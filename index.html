@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Owner</title>
+    <title>Dashboard Owner - Verifikasi Kartu</title>
     
-    <!-- Konfigurasi PWA agar bisa jadi aplikasi di HP -->
+    <!-- Konfigurasi PWA agar bisa di-install jadi aplikasi di HP -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,20 +14,124 @@
     <link rel="apple-touch-icon" href="icon.png">
 
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #0f172a; }
-        .card { background: #0f172a; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .card h3 { margin: 0 0 5px 0; font-size: 16px; color: #94a3b8; }
-        .card p { margin: 0; font-size: 24px; font-weight: bold; }
-        button { width: 100%; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button.refresh { background: #3b82f6; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f4f6f9; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 90vh; 
+            color: #333; 
+        }
+        .box { 
+            width: 100%; 
+            max-width: 400px; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+        h2 { 
+            text-align: center; 
+            color: #0f172a; 
+            margin-top: 0; 
+        }
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            color: #475569; 
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            box-sizing: border-box; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 16px; 
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #2563eb; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            font-size: 16px; 
+        }
+        button:hover { 
+            background: #1d4ed8; 
+        }
+        
+        /* Styling Dashboard */
+        .card { 
+            background: #0f172a; 
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+        }
+        .card h3 { 
+            margin: 0 0 5px 0; 
+            font-size: 14px; 
+            color: #94a3b8; 
+        }
+        .card p { 
+            margin: 0; 
+            font-size: 24px; 
+            font-weight: bold; 
+        }
+        .btn-logout { 
+            background: #ef4444; 
+            margin-top: 15px; 
+        }
+        .btn-logout:hover { 
+            background: #dc2626; 
+        }
+        .btn-refresh { 
+            background: #10b981; 
+            margin-bottom: 10px; 
+        }
+        .btn-refresh:hover { 
+            background: #059669; 
+        }
+        #infoCardId { 
+            text-align: center; 
+            color: #2563eb; 
+            font-weight: bold; 
+            font-size: 15px; 
+            margin-bottom: 20px;
+            background: #eff6ff;
+            padding: 8px;
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container" id="appContent" style="display: none;">
-        <h2>📊 Dashboard Owner</h2>
+    <!-- HALAMAN LOGIN -->
+    <div class="box" id="loginScreen">
+        <h2>🔐 Login Owner</h2>
+        <div id="infoCardId">Memuat ID Kartu...</div>
+        
+        <div class="form-group">
+            <label>PIN Kartu</label>
+            <input type="password" id="inputPin" placeholder="Masukkan PIN rahasia kartu ini">
+        </div>
+        <button onclick="prosesLogin()">Masuk Dashboard</button>
+    </div>
+
+    <!-- HALAMAN DASHBOARD (Awalnya Disembunyikan) -->
+    <div class="box" id="dashboardScreen" style="display: none;">
+        <h2 id="titleDashboard">📊 Dashboard Statistik</h2>
         
         <div class="card">
             <h3>Total Pengunjung</h3>
@@ -42,47 +146,101 @@
             <p id="statWA">0</p>
         </div>
 
-        <button class="refresh" onclick="loadData()">Perbarui Data</button>
-        <button onclick="logoutOwner()">Keluar / Lock</button>
+        <button class="btn-refresh" onclick="refreshData()">Perbarui Data</button>
+        <button class="btn-logout" onclick="logoutApp()">Keluar (Logout)</button>
     </div>
 
     <script>
-        // --- SISTEM KEAMANAN PIN ---
-        const PIN_RAHASIA = "123456"; // Ganti PIN Anda di sini!
+        // --- 1. MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI ---
+        const URL_API = "https://script.google.com/macros/s/AKfycbzQWr3zC1uBHHSzbV1Gd930BwBrM3WterDk8DkTNrxkAzO-gmOaXhzRBoAETIlh1hbJ/exec";
 
-        function cekLogin() {
-            let statusLogin = localStorage.getItem("owner_logged");
-            if (statusLogin !== "true") {
-                let inputPin = prompt("Masukkan PIN Rahasia Owner:");
-                if (inputPin === PIN_RAHASIA) {
-                    localStorage.setItem("owner_logged", "true");
-                    document.getElementById("appContent").style.display = "block";
-                    loadData();
-                } else {
-                    alert("PIN Salah! Akses ditolak.");
-                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px; color:red;'>Akses Ditolak 🚫</h2>";
-                }
-            } else {
-                document.getElementById("appContent").style.display = "block";
-                loadData();
+        // Ambil parameter "?id=" secara otomatis dari URL browser (Contoh: ?id=NFC-001)
+        const urlParams = new URLSearchParams(window.location.search);
+        const cardIdFromUrl = urlParams.get("id"); 
+
+        window.onload = function() {
+            // Validasi jika link dibuka tanpa parameter ID di belakangnya
+            if (!cardIdFromUrl) {
+                document.body.innerHTML = `
+                    <div class="box" style="text-align:center;">
+                        <h2 style="color:#ef4444;">Link Kartu Tidak Valid 🚫</h2>
+                        <p style="color:#64748b;">Pastikan Anda membuka link khusus dashboard yang menyertakan ID kartu, contoh:</p>
+                        <code style="background:#f1f5f9; padding:6px; display:block; border-radius:4px; margin-top:10px;">
+                            namadomain.vercel.app/?id=NFC-001
+                        </code>
+                    </div>`;
+                return;
             }
+
+            // Tampilkan ID kartu yang sedang diakses pada layar login
+            document.getElementById("infoCardId").innerText = "ID Kartu: " + cardIdFromUrl;
+
+            // Cek apakah owner sudah pernah login sebelumnya untuk kartu ini di HP ini
+            if (localStorage.getItem("owner_logged_" + cardIdFromUrl) === "true") {
+                tampilkanDashboardFromCache();
+            }
+        };
+
+        function prosesLogin() {
+            let pinVal = document.getElementById("inputPin").value.trim();
+
+            if (!pinVal) {
+                alert("Silakan masukkan PIN kartu terlebih dahulu!");
+                return;
+            }
+
+            // Beritahu user proses verifikasi sedang berjalan
+            alert("Memverifikasi PIN ke database...");
+
+            // Kirim request ke Google Apps Script (membawa parameter id dan pin)
+            fetch(`${URL_API}?action=login&link=${cardIdFromUrl}&pin=${pinVal}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        // Simpan status dan data statistik khusus untuk ID kartu ini ke memori HP
+                        localStorage.setItem("owner_logged_" + cardIdFromUrl, "true");
+                        localStorage.setItem("stat_visitor_" + cardIdFromUrl, data.visitor);
+                        localStorage.setItem("stat_maps_" + cardIdFromUrl, data.maps);
+                        localStorage.setItem("stat_wa_" + cardIdFromUrl, data.wa);
+
+                        tampilkanDashboardFromCache();
+                    } else {
+                        alert(data.message); // Pesan jika PIN salah dari Google Spreadsheet
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Terjadi kesalahan koneksi ke database spreadsheet.");
+                });
         }
 
-        function logoutOwner() {
-            localStorage.removeItem("owner_logged");
+        function tampilkanDashboardFromCache() {
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("dashboardScreen").style.display = "block";
+            
+            // Ubah judul dashboard sesuai ID kartu yang aktif
+            document.getElementById("titleDashboard").innerText = "📊 Dashboard - " + cardIdFromUrl;
+
+            // Ambil dan tampilkan data statistik dari LocalStorage HP
+            document.getElementById("statVisitor").innerText = localStorage.getItem("stat_visitor_" + cardIdFromUrl) || 0;
+            document.getElementById("statMaps").innerText = localStorage.getItem("stat_maps_" + cardIdFromUrl) || 0;
+            document.getElementById("statWA").innerText = localStorage.getItem("stat_wa_" + cardIdFromUrl) || 0;
+        }
+
+        function refreshData() {
+            // Melakukan verifikasi ulang/tarik data terbaru dari spreadsheet dengan PIN yang tersimpan
+            alert("Memperbarui data statistik terbaru...");
             location.reload();
         }
 
-        // --- CONTOH AMBIL DATA (Bisa disesuaikan dengan Google Sheets/Database Anda) ---
-        function loadData() {
-            // Contoh data dummy, nanti bisa disambungkan ke database/Google Apps Script Anda
-            document.getElementById("statVisitor").innerText = localStorage.getItem("vis_count") || "120";
-            document.getElementById("statMaps").innerText = localStorage.getItem("maps_count") || "45";
-            document.getElementById("statWA").innerText = localStorage.getItem("wa_count") || "30";
+        function logoutApp() {
+            // Hapus sesi login khusus kartu ini
+            localStorage.removeItem("owner_logged_" + cardIdFromUrl);
+            localStorage.removeItem("stat_visitor_" + cardIdFromUrl);
+            localStorage.removeItem("stat_maps_" + cardIdFromUrl);
+            localStorage.removeItem("stat_wa_" + cardIdFromUrl);
+            location.reload(); 
         }
-
-        // Jalankan cek login saat halaman dibuka
-        cekLogin();
     </script>
 </body>
 </html>
