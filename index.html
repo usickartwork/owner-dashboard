@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Owner</title>
+    
+    <!-- Konfigurasi PWA agar bisa jadi aplikasi di HP -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Owner App">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #0f172a; }
+        .card { background: #0f172a; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .card h3 { margin: 0 0 5px 0; font-size: 16px; color: #94a3b8; }
+        .card p { margin: 0; font-size: 24px; font-weight: bold; }
+        button { width: 100%; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button.refresh { background: #3b82f6; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="appContent" style="display: none;">
+        <h2>📊 Dashboard Owner</h2>
+        
+        <div class="card">
+            <h3>Total Pengunjung</h3>
+            <p id="statVisitor">0</p>
+        </div>
+        <div class="card">
+            <h3>Total Klik Google Maps</h3>
+            <p id="statMaps">0</p>
+        </div>
+        <div class="card">
+            <h3>Total Klik WhatsApp</h3>
+            <p id="statWA">0</p>
+        </div>
+
+        <button class="refresh" onclick="loadData()">Perbarui Data</button>
+        <button onclick="logoutOwner()">Keluar / Lock</button>
+    </div>
+
+    <script>
+        // --- SISTEM KEAMANAN PIN ---
+        const PIN_RAHASIA = "123456"; // Ganti PIN Anda di sini!
+
+        function cekLogin() {
+            let statusLogin = localStorage.getItem("owner_logged");
+            if (statusLogin !== "true") {
+                let inputPin = prompt("Masukkan PIN Rahasia Owner:");
+                if (inputPin === PIN_RAHASIA) {
+                    localStorage.setItem("owner_logged", "true");
+                    document.getElementById("appContent").style.display = "block";
+                    loadData();
+                } else {
+                    alert("PIN Salah! Akses ditolak.");
+                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px; color:red;'>Akses Ditolak 🚫</h2>";
+                }
+            } else {
+                document.getElementById("appContent").style.display = "block";
+                loadData();
+            }
+        }
+
+        function logoutOwner() {
+            localStorage.removeItem("owner_logged");
+            location.reload();
+        }
+
+        // --- CONTOH AMBIL DATA (Bisa disesuaikan dengan Google Sheets/Database Anda) ---
+        function loadData() {
+            // Contoh data dummy, nanti bisa disambungkan ke database/Google Apps Script Anda
+            document.getElementById("statVisitor").innerText = localStorage.getItem("vis_count") || "120";
+            document.getElementById("statMaps").innerText = localStorage.getItem("maps_count") || "45";
+            document.getElementById("statWA").innerText = localStorage.getItem("wa_count") || "30";
+        }
+
+        // Jalankan cek login saat halaman dibuka
+        cekLogin();
+    </script>
+</body>
+</html>
