@@ -15,6 +15,10 @@
         @keyframes spinLoader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-spinner { animation: spinLoader 0.8s linear infinite; }
 
+        /* Animasi ikon pop masuk (bounce halus) */
+        @keyframes iconBounce { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-icon-bounce { animation: iconBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
@@ -81,11 +85,13 @@
         <div id="connectModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-4 text-left relative">
                 
-                <!-- OVERLAY ANIMASI NOTIFIKASI DI DALAM MODAL KELOLA KARTU -->
-                <div id="connectAlertOverlay" class="hidden absolute inset-0 bg-white/95 rounded-2xl z-20 flex flex-col items-center justify-center p-4 text-center animate-pop-up">
-                    <div id="connectAlertIcon" class="text-4xl mb-2">✅</div>
-                    <h3 id="connectAlertTitle" class="text-sm font-bold text-slate-900 mb-1">Berhasil!</h3>
-                    <p id="connectAlertDesc" class="text-xs text-slate-500">Kartu berhasil dihubungkan.</p>
+                <!-- OVERLAY NOTIFIKASI DENGAN DESIGN & ANIMASI BARU YANG ELEGAN -->
+                <div id="connectAlertOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-20 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
+                    <div id="connectAlertBox" class="w-16 h-16 rounded-full flex items-center justify-center mb-3 shadow-sm">
+                        <!-- Ikon dinamis dimasukkan via JavaScript -->
+                    </div>
+                    <h3 id="connectAlertTitle" class="text-base font-bold text-slate-900 mb-1">Berhasil!</h3>
+                    <p id="connectAlertDesc" class="text-xs text-slate-500 max-w-xs">Kartu berhasil dihubungkan.</p>
                 </div>
 
                 <div class="text-center">
@@ -378,7 +384,7 @@
                 });
         }
 
-        // KELOLA / TAMBAH KARTU (CONNECT) DENGAN ANIMASI LOADING, SUKSES, DAN GAGAL
+        // KELOLA / TAMBAH KARTU (CONNECT) DENGAN DESIGN & ANIMASI NOTIFIKASI MODERN
         function openConnectModal() {
             renderManageList();
             document.getElementById("connectCardId").value = "";
@@ -426,16 +432,19 @@
 
         function showConnectAlert(type, title, desc) {
             const overlay = document.getElementById("connectAlertOverlay");
-            const iconEl = document.getElementById("connectAlertIcon");
+            const boxEl = document.getElementById("connectAlertBox");
             const titleEl = document.getElementById("connectAlertTitle");
             const descEl = document.getElementById("connectAlertDesc");
 
             if (type === "loading") {
-                iconEl.innerHTML = `<div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spinner mx-auto"></div>`;
+                boxEl.className = "w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mb-3 shadow-inner";
+                boxEl.innerHTML = `<div class="w-7 h-7 border-3 border-blue-600 border-t-transparent rounded-full animate-spinner"></div>`;
             } else if (type === "success") {
-                iconEl.textContent = "✅";
+                boxEl.className = "w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-3 shadow-sm animate-icon-bounce";
+                boxEl.innerHTML = `<svg class="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>`;
             } else if (type === "error") {
-                iconEl.textContent = "❌";
+                boxEl.className = "w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-3 shadow-sm animate-icon-bounce";
+                boxEl.innerHTML = `<svg class="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>`;
             }
 
             titleEl.textContent = title;
@@ -455,18 +464,17 @@
             let newPin = document.getElementById("connectCardPin").value.trim();
 
             if (!newId || !newPin) {
-                showConnectAlert("error", "Data Kurang!", "ID/Link Kartu dan PIN wajib diisi.");
+                showConnectAlert("error", "Data Belum Lengkap", "ID/Link Kartu dan PIN wajib diisi.");
                 hideConnectAlertAfterDelay(2000);
                 return;
             }
 
             if (connectedCardIds.includes(newId)) {
-                showConnectAlert("error", "Sudah Terhubung!", "Kartu " + newId + " sudah ada di dashboard ini.");
+                showConnectAlert("error", "Sudah Terhubung", "Kartu " + newId + " sudah ada di dalam daftar dashboard.");
                 hideConnectAlertAfterDelay(2000);
                 return;
             }
 
-            // Tampilkan Animasi Loading di Modal
             showConnectAlert("loading", "Menghubungkan...", "Memeriksa data kartu ke database.");
 
             fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(newId)}&pin=${encodeURIComponent(newPin)}`)
@@ -479,18 +487,15 @@
                         document.getElementById("connectCardPin").value = "";
                         renderManageList();
                         
-                        // Tampilkan Animasi Berhasil
                         showConnectAlert("success", "Berhasil Dihubungkan!", "Kartu " + newId + " sukses ditambahkan.");
                         hideConnectAlertAfterDelay(1800);
                     } else {
-                        // Tampilkan Animasi Gagal dari Server
-                        showConnectAlert("error", "Gagal Menghubungkan!", res.message || "PIN atau ID salah.");
+                        showConnectAlert("error", "Gagal Menghubungkan", res.message || "PIN atau ID salah.");
                         hideConnectAlertAfterDelay(2200);
                     }
                 })
                 .catch(() => {
-                    // Tampilkan Animasi Gagal Koneksi
-                    showConnectAlert("error", "Koneksi Gagal!", "Periksa koneksi internet Anda.");
+                    showConnectAlert("error", "Koneksi Gagal", "Periksa koneksi internet Anda.");
                     hideConnectAlertAfterDelay(2200);
                 });
         }
