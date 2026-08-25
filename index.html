@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Owner - Verifikasi Kartu</title>
+    <title>Dashboard Owner - Login</title>
     
     <!-- Konfigurasi PWA agar bisa di-install jadi aplikasi di HP -->
     <link rel="manifest" href="manifest.json">
@@ -103,29 +103,24 @@
         .btn-refresh:hover { 
             background: #059669; 
         }
-        #infoCardId { 
-            text-align: center; 
-            color: #2563eb; 
-            font-weight: bold; 
-            font-size: 15px; 
-            margin-bottom: 20px;
-            background: #eff6ff;
-            padding: 8px;
-            border-radius: 6px;
-        }
     </style>
 </head>
 <body>
 
-    <!-- HALAMAN LOGIN -->
+    <!-- HALAMAN LOGIN MANUAL -->
     <div class="box" id="loginScreen">
-        <h2>🔐 Login Owner</h2>
-        <div id="infoCardId">Memuat ID Kartu...</div>
+        <h2>🔐 Login Dashboard Owner</h2>
+        
+        <div class="form-group">
+            <label>ID / Link Kartu</label>
+            <input type="text" id="inputCardId" placeholder="Contoh: NFC-001">
+        </div>
         
         <div class="form-group">
             <label>PIN Kartu</label>
-            <input type="password" id="inputPin" placeholder="Masukkan PIN rahasia kartu ini">
+            <input type="password" id="inputPin" placeholder="Masukkan PIN rahasia">
         </div>
+        
         <button onclick="prosesLogin()">Masuk Dashboard</button>
     </div>
 
@@ -147,70 +142,58 @@
         </div>
 
         <button class="btn-refresh" onclick="refreshData()">Perbarui Data</button>
-        <button class="btn-logout" onclick="logoutApp()">Keluar (Logout)</button>
+        <button class="btn-logout" onclick="logoutApp()">Keluar (Ganti Kartu)</button>
     </div>
 
     <script>
         // --- 1. MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI ---
         const URL_API = "https://script.google.com/macros/s/AKfycbzQWr3zC1uBHHSzbV1Gd930BwBrM3WterDk8DkTNrxkAzO-gmOaXhzRBoAETIlh1hbJ/exec";
 
-        // Ambil parameter "?id=" secara otomatis dari URL browser (Contoh: ?id=NFC-001)
-        const urlParams = new URLSearchParams(window.location.search);
-        const cardIdFromUrl = urlParams.get("id"); 
+        // Variabel untuk menyimpan ID kartu yang sedang aktif
+        let activeCardId = "";
 
         window.onload = function() {
-            // Validasi jika link dibuka tanpa parameter ID di belakangnya
-            if (!cardIdFromUrl) {
-                document.body.innerHTML = `
-                    <div class="box" style="text-align:center;">
-                        <h2 style="color:#ef4444;">Link Kartu Tidak Valid 🚫</h2>
-                        <p style="color:#64748b;">Pastikan Anda membuka link khusus dashboard yang menyertakan ID kartu, contoh:</p>
-                        <code style="background:#f1f5f9; padding:6px; display:block; border-radius:4px; margin-top:10px;">
-                            namadomain.vercel.app/?id=NFC-001
-                        </code>
-                    </div>`;
-                return;
-            }
-
-            // Tampilkan ID kartu yang sedang diakses pada layar login
-            document.getElementById("infoCardId").innerText = "ID Kartu: " + cardIdFromUrl;
-
-            // Cek apakah owner sudah pernah login sebelumnya untuk kartu ini di HP ini
-            if (localStorage.getItem("owner_logged_" + cardIdFromUrl) === "true") {
+            // Cek apakah sebelumnya sudah pernah login di HP ini
+            let savedCardId = localStorage.getItem("active_owner_card");
+            if (savedCardId && localStorage.getItem("owner_logged_" + savedCardId) === "true") {
+                activeCardId = savedCardId;
                 tampilkanDashboardFromCache();
             }
         };
 
         function prosesLogin() {
+            let cardIdVal = document.getElementById("inputCardId").value.trim();
             let pinVal = document.getElementById("inputPin").value.trim();
 
-            if (!pinVal) {
-                alert("Silakan masukkan PIN kartu terlebih dahulu!");
+            if (!cardIdVal || !pinVal) {
+                alert("ID Kartu dan PIN wajib diisi!");
                 return;
             }
 
-            // Beritahu user proses verifikasi sedang berjalan
-            alert("Memverifikasi PIN ke database...");
+            alert("Memverifikasi data ke database spreadsheet...");
 
-            // Kirim request ke Google Apps Script (membawa parameter id dan pin)
-            fetch(`${URL_API}?action=login&link=${cardIdFromUrl}&pin=${pinVal}`)
+            // Kirim request ke Google Apps Script
+            fetch(`${URL_API}?action=login&link=${encodeURIComponent(cardIdVal)}&pin=${encodeURIComponent(pinVal)}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === "success") {
-                        // Simpan status dan data statistik khusus untuk ID kartu ini ke memori HP
-                        localStorage.setItem("owner_logged_" + cardIdFromUrl, "true");
-                        localStorage.setItem("stat_visitor_" + cardIdFromUrl, data.visitor);
-                        localStorage.setItem("stat_maps_" + cardIdFromUrl, data.maps);
-                        localStorage.setItem("stat_wa_" + cardIdFromUrl, data.wa);
+                        activeCardId = cardIdVal;
+
+                        // Simpan sesi login ke LocalStorage HP
+                        localStorage.setItem("active_owner_card", activeCardId);
+                        localStorage.setItem("owner_logged_" + activeCardId, "true");
+                        localStorage.setItem("stat_visitor_" + activeCardId, data.visitor);
+                        localStorage.setItem("stat_maps_" + activeCardId, data.maps);
+                        localStorage.setItem("stat_wa_" + activeCardId, data.wa);
 
                         tampilkanDashboardFromCache();
                     } else {
-                        alert(data.message); // Pesan jika PIN salah dari Google Spreadsheet
+                        alert(data.message); // Pesan error dari database (ID/PIN salah)
                     }
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    alert("Terjadi kesalahan koneksi ke database spreadsheet.");
+                    alert("Terjadi kesalahan koneksi ke database.");
                 });
         }
 
@@ -219,26 +202,28 @@
             document.getElementById("dashboardScreen").style.display = "block";
             
             // Ubah judul dashboard sesuai ID kartu yang aktif
-            document.getElementById("titleDashboard").innerText = "📊 Dashboard - " + cardIdFromUrl;
+            document.getElementById("titleDashboard").innerText = "📊 Dashboard - " + activeCardId;
 
-            // Ambil dan tampilkan data statistik dari LocalStorage HP
-            document.getElementById("statVisitor").innerText = localStorage.getItem("stat_visitor_" + cardIdFromUrl) || 0;
-            document.getElementById("statMaps").innerText = localStorage.getItem("stat_maps_" + cardIdFromUrl) || 0;
-            document.getElementById("statWA").innerText = localStorage.getItem("stat_wa_" + cardIdFromUrl) || 0;
+            // Tampilkan data statistik dari memori HP
+            document.getElementById("statVisitor").innerText = localStorage.getItem("stat_visitor_" + activeCardId) || 0;
+            document.getElementById("statMaps").innerText = localStorage.getItem("stat_maps_" + activeCardId) || 0;
+            document.getElementById("statWA").innerText = localStorage.getItem("stat_wa_" + activeCardId) || 0;
         }
 
         function refreshData() {
-            // Melakukan verifikasi ulang/tarik data terbaru dari spreadsheet dengan PIN yang tersimpan
             alert("Memperbarui data statistik terbaru...");
             location.reload();
         }
 
         function logoutApp() {
-            // Hapus sesi login khusus kartu ini
-            localStorage.removeItem("owner_logged_" + cardIdFromUrl);
-            localStorage.removeItem("stat_visitor_" + cardIdFromUrl);
-            localStorage.removeItem("stat_maps_" + cardIdFromUrl);
-            localStorage.removeItem("stat_wa_" + cardIdFromUrl);
+            // Hapus sesi login kartu aktif
+            if (activeCardId) {
+                localStorage.removeItem("owner_logged_" + activeCardId);
+                localStorage.removeItem("stat_visitor_" + activeCardId);
+                localStorage.removeItem("stat_maps_" + activeCardId);
+                localStorage.removeItem("stat_wa_" + activeCardId);
+            }
+            localStorage.removeItem("active_owner_card");
             location.reload(); 
         }
     </script>
