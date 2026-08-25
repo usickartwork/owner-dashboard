@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Owner - Login</title>
+    <title>Owner Dashboard - Statistik Kartu</title>
     
-    <!-- Konfigurasi PWA agar bisa di-install jadi aplikasi di HP -->
+    <!-- Konfigurasi PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,147 +13,282 @@
     <meta name="apple-mobile-web-app-title" content="Owner App">
     <link rel="apple-touch-icon" href="icon.png">
 
+    <!-- Google Fonts Inter untuk Tampilan Modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        * { box-sizing: border-box; }
         body { 
-            font-family: Arial, sans-serif; 
-            background: #f4f6f9; 
+            font-family: 'Inter', sans-serif; 
+            background: #0f172a; 
             margin: 0; 
             padding: 20px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            min-height: 90vh; 
-            color: #333; 
+            min-height: 92vh; 
+            color: #1e293b; 
         }
-        .box { 
+
+        /* Container Kartu Utama */
+        .wrapper { 
             width: 100%; 
-            max-width: 400px; 
-            background: white; 
-            padding: 25px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            max-width: 440px; 
+            background: #ffffff; 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2); 
         }
-        h2 { 
-            text-align: center; 
-            color: #0f172a; 
-            margin-top: 0; 
+
+        /* Halaman Login Styling */
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
         }
+        .login-header h2 {
+            margin: 0 0 8px 0;
+            color: #0f172a;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .login-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
         .form-group { 
-            margin-bottom: 15px; 
+            margin-bottom: 20px; 
         }
         label { 
             display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
-            font-size: 14px; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            font-size: 13px; 
             color: #475569; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         input { 
             width: 100%; 
-            padding: 12px; 
-            box-sizing: border-box; 
+            padding: 14px 16px; 
+            background: #f8fafc;
             border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
-            font-size: 16px; 
+            border-radius: 10px; 
+            font-size: 15px; 
+            color: #0f172a;
+            transition: all 0.3s ease;
         }
-        button { 
+        input:focus { 
+            outline: none; 
+            border-color: #3b82f6; 
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
+        }
+
+        .btn-primary { 
             width: 100%; 
-            padding: 12px; 
+            padding: 14px; 
             background: #2563eb; 
             color: white; 
             border: none; 
-            border-radius: 6px; 
-            font-weight: bold; 
+            border-radius: 10px; 
+            font-weight: 600; 
             cursor: pointer; 
-            font-size: 16px; 
+            font-size: 15px; 
+            transition: background 0.2s;
         }
-        button:hover { 
+        .btn-primary:hover { 
             background: #1d4ed8; 
         }
-        
-        /* Styling Dashboard */
-        .card { 
-            background: #0f172a; 
-            color: white; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 15px; 
+
+        /* Dashboard Styling */
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 15px;
         }
-        .card h3 { 
-            margin: 0 0 5px 0; 
-            font-size: 14px; 
-            color: #94a3b8; 
+        .dash-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #0f172a;
+            font-weight: 700;
         }
-        .card p { 
+        .badge-id {
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Kartu Statistik */
+        .stats-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .stat-card { 
+            background: #f8fafc; 
+            border: 1px solid #e2e8f0;
+            padding: 18px 20px; 
+            border-radius: 14px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+        }
+        .stat-info h3 { 
+            margin: 0 0 4px 0; 
+            font-size: 13px; 
+            color: #64748b; 
+            font-weight: 500;
+        }
+        .stat-info p { 
             margin: 0; 
-            font-size: 24px; 
-            font-weight: bold; 
+            font-size: 26px; 
+            font-weight: 700; 
+            color: #0f172a; 
         }
-        .btn-logout { 
-            background: #ef4444; 
-            margin-top: 15px; 
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
         }
-        .btn-logout:hover { 
-            background: #dc2626; 
+        .icon-visitor { background: #e0f2fe; color: #0284c7; }
+        .icon-maps { background: #dcfce7; color: #16a34a; }
+        .icon-wa { background: #fef3c7; color: #d97706; }
+
+        /* Tombol Aksi Dashboard */
+        .dash-actions {
+            display: flex;
+            gap: 10px;
         }
         .btn-refresh { 
-            background: #10b981; 
-            margin-bottom: 10px; 
+            flex: 1;
+            padding: 12px; 
+            background: #f1f5f9; 
+            color: #334155; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: background 0.2s;
         }
-        .btn-refresh:hover { 
-            background: #059669; 
+        .btn-refresh:hover { background: #e2e8f0; }
+
+        .btn-logout { 
+            flex: 1;
+            padding: 12px; 
+            background: #fef2f2; 
+            color: #dc2626; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: #fee2e2; }
+
+        /* Loading State Animation */
+        .loading-overlay {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-    <!-- HALAMAN LOGIN MANUAL -->
-    <div class="box" id="loginScreen">
-        <h2>🔐 Login Dashboard Owner</h2>
-        
-        <div class="form-group">
-            <label>ID / Link Kartu</label>
-            <input type="text" id="inputCardId" placeholder="Contoh: NFC-001">
-        </div>
-        
-        <div class="form-group">
-            <label>PIN Kartu</label>
-            <input type="password" id="inputPin" placeholder="Masukkan PIN rahasia">
-        </div>
-        
-        <button onclick="prosesLogin()">Masuk Dashboard</button>
-    </div>
-
-    <!-- HALAMAN DASHBOARD (Awalnya Disembunyikan) -->
-    <div class="box" id="dashboardScreen" style="display: none;">
-        <h2 id="titleDashboard">📊 Dashboard Statistik</h2>
-        
-        <div class="card">
-            <h3>Total Pengunjung</h3>
-            <p id="statVisitor">0</p>
-        </div>
-        <div class="card">
-            <h3>Total Klik Google Maps</h3>
-            <p id="statMaps">0</p>
-        </div>
-        <div class="card">
-            <h3>Total Klik WhatsApp</h3>
-            <p id="statWA">0</p>
+    <div class="wrapper">
+        <!-- HALAMAN LOGIN -->
+        <div id="loginScreen">
+            <div class="login-header">
+                <h2>🔐 Owner Portal</h2>
+                <p>Masukkan kredensial kartu untuk melihat analitik</p>
+            </div>
+            
+            <div class="form-group">
+                <label>ID Kartu / Produk</label>
+                <input type="text" id="inputCardId" placeholder="Contoh: NFC-001" autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label>PIN Rahasia</label>
+                <input type="password" id="inputPin" placeholder="••••••••">
+            </div>
+            
+            <button class="btn-primary" onclick="prosesLogin()">Masuk Dashboard</button>
+            <div id="loadingText" class="loading-overlay">Menghubungkan ke database...</div>
         </div>
 
-        <button class="btn-refresh" onclick="refreshData()">Perbarui Data</button>
-        <button class="btn-logout" onclick="logoutApp()">Keluar (Ganti Kartu)</button>
+        <!-- HALAMAN DASHBOARD -->
+        <div id="dashboardScreen" style="display: none;">
+            <div class="dash-header">
+                <div>
+                    <h2 id="titleDashboard">Dashboard Statistik</h2>
+                    <span id="badgeCardId" class="badge-id">ID: -</span>
+                </div>
+                <span style="font-size: 22px;">📊</span>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Pengunjung</h3>
+                        <p id="statVisitor">0</p>
+                    </div>
+                    <div class="stat-icon icon-visitor">👥</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Klik Google Maps</h3>
+                        <p id="statMaps">0</p>
+                    </div>
+                    <div class="stat-icon icon-maps">📍</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <h3>Total Klik Masukan WA</h3>
+                        <p id="statWA">0</p>
+                    </div>
+                    <div class="stat-icon icon-wa">💬</div>
+                </div>
+            </div>
+
+            <div class="dash-actions">
+                <button class="btn-refresh" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn-logout" onclick="logoutApp()">🚪 Keluar</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // --- 1. MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI ---
+        // --- MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI ---
         const URL_API = "https://script.google.com/macros/s/AKfycbwrtnBlUReH1zbGHGwbhg3YOCsyunDlmAHkaw9pIo-SRr3WNRCIOD0esEwpUHMwKMgg/exec";
 
-        // Variabel untuk menyimpan ID kartu yang sedang aktif
         let activeCardId = "";
 
         window.onload = function() {
-            // Cek apakah sebelumnya sudah pernah login di HP ini
             let savedCardId = localStorage.getItem("active_owner_card");
             if (savedCardId && localStorage.getItem("owner_logged_" + savedCardId) === "true") {
                 activeCardId = savedCardId;
@@ -170,16 +305,15 @@
                 return;
             }
 
-            alert("Memverifikasi data ke database spreadsheet...");
+            document.getElementById("loadingText").style.display = "block";
 
-            // Kirim request ke Google Apps Script
             fetch(`${URL_API}?action=login&link=${encodeURIComponent(cardIdVal)}&pin=${encodeURIComponent(pinVal)}`)
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById("loadingText").style.display = "none";
                     if (data.status === "success") {
                         activeCardId = cardIdVal;
 
-                        // Simpan sesi login ke LocalStorage HP
                         localStorage.setItem("active_owner_card", activeCardId);
                         localStorage.setItem("owner_logged_" + activeCardId, "true");
                         localStorage.setItem("stat_visitor_" + activeCardId, data.visitor);
@@ -188,10 +322,11 @@
 
                         tampilkanDashboardFromCache();
                     } else {
-                        alert(data.message); // Pesan error dari database (ID/PIN salah)
+                        alert(data.message);
                     }
                 })
                 .catch(error => {
+                    document.getElementById("loadingText").style.display = "none";
                     console.error("Error:", error);
                     alert("Terjadi kesalahan koneksi ke database.");
                 });
@@ -201,10 +336,8 @@
             document.getElementById("loginScreen").style.display = "none";
             document.getElementById("dashboardScreen").style.display = "block";
             
-            // Ubah judul dashboard sesuai ID kartu yang aktif
-            document.getElementById("titleDashboard").innerText = "📊 Dashboard - " + activeCardId;
+            document.getElementById("badgeCardId").innerText = "ID: " + activeCardId;
 
-            // Tampilkan data statistik dari memori HP
             document.getElementById("statVisitor").innerText = localStorage.getItem("stat_visitor_" + activeCardId) || 0;
             document.getElementById("statMaps").innerText = localStorage.getItem("stat_maps_" + activeCardId) || 0;
             document.getElementById("statWA").innerText = localStorage.getItem("stat_wa_" + activeCardId) || 0;
@@ -216,7 +349,6 @@
         }
 
         function logoutApp() {
-            // Hapus sesi login kartu aktif
             if (activeCardId) {
                 localStorage.removeItem("owner_logged_" + activeCardId);
                 localStorage.removeItem("stat_visitor_" + activeCardId);
