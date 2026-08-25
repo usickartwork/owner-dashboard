@@ -97,13 +97,20 @@
 
         <!-- HALAMAN DASHBOARD STATISTIK -->
         <div id="dashboardScreen" class="hidden space-y-5 text-left animate-page-fade-in">
-            <div class="text-center space-y-1">
+            <div class="text-center space-y-1.5">
                 <div class="w-10 h-1 bg-blue-600 mx-auto rounded-full mb-3"></div>
-                <h1 id="displayBusinessName" class="text-2xl font-extrabold text-slate-900 tracking-tight">Nama Bisnis</h1>
-                <span id="badgeCardId" class="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase mt-1">ID: -</span>
+                <!-- Headline Dashboard Review -->
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
+                <!-- Nama Bisnis (Dibuat Kecil) -->
+                <div>
+                    <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Bisnis</span>
+                </div>
+                <div>
+                    <span id="badgeCardId" class="inline-block bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase mt-1">ID: -</span>
+                </div>
             </div>
 
-            <!-- Kotak Kunjungan & Overall Rating (Overall Rating Diubah ke Warna Kuning Tua / Oranye: bg-amber-600) -->
+            <!-- Kotak Kunjungan & Overall Rating -->
             <div class="grid grid-cols-2 gap-3 pt-2">
                 <div class="bg-blue-600 text-white p-4 rounded-2xl shadow-sm flex flex-col justify-between">
                     <span class="text-[11px] uppercase tracking-wider font-semibold opacity-90">Total Kunjungan</span>
@@ -319,7 +326,7 @@
         }
 
         function renderDashboard(data) {
-            document.getElementById("displayBusinessName").innerText = data.business_name || "Dashboard Bisnis";
+            document.getElementById("displayBusinessName").innerText = data.business_name || "Nama Bisnis";
 
             document.getElementById("statVisitor").innerText = data.visitor || 0;
             document.getElementById("statMaps").innerText = data.maps || 0;
