@@ -5,15 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Owner Dashboard - Statistik Kartu</title>
     
-    <!-- Konfigurasi PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Owner App">
-    <link rel="apple-touch-icon" href="icon.png">
-
-    <!-- Google Fonts Inter untuk Tampilan Modern -->
+    <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -30,17 +22,15 @@
             color: #1e293b; 
         }
 
-        /* Container Kartu Utama */
         .wrapper { 
             width: 100%; 
             max-width: 440px; 
             background: #ffffff; 
             padding: 30px; 
             border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2); 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); 
         }
 
-        /* Halaman Login Styling */
         .login-header {
             text-align: center;
             margin-bottom: 25px;
@@ -77,7 +67,6 @@
             border-radius: 10px; 
             font-size: 15px; 
             color: #0f172a;
-            transition: all 0.3s ease;
         }
         input:focus { 
             outline: none; 
@@ -96,13 +85,9 @@
             font-weight: 600; 
             cursor: pointer; 
             font-size: 15px; 
-            transition: background 0.2s;
         }
-        .btn-primary:hover { 
-            background: #1d4ed8; 
-        }
+        .btn-primary:hover { background: #1d4ed8; }
 
-        /* Dashboard Styling */
         .dash-header {
             display: flex;
             justify-content: space-between;
@@ -126,7 +111,6 @@
             font-weight: 600;
         }
 
-        /* Kartu Statistik */
         .stats-grid {
             display: flex;
             flex-direction: column;
@@ -141,11 +125,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: transform 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-            border-color: #cbd5e1;
         }
         .stat-info h3 { 
             margin: 0 0 4px 0; 
@@ -172,7 +151,6 @@
         .icon-maps { background: #dcfce7; color: #16a34a; }
         .icon-wa { background: #fef3c7; color: #d97706; }
 
-        /* Tombol Aksi Dashboard */
         .dash-actions {
             display: flex;
             gap: 10px;
@@ -187,7 +165,6 @@
             font-weight: 600; 
             cursor: pointer; 
             font-size: 14px;
-            transition: background 0.2s;
         }
         .btn-refresh:hover { background: #e2e8f0; }
 
@@ -201,15 +178,13 @@
             font-weight: 600; 
             cursor: pointer; 
             font-size: 14px;
-            transition: background 0.2s;
         }
         .btn-logout:hover { background: #fee2e2; }
 
-        /* Loading State Animation */
         .loading-overlay {
             display: none;
             text-align: center;
-            padding: 20px;
+            margin-top: 15px;
             color: #64748b;
             font-size: 14px;
         }
@@ -222,7 +197,7 @@
         <div id="loginScreen">
             <div class="login-header">
                 <h2>🔐 Owner Portal</h2>
-                <p>Masukkan kredensial kartu untuk melihat analitik</p>
+                <p>Masukkan ID dan PIN kartu untuk masuk</p>
             </div>
             
             <div class="form-group">
@@ -283,8 +258,8 @@
     </div>
 
     <script>
-        // --- MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI ---
-        const URL_API = "https://script.google.com/macros/s/AKfycbx9EXgT-DeFDbwb9rlW8CBumKPSajQbwBxHd4C87qhp5PNigSjOKgDGELe52eiy5IVR/exec";
+        // Masukkan URL Web App Google Apps Script Anda yang sama di sini
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2hzFRPefruW7AmfUD_7-nlbWciawtbSYBW0E65xMAISkbEPHlDp2G_J9y-jJd_c2Y/exec";
 
         let activeCardId = "";
 
@@ -307,22 +282,23 @@
 
             document.getElementById("loadingText").style.display = "block";
 
-            fetch(`${URL_API}?action=login&link=${encodeURIComponent(cardIdVal)}&pin=${encodeURIComponent(pinVal)}`)
+            // Kirim request login owner ke Apps Script
+            fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(cardIdVal)}&pin=${encodeURIComponent(pinVal)}`)
                 .then(response => response.json())
-                .then(data => {
+                .then(res => {
                     document.getElementById("loadingText").style.display = "none";
-                    if (data.status === "success") {
+                    if (res.success) {
                         activeCardId = cardIdVal;
 
                         localStorage.setItem("active_owner_card", activeCardId);
                         localStorage.setItem("owner_logged_" + activeCardId, "true");
-                        localStorage.setItem("stat_visitor_" + activeCardId, data.visitor);
-                        localStorage.setItem("stat_maps_" + activeCardId, data.maps);
-                        localStorage.setItem("stat_wa_" + activeCardId, data.wa);
+                        localStorage.setItem("stat_visitor_" + activeCardId, res.data.visitor);
+                        localStorage.setItem("stat_maps_" + activeCardId, res.data.maps);
+                        localStorage.setItem("stat_wa_" + activeCardId, res.data.wa);
 
                         tampilkanDashboardFromCache();
                     } else {
-                        alert(data.message);
+                        alert(res.message);
                     }
                 })
                 .catch(error => {
@@ -344,7 +320,6 @@
         }
 
         function refreshData() {
-            alert("Memperbarui data statistik terbaru...");
             location.reload();
         }
 
