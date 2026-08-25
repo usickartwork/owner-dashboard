@@ -192,8 +192,6 @@
                     document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
                         activeCardId = cardIdVal;
-                        // Simpan PIN untuk kebutuhan otorisasi reset
-                        localStorage.setItem("active_owner_pin_" + activeCardId, pinVal);
                         localStorage.setItem("active_owner_card", activeCardId);
                         localStorage.setItem("owner_logged_" + activeCardId, "true");
                         localStorage.setItem("data_stat_" + activeCardId, JSON.stringify(res.data));
@@ -272,17 +270,21 @@
         }
 
         function resetCardData() {
-            let konfirmasi = confirm("PERINGATAN!\n\nSemua data kartu ini (Nama bisnis, PIN, link ulasan, dan seluruh statistik/bintang) akan dihapus permanen dan kartu akan kembali ke menu aktivasi awal. Lanjutkan?");
-            if (!konfirmasi) return;
-
-            let savedPin = localStorage.getItem("active_owner_pin_" + activeCardId) || "";
+            // Meminta owner memasukkan PIN secara langsung untuk keamanan
+            let inputPin = prompt("⚠️ PERINGATAN!\n\nSemua data kartu ini akan dihapus permanen dan kembali ke menu aktivasi.\n\nSilakan masukkan PIN Keamanan Anda untuk konfirmasi:");
+            
+            if (inputPin === null) return; // Jika user klik cancel
+            if (!inputPin.trim()) {
+                alert("PIN tidak boleh kosong!");
+                return;
+            }
 
             fetch(SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({
                     action: "reset_card",
                     product_id: activeCardId,
-                    pin: savedPin
+                    pin: inputPin.trim()
                 })
             })
             .then(res => res.json())
@@ -304,7 +306,6 @@
             if (activeCardId) {
                 localStorage.removeItem("owner_logged_" + activeCardId);
                 localStorage.removeItem("data_stat_" + activeCardId);
-                localStorage.removeItem("active_owner_pin_" + activeCardId);
             }
             localStorage.removeItem("active_owner_card");
             location.reload(); 
