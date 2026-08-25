@@ -11,7 +11,6 @@
         .animate-pop-up { animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-page-fade-in { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        /* Efek klik tombol yang lebih interaktif */
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
@@ -90,7 +89,7 @@
                 <div class="pt-2 border-t border-slate-100 space-y-2.5">
                     <p class="text-xs font-bold text-slate-700">Hubungkan Kartu Tambahan:</p>
                     <div>
-                        <input type="text" id="connectCardId" placeholder="ID Kartu (Contoh: NFC-002)" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none uppercase">
+                        <input type="text" id="connectCardId" placeholder="ID Kartu atau Link Lengkap" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
                     </div>
                     <div>
                         <input type="password" id="connectCardPin" placeholder="PIN Kartu Tersebut" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
@@ -118,7 +117,7 @@
 
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu atau Link Kartu</label>
-                <input type="text" id="inputCardId" placeholder="Contoh: NFC-001" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none" autocomplete="off">
+                <input type="text" id="inputCardId" placeholder="Contoh: NFC-001 atau https://.../?id=NFC-001" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none" autocomplete="off">
             </div>
             
             <div>
@@ -208,7 +207,7 @@
                 </div>
             </div>
 
-            <!-- 3 Tombol Utama dengan Desain Modern & Ikon -->
+            <!-- 3 Tombol Utama -->
             <div class="grid grid-cols-3 gap-2 pt-1">
                 <button id="btnRefresh" onclick="refreshData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 shadow-xs border border-slate-200">
                     <span>🔄</span> <span>Refresh</span>
@@ -367,7 +366,7 @@
                 });
         }
 
-        // KELOLA / TAMBAH KARTU (CONNECT)
+        // KELOLA / TAMBAH KARTU (CONNECT) DENGAN DUKUNGAN LINK ATAU ID LANGSUNG
         function openConnectModal() {
             renderManageList();
             document.getElementById("connectCardId").value = "";
@@ -414,11 +413,12 @@
         }
 
         function executeConnectCard() {
-            let newId = document.getElementById("connectCardId").value.trim().toUpperCase();
+            let rawInput = document.getElementById("connectCardId").value;
+            let newId = extractCardId(rawInput).toUpperCase();
             let newPin = document.getElementById("connectCardPin").value.trim();
 
             if (!newId || !newPin) {
-                alert("ID dan PIN kartu tambahan wajib diisi!");
+                alert("ID / Link Kartu dan PIN wajib diisi!");
                 return;
             }
 
