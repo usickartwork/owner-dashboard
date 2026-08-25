@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Dashboard - Statistik Kartu</title>
+    <title>Owner Dashboard</title>
     
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,181 +12,187 @@
         * { box-sizing: border-box; }
         body { 
             font-family: 'Inter', sans-serif; 
-            background: #0f172a; 
+            background: #fafafa; 
             margin: 0; 
-            padding: 20px; 
+            padding: 24px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            min-height: 92vh; 
-            color: #1e293b; 
+            min-height: 90vh; 
+            color: #0f172a; 
         }
 
         .wrapper { 
             width: 100%; 
-            max-width: 440px; 
+            max-width: 420px; 
             background: #ffffff; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); 
+            padding: 32px; 
+            border-radius: 24px; 
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); 
         }
 
         .login-header {
-            text-align: center;
-            margin-bottom: 25px;
+            text-align: left;
+            margin-bottom: 28px;
         }
         .login-header h2 {
-            margin: 0 0 8px 0;
+            margin: 0 0 6px 0;
             color: #0f172a;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
         }
         .login-header p {
             margin: 0;
             color: #64748b;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .form-group { 
-            margin-bottom: 20px; 
+            margin-bottom: 18px; 
         }
         label { 
             display: block; 
-            margin-bottom: 8px; 
-            font-weight: 600; 
-            font-size: 13px; 
-            color: #475569; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 6px; 
+            font-weight: 500; 
+            font-size: 12px; 
+            color: #64748b; 
         }
         input { 
             width: 100%; 
-            padding: 14px 16px; 
+            padding: 12px 14px; 
             background: #f8fafc;
-            border: 1px solid #cbd5e1; 
-            border-radius: 10px; 
-            font-size: 15px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 12px; 
+            font-size: 14px; 
             color: #0f172a;
         }
         input:focus { 
             outline: none; 
-            border-color: #3b82f6; 
+            border-color: #0f172a; 
             background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); 
         }
 
         .btn-primary { 
             width: 100%; 
-            padding: 14px; 
-            background: #2563eb; 
+            padding: 13px; 
+            background: #0f172a; 
             color: white; 
             border: none; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             font-weight: 600; 
             cursor: pointer; 
-            font-size: 15px; 
+            font-size: 14px; 
+            margin-top: 8px;
         }
-        .btn-primary:hover { background: #1d4ed8; }
+        .btn-primary:hover { background: #1e293b; }
 
         .dash-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 15px;
+            align-items: flex-start;
+            margin-bottom: 24px;
         }
         .dash-header h2 {
-            margin: 0;
+            margin: 0 0 4px 0;
             font-size: 18px;
             color: #0f172a;
             font-weight: 700;
         }
         .badge-id {
-            background: #eff6ff;
-            color: #2563eb;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
-        .stats-grid {
+        /* Tampilan Clean List & Bar Grafik */
+        .stats-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 16px;
+            margin-bottom: 24px;
         }
-        .stat-card { 
+        .stat-row { 
             background: #f8fafc; 
-            border: 1px solid #e2e8f0;
-            padding: 18px 20px; 
-            border-radius: 14px; 
+            border: 1px solid #f1f5f9;
+            padding: 16px; 
+            border-radius: 16px; 
+        }
+        .stat-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 8px;
         }
         .stat-info h3 { 
-            margin: 0 0 4px 0; 
-            font-size: 13px; 
+            margin: 0; 
+            font-size: 12px; 
             color: #64748b; 
             font-weight: 500;
         }
         .stat-info p { 
             margin: 0; 
-            font-size: 26px; 
+            font-size: 18px; 
             font-weight: 700; 
             color: #0f172a; 
         }
-        .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+        
+        /* Bar Grafik Minimalis */
+        .chart-track {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
         }
-        .icon-visitor { background: #e0f2fe; color: #0284c7; }
-        .icon-maps { background: #dcfce7; color: #16a34a; }
-        .icon-wa { background: #fef3c7; color: #d97706; }
+        .chart-fill {
+            height: 100%;
+            background: #0f172a;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
         .dash-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         .btn-refresh { 
-            flex: 1;
-            padding: 12px; 
-            background: #f1f5f9; 
-            color: #334155; 
-            border: none; 
-            border-radius: 10px; 
-            font-weight: 600; 
+            flex: 2;
+            padding: 11px; 
+            background: #f8fafc; 
+            color: #0f172a; 
+            border: 1px solid #e2e8f0;
+            border-radius: 12px; 
+            font-weight: 500; 
             cursor: pointer; 
-            font-size: 14px;
+            font-size: 13px;
         }
-        .btn-refresh:hover { background: #e2e8f0; }
+        .btn-refresh:hover { background: #f1f5f9; }
 
         .btn-logout { 
             flex: 1;
-            padding: 12px; 
-            background: #fef2f2; 
-            color: #dc2626; 
-            border: none; 
-            border-radius: 10px; 
-            font-weight: 600; 
+            padding: 11px; 
+            background: #fff; 
+            color: #ef4444; 
+            border: 1px solid #fee2e2;
+            border-radius: 12px; 
+            font-weight: 500; 
             cursor: pointer; 
-            font-size: 14px;
+            font-size: 13px;
         }
-        .btn-logout:hover { background: #fee2e2; }
+        .btn-logout:hover { background: #fef2f2; }
 
-        .loading-overlay {
+        .loading-text {
             display: none;
             text-align: center;
-            margin-top: 15px;
+            margin-top: 14px;
             color: #64748b;
-            font-size: 14px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -196,69 +202,76 @@
         <!-- HALAMAN LOGIN -->
         <div id="loginScreen">
             <div class="login-header">
-                <h2>🔐 Owner Portal</h2>
-                <p>Masukkan ID dan PIN kartu untuk masuk</p>
+                <h2>Masuk Dashboard</h2>
+                <p>Masukkan ID kartu dan PIN rahasia Anda</p>
             </div>
             
             <div class="form-group">
-                <label>ID Kartu / Produk</label>
+                <label>ID Kartu</label>
                 <input type="text" id="inputCardId" placeholder="Contoh: NFC-001" autocomplete="off">
             </div>
             
             <div class="form-group">
-                <label>PIN Rahasia</label>
-                <input type="password" id="inputPin" placeholder="••••••••">
+                <label>PIN Keamanan</label>
+                <input type="password" id="inputPin" placeholder="••••">
             </div>
             
-            <button class="btn-primary" onclick="prosesLogin()">Masuk Dashboard</button>
-            <div id="loadingText" class="loading-overlay">Menghubungkan ke database...</div>
+            <button class="btn-primary" onclick="prosesLogin()">Masuk</button>
+            <div id="loadingText" class="loading-text">Menghubungkan...</div>
         </div>
 
         <!-- HALAMAN DASHBOARD -->
         <div id="dashboardScreen" style="display: none;">
             <div class="dash-header">
                 <div>
-                    <h2 id="titleDashboard">Dashboard Statistik</h2>
+                    <h2>Statistik Kartu</h2>
                     <span id="badgeCardId" class="badge-id">ID: -</span>
                 </div>
-                <span style="font-size: 22px;">📊</span>
             </div>
             
-            <div class="stats-grid">
-                <div class="stat-card">
+            <div class="stats-container">
+                <!-- Baris Statistik 1: Pengunjung -->
+                <div class="stat-row">
                     <div class="stat-info">
                         <h3>Total Pengunjung</h3>
                         <p id="statVisitor">0</p>
                     </div>
-                    <div class="stat-icon icon-visitor">👥</div>
+                    <div class="chart-track">
+                        <div id="barVisitor" class="chart-fill"></div>
+                    </div>
                 </div>
 
-                <div class="stat-card">
+                <!-- Baris Statistik 2: Google Maps -->
+                <div class="stat-row">
                     <div class="stat-info">
-                        <h3>Total Klik Google Maps</h3>
+                        <h3>Klik Google Maps</h3>
                         <p id="statMaps">0</p>
                     </div>
-                    <div class="stat-icon icon-maps">📍</div>
+                    <div class="chart-track">
+                        <div id="barMaps" class="chart-fill"></div>
+                    </div>
                 </div>
 
-                <div class="stat-card">
+                <!-- Baris Statistik 3: WhatsApp -->
+                <div class="stat-row">
                     <div class="stat-info">
-                        <h3>Total Klik Masukan WA</h3>
+                        <h3>Klik Masukan WA</h3>
                         <p id="statWA">0</p>
                     </div>
-                    <div class="stat-icon icon-wa">💬</div>
+                    <div class="chart-track">
+                        <div id="barWA" class="chart-fill"></div>
+                    </div>
                 </div>
             </div>
 
             <div class="dash-actions">
-                <button class="btn-refresh" onclick="refreshData()">🔄 Refresh</button>
-                <button class="btn-logout" onclick="logoutApp()">🚪 Keluar</button>
+                <button class="btn-refresh" onclick="refreshData()">Perbarui Data</button>
+                <button class="btn-logout" onclick="logoutApp()">Keluar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Masukkan URL Web App Google Apps Script Anda yang sama di sini
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCV2-_bBSOJ0QqiW2Zu0zUViO-T42IAihhF_-LSiwqRT26i0-3QZdKTmMC8VW1ovHH/exec";
 
         let activeCardId = "";
@@ -303,8 +316,22 @@
                 .catch(error => {
                     document.getElementById("loadingText").style.display = "none";
                     console.error("Error:", error);
-                    alert("Terjadi kesalahan koneksi ke database.");
+                    alert("Terjadi kesalahan koneksi.");
                 });
+        }
+
+        function updateChartBars(v, m, w) {
+            let visitor = Number(v) || 0;
+            let maps = Number(m) || 0;
+            let wa = Number(w) || 0;
+
+            let max = Math.max(visitor, maps, wa, 1); // Hindari pembagian dengan 0
+
+            setTimeout(() => {
+                document.getElementById("barVisitor").style.width = Math.round((visitor / max) * 100) + "%";
+                document.getElementById("barMaps").style.width = Math.round((maps / max) * 100) + "%";
+                document.getElementById("barWA").style.width = Math.round((wa / max) * 100) + "%";
+            }, 100);
         }
 
         function tampilkanDashboardFromCache() {
@@ -313,9 +340,15 @@
             
             document.getElementById("badgeCardId").innerText = "ID: " + activeCardId;
 
-            document.getElementById("statVisitor").innerText = localStorage.getItem("stat_visitor_" + activeCardId) || 0;
-            document.getElementById("statMaps").innerText = localStorage.getItem("stat_maps_" + activeCardId) || 0;
-            document.getElementById("statWA").innerText = localStorage.getItem("stat_wa_" + activeCardId) || 0;
+            let v = localStorage.getItem("stat_visitor_" + activeCardId) || 0;
+            let m = localStorage.getItem("stat_maps_" + activeCardId) || 0;
+            let w = localStorage.getItem("stat_wa_" + activeCardId) || 0;
+
+            document.getElementById("statVisitor").innerText = v;
+            document.getElementById("statMaps").innerText = m;
+            document.getElementById("statWA").innerText = w;
+
+            updateChartBars(v, m, w);
         }
 
         function refreshData() {
@@ -325,12 +358,12 @@
             }
 
             const btnRefresh = document.querySelector('.btn-refresh');
-            btnRefresh.innerText = "Memperbarui...";
+            btnRefresh.innerText = "Memuat...";
 
             fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(activeCardId)}`)
                 .then(response => response.json())
                 .then(res => {
-                    btnRefresh.innerText = "🔄 Refresh";
+                    btnRefresh.innerText = "Perbarui Data";
                     if (res.success) {
                         localStorage.setItem("stat_visitor_" + activeCardId, res.data.visitor);
                         localStorage.setItem("stat_maps_" + activeCardId, res.data.maps);
@@ -340,15 +373,15 @@
                         document.getElementById("statMaps").innerText = res.data.maps;
                         document.getElementById("statWA").innerText = res.data.wa;
 
-                        alert("Data statistik berhasil diperbarui ke angka terbaru!");
+                        updateChartBars(res.data.visitor, res.data.maps, res.data.wa);
                     } else {
                         alert("Gagal memperbarui data.");
                     }
                 })
                 .catch(error => {
-                    btnRefresh.innerText = "🔄 Refresh";
+                    btnRefresh.innerText = "Perbarui Data";
                     console.error("Error:", error);
-                    alert("Terjadi kesalahan koneksi saat memperbarui data.");
+                    alert("Koneksi gagal.");
                 });
         }
 
