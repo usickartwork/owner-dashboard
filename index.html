@@ -282,7 +282,6 @@
 
             document.getElementById("loadingText").style.display = "block";
 
-            // Kirim request login owner ke Apps Script
             fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(cardIdVal)}&pin=${encodeURIComponent(pinVal)}`)
                 .then(response => response.json())
                 .then(res => {
@@ -320,7 +319,37 @@
         }
 
         function refreshData() {
-            location.reload();
+            if (!activeCardId) {
+                location.reload();
+                return;
+            }
+
+            const btnRefresh = document.querySelector('.btn-refresh');
+            btnRefresh.innerText = "Memperbarui...";
+
+            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(activeCardId)}`)
+                .then(response => response.json())
+                .then(res => {
+                    btnRefresh.innerText = "🔄 Refresh";
+                    if (res.success) {
+                        localStorage.setItem("stat_visitor_" + activeCardId, res.data.visitor);
+                        localStorage.setItem("stat_maps_" + activeCardId, res.data.maps);
+                        localStorage.setItem("stat_wa_" + activeCardId, res.data.wa);
+
+                        document.getElementById("statVisitor").innerText = res.data.visitor;
+                        document.getElementById("statMaps").innerText = res.data.maps;
+                        document.getElementById("statWA").innerText = res.data.wa;
+
+                        alert("Data statistik berhasil diperbarui ke angka terbaru!");
+                    } else {
+                        alert("Gagal memperbarui data.");
+                    }
+                })
+                .catch(error => {
+                    btnRefresh.innerText = "🔄 Refresh";
+                    console.error("Error:", error);
+                    alert("Terjadi kesalahan koneksi saat memperbarui data.");
+                });
         }
 
         function logoutApp() {
