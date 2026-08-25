@@ -57,7 +57,9 @@
         <!-- HALAMAN LOGIN OWNER -->
         <div id="loginScreen" class="space-y-4 text-left animate-page-fade-in">
             <div class="text-center mb-6">
-                <div class="w-10 h-1 bg-blue-600 mx-auto rounded-full mb-3"></div>
+                <!-- Logo di Halaman Login -->
+                <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
+                
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
                 <p class="text-xs text-slate-500 mt-1">Masukkan ID kartu atau tempel (*paste*) link kartu Anda.</p>
             </div>
@@ -98,7 +100,9 @@
         <!-- HALAMAN DASHBOARD STATISTIK -->
         <div id="dashboardScreen" class="hidden space-y-5 text-left animate-page-fade-in">
             <div class="text-center space-y-1.5">
-                <div class="w-10 h-1 bg-blue-600 mx-auto rounded-full mb-3"></div>
+                <!-- Logo di Halaman Dashboard -->
+                <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-2">
+                
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
                 <div>
                     <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Bisnis</span>
@@ -299,7 +303,6 @@
                     if (res.success) {
                         activeCardId = cardIdVal;
                         
-                        // AMAN: PIN TIDAK DISIMPAN KE LOCALSTORAGE (Hanya status sesi login saja)
                         localStorage.setItem("active_owner_card", activeCardId);
                         localStorage.setItem("owner_logged_" + activeCardId, "true");
                         
