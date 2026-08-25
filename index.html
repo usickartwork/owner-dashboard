@@ -153,7 +153,7 @@
             <!-- Tombol Aksi Bawah -->
             <div class="space-y-2 pt-1">
                 <div class="flex gap-2">
-                    <button onclick="refreshData()" class="flex-1 bg-slate-100 text-slate-700 font-medium py-2.5 rounded-xl text-xs hover:bg-slate-200 transition">
+                    <button id="btnRefresh" onclick="refreshData()" class="flex-1 bg-slate-100 text-slate-700 font-medium py-2.5 rounded-xl text-xs hover:bg-slate-200 transition">
                         Perbarui Data
                     </button>
                     <button onclick="logoutApp()" class="flex-1 bg-slate-100 text-slate-600 font-medium py-2.5 rounded-xl text-xs hover:bg-slate-200 transition">
@@ -184,25 +184,21 @@
             }
         };
 
-        // Fungsi Pintar: Mengekstrak ID Kartu jika owner mengetik/paste link lengkap
         function extractCardId(input) {
             input = input.trim();
             try {
-                // Jika input berupa URL valid (misal: https://.../?id=NFC-001)
                 if (input.startsWith("http://") || input.startsWith("https://")) {
                     let urlObj = new URL(input);
                     let idParam = urlObj.searchParams.get("id");
                     if (idParam) return idParam.trim();
                 }
-            } catch (e) {
-                // Jika gagal di-parse sebagai URL, abaikan dan kembalikan input mentah
-            }
-            return input; // Jika owner hanya mengetik ID-nya saja (misal: NFC-001)
+            } catch (e) {}
+            return input;
         }
 
         function prosesLogin() {
             let rawInputId = document.getElementById("inputCardId").value;
-            let cardIdVal = extractCardId(rawInputId); // Ekstrak ID otomatis dari link atau teks biasa
+            let cardIdVal = extractCardId(rawInputId);
             let pinVal = document.getElementById("inputPin").value.trim();
             let rememberMeChecked = document.getElementById("rememberMe").checked;
 
@@ -285,18 +281,34 @@
         function refreshData() {
             if (!activeCardId) return;
 
+            const btn = document.getElementById("btnRefresh");
+            btn.innerText = "Memperbarui...";
+            btn.disabled = true;
+
             fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(activeCardId)}`)
                 .then(response => response.json())
                 .then(res => {
+                    btn.disabled = false;
                     if (res.success) {
                         localStorage.setItem("data_stat_" + activeCardId, JSON.stringify(res.data));
                         renderDashboard(res.data);
-                        alert("Data statistik berhasil diperbarui!");
+                        
+                        // Ubah teks tombol sementara jadi hijau bersih tanda sukses
+                        btn.innerText = "✓ Berhasil Diperbarui";
+                        btn.classList.add("bg-emerald-50", "text-emerald-600");
+                        
+                        setTimeout(() => {
+                            btn.innerText = "Perbarui Data";
+                            btn.classList.remove("bg-emerald-50", "text-emerald-600");
+                        }, 2000);
                     } else {
+                        btn.innerText = "Perbarui Data";
                         alert("Gagal memperbarui data.");
                     }
                 })
                 .catch(error => {
+                    btn.disabled = false;
+                    btn.innerText = "Perbarui Data";
                     console.error("Error:", error);
                     alert("Koneksi gagal.");
                 });
