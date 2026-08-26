@@ -15,13 +15,32 @@
         @keyframes spinLoader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-spinner { animation: spinLoader 0.8s linear infinite; }
 
-        @keyframes iconBounce { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-icon-bounce { animation: iconBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        /* Animasi Intro Logo */
+        @keyframes logoIntro {
+            0% { transform: scale(0.8); opacity: 0; filter: blur(10px); }
+            50% { transform: scale(1.05); opacity: 1; filter: blur(0px); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-logo-intro { animation: logoIntro 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        @keyframes fadeOutScreen {
+            0% { opacity: 1; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        .animate-fade-out-screen { animation: fadeOutScreen 0.5s ease forwards; }
 
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
+
+    <!-- INTRO SPLASH SCREEN LOGO -->
+    <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="space-y-4 animate-logo-intro">
+            <img src="logo.png" alt="Logo Brand" class="h-24 w-auto mx-auto object-contain">
+            <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spinner mx-auto mt-2"></div>
+        </div>
+    </div>
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
@@ -96,7 +115,6 @@
                 <input type="password" id="inputPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
             </div>
 
-            <!-- TAMBAHAN: Checkbox Remember Me -->
             <div class="flex items-center justify-between pt-1">
                 <label class="flex items-center gap-2 cursor-pointer select-none">
                     <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
@@ -192,19 +210,24 @@
     </div>
 
     <script>
-        // GANTI URL DI BAWAH INI DENGAN URL WEB APP SKRIP DASHBOARD OWNER ANDA
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlx2XWqbTd_iHzTNEkN3XoHJ0cHV5dfFMWTxsFQSpJPFbTPD0w3wsEMgpMd8pg9B4V/exec";
         
-        let currentCardId = localStorage.getItem("owner_card_id") || "";
-        let currentPin = localStorage.getItem("owner_pin") || "";
+        let currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
+        let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
 
         window.onload = function() {
-            // Jika fitur remember me aktif atau data tersimpan, langsung masuk otomatis
-            if (currentCardId && currentPin) {
-                refreshData(true);
-            } else {
-                document.getElementById("loginScreen").classList.remove("hidden");
-            }
+            // Beri jeda animasi intro logo selama 1.2 detik sebelum memuat data / menampilkan layar
+            setTimeout(() => {
+                const introEl = document.getElementById("introScreen");
+                introEl.classList.add("animate-fade-out-screen");
+                setTimeout(() => introEl.remove(), 500);
+
+                if (currentCardId && currentPin) {
+                    refreshData(true);
+                } else {
+                    document.getElementById("loginScreen").classList.remove("hidden");
+                }
+            }, 1200);
         };
 
         function extractCardId(input) {
@@ -240,12 +263,10 @@
                         currentCardId = cardId;
                         currentPin = pin;
 
-                        // Jika "Ingat Saya" dicentang, simpan permanen di localStorage
                         if (isRememberChecked) {
                             localStorage.setItem("owner_card_id", cardId);
                             localStorage.setItem("owner_pin", pin);
                         } else {
-                            // Jika tidak dicentang, simpan sementara di sessionStorage (hilang jika browser/tab ditutup)
                             sessionStorage.setItem("owner_card_id", cardId);
                             sessionStorage.setItem("owner_pin", pin);
                         }
@@ -262,7 +283,6 @@
         }
 
         function refreshData(isInitial = false) {
-            // Cek juga sessionStorage jika localStorage kosong
             if (!currentCardId || !currentPin) {
                 currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
                 currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
