@@ -68,11 +68,10 @@
             </div>
         </div>
 
-        <!-- MODAL KELOLA KARTU (KONTRAS TEKS DIPERBAIKI TOTAL AGAR JELAS TERBACA) -->
+        <!-- MODAL KELOLA KARTU (BERSIH & KONTRAK JELAS) -->
         <div id="manageCardModal" class="hidden absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-4 text-left max-h-[90vh] overflow-y-auto px-1">
                 
-                <!-- Header Modal -->
                 <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                     <div>
                         <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Kelola Kartu Terhubung</h2>
@@ -81,7 +80,6 @@
                     <button onclick="closeManageCardModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center text-xs font-bold">&times;</button>
                 </div>
 
-                <!-- Bagian 1: Daftar Kartu yang Sedang Aktif Terhubung -->
                 <div class="space-y-2">
                     <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Kartu yang Aktif di Dashboard Ini</span>
                     <div class="space-y-2 max-h-40 overflow-y-auto pr-1" id="manageConnectedCardsList">
@@ -89,7 +87,6 @@
                     </div>
                 </div>
 
-                <!-- Bagian 2: Form Tambah Kartu Baru -->
                 <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-3 mt-2">
                     <div>
                         <span class="text-[11px] font-bold text-slate-800 block mb-1">Tambah Kartu Lain</span>
@@ -241,15 +238,15 @@
                 </div>
             </div>
 
-            <!-- Tombol Navigasi Bawah Dashboard (Seragam, Bersih, dan Elegan) -->
+            <!-- Tombol Navigasi Bawah Dashboard (Seragam, Bersih, Profesional) -->
             <div class="grid grid-cols-3 gap-2 pt-1">
-                <button id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
+                <button id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Refresh
                 </button>
-                <button onclick="openManageCardModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
+                <button onclick="openManageCardModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Kelola Kartu
                 </button>
-                <button onclick="openSettingModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
+                <button onclick="openSettingModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Pengaturan
                 </button>
             </div>
@@ -257,7 +254,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlx2XWqbTd_iHzTNEkN3XoHJ0cHV5dfFMWTxsFQSpJPFbTPD0w3wsEMgpMd8pg9B4V/exec";
+        const SCRIPT_URL = "MASUKKAN_URL_WEB_APP_KHUSUS_DASHBOARD_DISINI";
         
         let primaryCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
