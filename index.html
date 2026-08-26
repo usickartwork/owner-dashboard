@@ -119,7 +119,7 @@
             </div>
         </div>
 
-        <!-- HALAMAN LOGIN OWNER (DISEMBUNYIKAN SECARA DEFAULT AGAR TIDAK MUNCUL KILASAN) -->
+        <!-- HALAMAN LOGIN OWNER (DISEMBUNYIKAN SECARA DEFAULT) -->
         <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center mb-6">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
@@ -247,12 +247,10 @@
                         connectedCardIds = parsedIds;
                         tampilkanDashboardFromCache();
                         refreshData();
-                        return; // Berhenti agar tidak menampilkan halaman login
+                        return;
                     }
                 } catch (e) {}
             }
-            
-            // Jika belum login, baru tampilkan halaman login
             document.getElementById("loginScreen").classList.remove("hidden");
         };
 
@@ -543,6 +541,7 @@
             document.getElementById("resetModal").classList.add("hidden");
         }
 
+        // PENGAMAN ANTI-STUCK: Dilengkapi timeout 10 detik agar tidak berputar terus
         function executeResetCard() {
             let selectedCard = document.getElementById("resetCardSelect").value;
             let inputPin = document.getElementById("resetPinInput").value.trim();
@@ -556,12 +555,17 @@
             btnConfirm.innerText = "Memproses...";
             btnConfirm.disabled = true;
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // Batas waktu maksimal 10 detik
+
             fetch(SCRIPT_URL, {
                 method: "POST",
+                signal: controller.signal,
                 body: JSON.stringify({ action: "reset_card", product_id: selectedCard, pin: inputPin })
             })
             .then(res => res.json())
             .then(result => {
+                clearTimeout(timeoutId);
                 btnConfirm.innerText = "Ya, Reset Kartu Ini";
                 btnConfirm.disabled = false;
                 closeResetModal();
@@ -579,11 +583,16 @@
                     alert("Gagal: " + (result.message || "PIN salah"));
                 }
             })
-            .catch(() => {
+            .catch((err) => {
+                clearTimeout(timeoutId);
                 btnConfirm.innerText = "Ya, Reset Kartu Ini";
                 btnConfirm.disabled = false;
                 closeResetModal();
-                alert("Koneksi gagal.");
+                if (err.name === 'AbortError') {
+                    alert("Waktu proses habis (Timeout). Silakan periksa kembali Spreadsheet atau coba beberapa saat lagi.");
+                } else {
+                    alert("Koneksi gagal atau terjadi kesalahan.");
+                }
             });
         }
 
