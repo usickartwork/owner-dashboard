@@ -39,42 +39,68 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- MODAL SETTING (PENGATURAN & KELOLA KARTU) -->
+        <!-- MODAL SETTING (PENGATURAN AKUN: LOGOUT & RESET) -->
         <div id="settingModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left max-h-[90vh] overflow-y-auto px-1">
+            <div class="w-full max-w-sm space-y-4 text-left">
                 <div class="text-center">
                     <div class="w-10 h-1 bg-slate-700 mx-auto rounded-full mb-3"></div>
                     <h2 class="text-lg font-bold text-slate-900">Pengaturan Akun</h2>
-                    <p class="text-xs text-slate-500 mt-1">Kelola kartu terhubung, sesi, atau reset data.</p>
+                    <p class="text-xs text-slate-500 mt-1">Kelola sesi masuk atau lakukan reset data kartu utama.</p>
                 </div>
 
-                <!-- Bagian Kelola Kartu Terhubung -->
-                <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-2.5">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">🔗 Kelola Kartu Terhubung</h3>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">Gabungkan kartu lain ke dashboard ini agar data statistik menjadi satu.</p>
-                    
-                    <div id="connectedCardsList" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
-                        <!-- Daftar kartu terhubung akan muncul disini -->
-                    </div>
-
-                    <div class="pt-1 flex gap-2">
-                        <input type="text" id="inputNewCardId" placeholder="ID Kartu Lain (Contoh: NFC-002)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase focus:ring-2 focus:ring-blue-600 outline-none">
-                        <button onclick="connectNewCard()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-2 rounded-lg text-xs transition whitespace-nowrap btn-modern">Connect</button>
-                    </div>
-                </div>
-
-                <div class="space-y-2 pt-1">
+                <div class="space-y-2.5 pt-2">
                     <button onclick="logoutApp()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 btn-modern border border-slate-200">
                         <span>🚪 Keluar Akun (Logout)</span>
                     </button>
                     
                     <button onclick="openResetModal()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-3 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-2 btn-modern">
-                        <span>⚠️ Reset Kartu Utama Ini</span>
+                        <span>⚠️ Reset / Kosongkan Kartu Utama</span>
+                    </button>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="closeSettingModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL KELOLA KARTU TERHUBUNG (CONNECT & DISCONNECT) -->
+        <div id="manageCardModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
+            <div class="w-full max-w-sm space-y-4 text-left max-h-[90vh] overflow-y-auto px-1">
+                <div class="text-center">
+                    <div class="w-10 h-1 bg-blue-600 mx-auto rounded-full mb-3"></div>
+                    <h2 class="text-lg font-bold text-slate-900">Kelola Kartu Terhubung</h2>
+                    <p class="text-xs text-slate-500 mt-1">Tambah atau lepas kartu yang digabungkan ke dashboard ini.</p>
+                </div>
+
+                <!-- Daftar Kartu Aktif -->
+                <div class="space-y-1.5 max-h-36 overflow-y-auto pr-1" id="manageConnectedCardsList">
+                    <!-- List kartu muncul di sini -->
+                </div>
+
+                <!-- Form Tambah Kartu Baru -->
+                <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-2.5 pt-3">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">➕ Tambah Kartu Baru</h3>
+                    
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">ID Kartu atau Link Kartu</label>
+                        <input type="text" id="inputNewCardId" placeholder="Contoh: NFC-002 atau https://..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase focus:ring-2 focus:ring-blue-600 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kode Kartu (PIN Keamanan)</label>
+                        <input type="password" id="inputNewCardPin" placeholder="••••" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-blue-600 outline-none tracking-widest">
+                    </div>
+
+                    <button onclick="connectNewCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-xs transition btn-modern mt-1">
+                        Hubungkan Kartu Ini
                     </button>
                 </div>
 
                 <div class="pt-1">
-                    <button onclick="closeSettingModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
+                    <button onclick="closeManageCardModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
                         Tutup
                     </button>
                 </div>
@@ -86,8 +112,8 @@
             <div class="w-full max-w-sm space-y-4 text-left">
                 <div class="text-center">
                     <div class="w-10 h-1 bg-red-500 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-lg font-bold text-slate-900">Reset Data Kartu</h2>
-                    <p class="text-xs text-slate-500 mt-1">Semua data statistik dan ulasan pada kartu ini akan dihapus permanen.</p>
+                    <h2 class="text-lg font-bold text-slate-900">Reset Data Kartu Utama</h2>
+                    <p class="text-xs text-slate-500 mt-1">Semua data statistik pada kartu utama ini akan dihapus permanen.</p>
                 </div>
 
                 <div>
@@ -96,7 +122,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Kartu Tersebut</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Kartu Utama</label>
                     <input type="password" id="resetPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-red-500 outline-none tracking-widest">
                 </div>
 
@@ -207,10 +233,13 @@
                 </div>
             </div>
 
-            <!-- Tombol Utama -->
-            <div class="grid grid-cols-2 gap-2 pt-1">
+            <!-- Tombol Navigasi Bawah Dashboard -->
+            <div class="grid grid-cols-3 gap-2 pt-1">
                 <button id="btnRefresh" onclick="refreshData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 border border-slate-200">
-                    <span>🔄</span> <span>Refresh Data</span>
+                    <span>🔄</span> <span>Refresh</span>
+                </button>
+                <button onclick="openManageCardModal()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 border border-blue-200">
+                    <span>🎴</span> <span>Kelola Kartu</span>
                 </button>
                 <button onclick="openSettingModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 border border-slate-200">
                     <span>⚙️</span> <span>Setting</span>
@@ -329,7 +358,7 @@
                 if (!isInitial) {
                     const btn = document.getElementById("btnRefresh");
                     btn.disabled = false;
-                    btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
+                    btn.innerHTML = "<span>🔄</span> <span>Refresh</span>";
                 }
 
                 let aggregatedData = {
@@ -381,10 +410,14 @@
             });
         }
 
+        // Fungsi Connect Kartu Baru dengan memasukkan PIN / Kode Kartu
         function connectNewCard() {
-            let newId = extractCardId(document.getElementById("inputNewCardId").value).trim().toLowerCase();
-            if (!newId) {
-                alert("Masukkan ID atau Link kartu yang ingin di-connect!");
+            let rawInput = document.getElementById("inputNewCardId").value;
+            let newId = extractCardId(rawInput).trim().toLowerCase();
+            let cardPin = document.getElementById("inputNewCardPin").value.trim();
+
+            if (!newId || !cardPin) {
+                alert("ID/Link Kartu dan Kode Kartu (PIN) wajib diisi!");
                 return;
             }
             if (newId === primaryCardId || connectedCards.includes(newId)) {
@@ -392,18 +425,19 @@
                 return;
             }
 
-            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(newId)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(newId)}&pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     if (res.success) {
                         connectedCards.push(newId);
                         localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
                         document.getElementById("inputNewCardId").value = "";
+                        document.getElementById("inputNewCardPin").value = "";
                         alert("Berhasil menghubungkan kartu " + newId.toUpperCase() + "!");
                         renderConnectedCardsList();
                         refreshData();
                     } else {
-                        alert("Gagal connect: Pastikan ID kartu benar dan PIN keamanannya sama.");
+                        alert("Gagal connect: " + (res.message || "ID kartu atau Kode Kartu salah."));
                     }
                 })
                 .catch(() => alert("Terjadi kesalahan koneksi."));
@@ -417,21 +451,22 @@
         }
 
         function renderConnectedCardsList() {
-            let html = `<div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 text-xs">
+            let html = `<div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm">
                 <span class="font-bold text-slate-700 uppercase">⭐ ${primaryCardId} (Utama)</span>
+                <span class="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-medium">Aktif</span>
             </div>`;
 
             if (connectedCards.length === 0) {
-                html += `<p class="text-[10px] text-slate-400 italic text-center py-1">Belum ada kartu lain yang terhubung.</p>`;
+                html += `<p class="text-[11px] text-slate-400 italic text-center py-2">Belum ada kartu lain yang terhubung.</p>`;
             } else {
                 connectedCards.forEach(id => {
-                    html += `<div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 text-xs">
-                        <span class="font-semibold text-slate-600 uppercase">${id}</span>
-                        <button onclick="disconnectCard('${id}')" class="text-red-500 hover:text-red-700 font-bold px-2 py-0.5 text-[10px]">Lepas</button>
+                    html += `<div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm">
+                        <span class="font-semibold text-slate-700 uppercase">${id}</span>
+                        <button onclick="disconnectCard('${id}')" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-2.5 py-1 rounded-lg text-[10px] transition border border-red-200">Lepas</button>
                     </div>`;
                 });
             }
-            document.getElementById("connectedCardsList").innerHTML = html;
+            document.getElementById("manageConnectedCardsList").innerHTML = html;
         }
 
         function renderDashboard(data) {
@@ -465,16 +500,20 @@
 
             let allActiveBadges = [primaryCardId, ...connectedCards];
             let badgeHtml = allActiveBadges.map(id => 
-                `<span class="inline-block bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border border-blue-100">${id}</span>`
+                `<span class="inline-block bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border border-blue-100">${id}</span>`
             ).join(' ');
             document.getElementById("badgeContainer").innerHTML = badgeHtml;
         }
 
-        function openSettingModal() { 
-            renderConnectedCardsList();
-            document.getElementById("settingModal").classList.remove("hidden"); 
-        }
+        // Modal Kontrol
+        function openSettingModal() { document.getElementById("settingModal").classList.remove("hidden"); }
         function closeSettingModal() { document.getElementById("settingModal").classList.add("hidden"); }
+
+        function openManageCardModal() {
+            renderConnectedCardsList();
+            document.getElementById("manageCardModal").classList.remove("hidden");
+        }
+        function closeManageCardModal() { document.getElementById("manageCardModal").classList.add("hidden"); }
 
         function openResetModal() {
             closeSettingModal();
@@ -482,10 +521,7 @@
             document.getElementById("resetPinInput").value = "";
             document.getElementById("resetModal").classList.remove("hidden");
         }
-
-        function closeResetModal() {
-            document.getElementById("resetModal").classList.add("hidden");
-        }
+        function closeResetModal() { document.getElementById("resetModal").classList.add("hidden"); }
 
         function executeResetCard() {
             let inputPin = document.getElementById("resetPinInput").value.trim();
