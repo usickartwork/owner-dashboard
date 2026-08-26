@@ -545,10 +545,8 @@
             btnConfirm.innerText = "Memproses...";
             btnConfirm.disabled = true;
 
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({ action: "reset_card", product_id: primaryCardId, pin: inputPin })
-            })
+            // Menggunakan metode GET agar bersih dari blokir CORS Vercel
+            fetch(`${SCRIPT_URL}?action=reset_card&product_id=${encodeURIComponent(primaryCardId)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(result => {
                 btnConfirm.innerText = "Ya, Reset";
