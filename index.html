@@ -7,24 +7,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
-        
         @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .animate-pop-up { animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-page-fade-in { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
         @keyframes logoPulse {
             0% { transform: scale(0.92); opacity: 0.85; }
             50% { transform: scale(1.06); opacity: 1; }
             100% { transform: scale(0.92); opacity: 0.85; }
         }
         .animate-logo-pulse { animation: logoPulse 1.4s ease-in-out infinite; }
-
         @keyframes fadeOutScreen {
             0% { opacity: 1; visibility: visible; }
             100% { opacity: 0; visibility: hidden; }
         }
         .animate-fade-out-screen { animation: fadeOutScreen 0.6s ease forwards; }
-
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
@@ -45,7 +41,7 @@
                 <div class="text-center">
                     <div class="w-8 h-1 bg-slate-300 mx-auto rounded-full mb-3"></div>
                     <h2 class="text-base font-bold text-slate-900">Pengaturan Akun</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Kelola sesi masuk atau reset data kartu utama.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Kelola sesi masuk atau reset data kartu.</p>
                 </div>
 
                 <div class="space-y-2 pt-1">
@@ -55,7 +51,7 @@
                     </button>
                     
                     <button onclick="openResetModal()" class="w-full bg-red-50/50 hover:bg-red-50 text-red-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-red-100 flex items-center justify-between btn-modern">
-                        <span>Reset Kartu Utama</span>
+                        <span>Reset Data Kartu</span>
                         <span class="text-red-400 font-bold">&rarr;</span>
                     </button>
                 </div>
@@ -68,66 +64,22 @@
             </div>
         </div>
 
-        <!-- MODAL KELOLA KARTU -->
-        <div id="manageCardModal" class="hidden absolute inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left max-h-[90vh] overflow-y-auto px-1">
-                
-                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                    <div>
-                        <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wide">Kelola Kartu Terhubung</h2>
-                        <p class="text-[11px] text-slate-500">Gabungkan beberapa kartu dalam satu statistik.</p>
-                    </div>
-                    <button onclick="closeManageCardModal()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center text-xs font-bold">&times;</button>
-                </div>
-
-                <div class="space-y-2">
-                    <span class="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">Kartu yang Aktif di Dashboard Ini</span>
-                    <div class="space-y-2 max-h-40 overflow-y-auto pr-1" id="manageConnectedCardsList">
-                        <!-- List kartu terhubung -->
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-3 mt-2">
-                    <div>
-                        <span class="text-[11px] font-bold text-slate-800 block mb-1">Tambah Kartu Lain</span>
-                        <p class="text-[10px] text-slate-500 leading-relaxed">Masukkan ID/Link kartu dan PIN keamanannya untuk menggabungkan datanya.</p>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <input type="text" id="inputNewCardId" placeholder="ID Kartu atau Link (Contoh: NFC-002)" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs uppercase focus:ring-2 focus:ring-blue-600 outline-none text-slate-800 placeholder:text-slate-400 font-medium">
-                        
-                        <input type="password" id="inputNewCardPin" placeholder="PIN Keamanan Kartu Tersebut" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none tracking-widest text-slate-800 placeholder:text-slate-400 font-medium">
-
-                        <button onclick="connectNewCard()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern mt-1">
-                            Hubungkan Kartu
-                        </button>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <button onclick="closeManageCardModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern border border-slate-200">
-                        Kembali ke Dashboard
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL RESET KARTU UTAMA -->
+        <!-- MODAL RESET KARTU -->
         <div id="resetModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-4 text-left">
                 <div class="text-center">
                     <div class="w-8 h-1 bg-red-500 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-base font-bold text-slate-900">Reset Data Kartu Utama</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Semua data statistik kartu utama akan dihapus permanen.</p>
+                    <h2 class="text-base font-bold text-slate-900">Reset Data Kartu</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Semua data statistik kartu ini akan dihapus permanen.</p>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu Utama</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu</label>
                     <input type="text" id="resetCardIdDisplay" disabled class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold text-slate-500 bg-slate-100">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Kartu Utama</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Kartu</label>
                     <input type="password" id="resetPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-red-500 outline-none tracking-widest">
                 </div>
 
@@ -177,7 +129,9 @@
                 <div>
                     <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Bisnis</span>
                 </div>
-                <div class="pt-1 flex flex-wrap justify-center gap-1.5" id="badgeContainer"></div>
+                <div class="pt-1">
+                    <span id="badgeCardId" class="inline-block bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase border border-slate-200">ID</span>
+                </div>
             </div>
 
             <!-- Kartu Statistik Utama -->
@@ -239,26 +193,22 @@
             </div>
 
             <!-- Tombol Navigasi Bawah Dashboard -->
-            <div class="grid grid-cols-3 gap-2 pt-1">
+            <div class="grid grid-cols-2 gap-2 pt-1">
                 <button id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
-                    Refresh
-                </button>
-                <button onclick="openManageCardModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
-                    Kelola Kartu
+                    Refresh Statistik
                 </button>
                 <button onclick="openSettingModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
-                    Pengaturan
+                    Pengaturan Akun
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlx2XWqbTd_iHzTNEkN3XoHJ0cHV5dfFMWTxsFQSpJPFbTPD0w3wsEMgpMd8pg9B4V/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuWaWZg4vc0w0ienLYrdfk7now4mqUfe5BCfaXTDeohlcNVKnldQl1xAxMSq7V17c_/exec";
         
-        let primaryCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
+        let cardIdSession = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
-        let connectedCards = JSON.parse(localStorage.getItem("owner_connected_cards") || "[]");
 
         function hideIntroScreen() {
             const introEl = document.getElementById("introScreen");
@@ -272,7 +222,7 @@
             document.getElementById("dashboardScreen").classList.add("hidden");
             document.getElementById("loginScreen").classList.add("hidden");
 
-            if (primaryCardId && currentPin) {
+            if (cardIdSession && currentPin) {
                 refreshData(true);
             } else {
                 setTimeout(() => {
@@ -312,20 +262,18 @@
                 .then(res => {
                     document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
-                        primaryCardId = cardId;
+                        cardIdSession = cardId;
                         currentPin = pin;
-                        connectedCards = [];
 
                         if (isRememberChecked) {
                             localStorage.setItem("owner_card_id", cardId);
                             localStorage.setItem("owner_pin", pin);
-                            localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
                         } else {
                             sessionStorage.setItem("owner_card_id", cardId);
                             sessionStorage.setItem("owner_pin", pin);
                         }
 
-                        fetchAllCardsData();
+                        fetchCardData();
                     } else {
                         alert(res.message || "ID Kartu atau PIN salah!");
                     }
@@ -337,8 +285,8 @@
         }
 
         function refreshData(isInitial = false) {
-            if (!primaryCardId || !currentPin) {
-                primaryCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
+            if (!cardIdSession || !currentPin) {
+                cardIdSession = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
                 currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
             }
 
@@ -348,137 +296,35 @@
                 btn.disabled = true;
             }
 
-            fetchAllCardsData(isInitial);
+            fetchCardData(isInitial);
         }
 
-        function fetchAllCardsData(isInitial = false) {
-            let allCardsToFetch = [primaryCardId, ...connectedCards];
-            let promises = allCardsToFetch.map(id => 
-                fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(id)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
-                .then(res => res.json())
-                .catch(() => ({ success: false }))
-            );
-
-            Promise.all(promises).then(results => {
-                if (!isInitial) {
-                    const btn = document.getElementById("btnRefresh");
-                    btn.disabled = false;
-                    btn.innerText = "Refresh";
-                }
-
-                let aggregatedData = {
-                    business_name: "",
-                    visitor: 0,
-                    maps: 0,
-                    wa: 0,
-                    ratings: { b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, total: 0, overall: "0.0" }
-                };
-
-                let validCount = 0;
-                results.forEach((res, index) => {
-                    if (res.success && res.data) {
-                        validCount++;
-                        let d = res.data;
-                        if (index === 0) aggregatedData.business_name = d.business_name;
-                        
-                        aggregatedData.visitor += Number(d.visitor) || 0;
-                        aggregatedData.maps += Number(d.maps) || 0;
-                        aggregatedData.wa += Number(d.wa) || 0;
-
-                        if (d.ratings) {
-                            aggregatedData.ratings.b1 += Number(d.ratings.b1) || 0;
-                            aggregatedData.ratings.b2 += Number(d.ratings.b2) || 0;
-                            aggregatedData.ratings.b3 += Number(d.ratings.b3) || 0;
-                            aggregatedData.ratings.b4 += Number(d.ratings.b4) || 0;
-                            aggregatedData.ratings.b5 += Number(d.ratings.b5) || 0;
-                        }
-                    } else if (index === 0) {
-                        if (!isInitial) alert("Sesi kedaluwarsa atau kartu utama telah di-reset.");
-                        logoutApp();
-                        return;
-                    }
-                });
-
-                if (validCount > 0) {
-                    let r = aggregatedData.ratings;
-                    r.total = r.b1 + r.b2 + r.b3 + r.b4 + r.b5;
-                    if (r.total > 0) {
-                        let sumScore = (r.b1 * 1) + (r.b2 * 2) + (r.b3 * 3) + (r.b4 * 4) + (r.b5 * 5);
-                        r.overall = (sumScore / r.total).toFixed(1);
-                    } else {
-                        r.overall = "0.0";
-                    }
-
-                    renderDashboard(aggregatedData);
-                    hideIntroScreen();
-                }
-            });
-        }
-
-        function connectNewCard() {
-            let rawInput = document.getElementById("inputNewCardId").value;
-            let newId = extractCardId(rawInput).trim().toLowerCase();
-            let cardPin = document.getElementById("inputNewCardPin").value.trim();
-
-            if (!newId || !cardPin) {
-                alert("ID/Link Kartu dan PIN wajib diisi!");
-                return;
-            }
-            if (newId === primaryCardId || connectedCards.includes(newId)) {
-                alert("Kartu tersebut sudah terhubung ke dashboard ini.");
-                return;
-            }
-
-            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(newId)}&pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`)
+        function fetchCardData(isInitial = false) {
+            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
-                    if (res.success) {
-                        connectedCards.push(newId);
-                        localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
-                        document.getElementById("inputNewCardId").value = "";
-                        document.getElementById("inputNewCardPin").value = "";
-                        alert("Berhasil menghubungkan kartu " + newId.toUpperCase() + "!");
-                        renderConnectedCardsList();
-                        refreshData();
+                    if (!isInitial) {
+                        const btn = document.getElementById("btnRefresh");
+                        btn.disabled = false;
+                        btn.innerText = "Refresh Statistik";
+                    }
+
+                    if (res.success && res.data) {
+                        renderDashboard(res.data);
+                        hideIntroScreen();
                     } else {
-                        alert("Gagal connect: " + (res.message || "ID kartu atau PIN salah."));
+                        if (!isInitial) alert("Sesi kedaluwarsa atau kartu telah di-reset.");
+                        logoutApp();
                     }
                 })
-                .catch(() => alert("Terjadi kesalahan koneksi."));
-        }
-
-        function disconnectCard(cardId) {
-            connectedCards = connectedCards.filter(id => id !== cardId);
-            localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
-            renderConnectedCardsList();
-            refreshData();
-        }
-
-        function renderConnectedCardsList() {
-            let html = `
-                <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                    <div>
-                        <span class="font-bold text-slate-900 uppercase block">${primaryCardId}</span>
-                        <span class="text-[10px] text-slate-500 font-medium">Kartu Utama</span>
-                    </div>
-                    <span class="bg-slate-200 text-slate-700 font-semibold px-2.5 py-1 rounded-lg text-[10px]">Utama</span>
-                </div>`;
-
-            if (connectedCards.length > 0) {
-                connectedCards.forEach(id => {
-                    html += `
-                        <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs">
-                            <div>
-                                <span class="font-bold text-slate-900 uppercase block">${id}</span>
-                                <span class="text-[10px] text-slate-500 font-medium">Kartu Terhubung</span>
-                            </div>
-                            <button onclick="disconnectCard('${id}')" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-2.5 py-1 rounded-lg text-[10px] transition border border-red-200">
-                                Lepas
-                            </button>
-                        </div>`;
+                .catch(() => {
+                    if (!isInitial) {
+                        const btn = document.getElementById("btnRefresh");
+                        btn.disabled = false;
+                        btn.innerText = "Refresh Statistik";
+                    }
+                    if (!isInitial) alert("Gagal memperbarui data.");
                 });
-            }
-            document.getElementById("manageConnectedCardsList").innerHTML = html;
         }
 
         function renderDashboard(data) {
@@ -489,6 +335,7 @@
             dash.classList.add("animate-page-fade-in");
 
             document.getElementById("displayBusinessName").innerText = data.business_name || "Nama Bisnis";
+            document.getElementById("badgeCardId").innerText = cardIdSession.toUpperCase();
             document.getElementById("statVisitor").innerText = data.visitor;
             document.getElementById("statMaps").innerText = data.maps;
             document.getElementById("statWA").innerText = data.wa;
@@ -509,26 +356,14 @@
                 document.getElementById("barB4").style.width = Math.round((data.ratings.b4 / maxStar) * 100) + "%";
                 document.getElementById("barB5").style.width = Math.round((data.ratings.b5 / maxStar) * 100) + "%";
             }, 100);
-
-            let allActiveBadges = [primaryCardId, ...connectedCards];
-            let badgeHtml = allActiveBadges.map(id => 
-                `<span class="inline-block bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase border border-slate-200">${id}</span>`
-            ).join(' ');
-            document.getElementById("badgeContainer").innerHTML = badgeHtml;
         }
 
         function openSettingModal() { document.getElementById("settingModal").classList.remove("hidden"); }
         function closeSettingModal() { document.getElementById("settingModal").classList.add("hidden"); }
 
-        function openManageCardModal() {
-            renderConnectedCardsList();
-            document.getElementById("manageCardModal").classList.remove("hidden");
-        }
-        function closeManageCardModal() { document.getElementById("manageCardModal").classList.add("hidden"); }
-
         function openResetModal() {
             closeSettingModal();
-            document.getElementById("resetCardIdDisplay").value = primaryCardId.toUpperCase();
+            document.getElementById("resetCardIdDisplay").value = cardIdSession.toUpperCase();
             document.getElementById("resetPinInput").value = "";
             document.getElementById("resetModal").classList.remove("hidden");
         }
@@ -537,7 +372,7 @@
         function executeResetCard() {
             let inputPin = document.getElementById("resetPinInput").value.trim();
             if (!inputPin) {
-                alert("Masukkan PIN keamanan kartu utama Anda!");
+                alert("Masukkan PIN keamanan kartu Anda!");
                 return;
             }
 
@@ -545,10 +380,15 @@
             btnConfirm.innerText = "Memproses...";
             btnConfirm.disabled = true;
 
-            // Menggunakan metode GET bebas CORS dengan debugging konsol
-            let resetUrl = `${SCRIPT_URL}?action=reset_card&product_id=${encodeURIComponent(primaryCardId)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`;
-
-            fetch(resetUrl)
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: "reset_card", 
+                    product_id: cardIdSession, 
+                    pin: inputPin 
+                })
+            })
             .then(res => res.json())
             .then(result => {
                 btnConfirm.innerText = "Ya, Reset";
@@ -556,14 +396,13 @@
                 closeResetModal();
 
                 if (result.success) {
-                    alert("Reset Berhasil! Kartu utama kembali ke status unactivated.");
+                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
                     logoutApp();
                 } else {
                     alert("Gagal: " + (result.message || "PIN salah"));
                 }
             })
-            .catch(err => {
-                console.error("Error reset:", err);
+            .catch(() => {
                 btnConfirm.innerText = "Ya, Reset";
                 btnConfirm.disabled = false;
                 closeResetModal();
