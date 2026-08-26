@@ -4,30 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Owner - Kelola Kartu</title>
+    <!-- Masukkan style / Tailwind / CSS bawaan desain lama Anda di sini -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
-        @keyframes pageFadeIn { 0% { opacity: 0; transform: translateY(10px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-        .animate-page-fade-in { animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes spinLoader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .animate-spinner { animation: spinLoader 0.8s linear infinite; }
-        .btn-modern:active { transform: scale(0.97); }
-    </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
 
-    <div class="w-full max-w-md min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8">
         
-        <!-- OVERLAY LOADING KILAT -->
-        <div id="loading-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
-            <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spinner mb-3"></div>
-            <h2 id="overlay-title" class="text-sm font-bold text-slate-900 mb-1">Memproses...</h2>
-            <p id="overlay-desc" class="text-xs text-slate-400">Mohon tunggu sebentar.</p>
-        </div>
-
         <!-- HALAMAN LOGIN OWNER -->
-        <div id="login-section" class="space-y-4 text-left animate-page-fade-in">
+        <div id="login-section" class="space-y-4">
             <div class="text-center mb-6">
                 <h1 class="text-xl font-bold text-slate-900">Dashboard Owner</h1>
                 <p class="text-xs text-slate-500 mt-1">Masukkan ID Kartu dan PIN untuk melihat statistik.</p>
@@ -40,19 +26,19 @@
                 <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan</label>
                 <input type="password" id="login-pin" placeholder="Masukkan PIN" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
             </div>
-            <button onclick="ownerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern text-sm">
+            <button onclick="ownerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 text-sm">
                 Masuk ke Dashboard
             </button>
         </div>
 
         <!-- HALAMAN DASHBOARD UTAMA -->
-        <div id="dashboard-section" class="hidden space-y-5 text-left animate-page-fade-in">
+        <div id="dashboard-section" class="hidden space-y-5">
             <div class="flex justify-between items-center border-b border-slate-100 pb-4">
                 <div>
                     <h2 id="dash-business-name" class="text-base font-bold text-slate-900">Nama Bisnis</h2>
                     <p class="text-[11px] text-slate-400">Panel Kontrol & Statistik Kartu</p>
                 </div>
-                <button onclick="refreshStats()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2 rounded-xl text-xs font-semibold transition flex items-center gap-1">
+                <button onclick="refreshStats()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition">
                     🔄 Refresh
                 </button>
             </div>
@@ -96,10 +82,10 @@
 
             <!-- TOMBOL AKSI -->
             <div class="space-y-2 pt-2">
-                <button onclick="confirmReset()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2.5 rounded-xl text-xs transition border border-red-200 btn-modern">
+                <button onclick="confirmReset()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2.5 rounded-xl text-xs transition border border-red-200">
                     ⚠️ Reset / Hapus Data Kartu Ini
                 </button>
-                <button onclick="logoutOwner()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2.5 rounded-xl text-xs transition btn-modern">
+                <button onclick="logoutOwner()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2.5 rounded-xl text-xs transition">
                     Keluar Akun
                 </button>
             </div>
@@ -120,16 +106,6 @@
             }
         };
 
-        function showOverlay(title, desc) {
-            document.getElementById('overlay-title').textContent = title;
-            document.getElementById('overlay-desc').textContent = desc;
-            document.getElementById('loading-overlay').classList.remove('hidden');
-        }
-
-        function hideOverlay() {
-            document.getElementById('loading-overlay').classList.add('hidden');
-        }
-
         function ownerLogin() {
             const id = document.getElementById('login-id').value.trim();
             const pin = document.getElementById('login-pin').value.trim();
@@ -139,12 +115,9 @@
                 return;
             }
 
-            showOverlay("Masuk ke Dashboard", "Memverifikasi akun Anda...");
-
             fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(id)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
-                    hideOverlay();
                     if (res.success) {
                         currentProductId = id;
                         currentPin = pin;
@@ -160,18 +133,14 @@
                     }
                 })
                 .catch(() => {
-                    hideOverlay();
                     alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
                 });
         }
 
         function refreshStats() {
-            showOverlay("Memperbarui Data", "Mengambil statistik terbaru...");
-
             fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(currentProductId)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
-                    hideOverlay();
                     if (res.success) {
                         updateDashboardData(res.data);
                     } else {
@@ -179,7 +148,6 @@
                     }
                 })
                 .catch(() => {
-                    hideOverlay();
                     alert("Koneksi terputus saat memperbarui data.");
                 });
         }
@@ -203,8 +171,7 @@
 
         function confirmReset() {
             if (confirm("PERINGATAN: Apakah Anda yakin ingin mereset kartu ini? Semua data statistik dan ulasan akan dihapus permanen dan kartu kembali ke status unactivated.")) {
-                showOverlay("Mereset Kartu", "Membersihkan data kartu...");
-
+                
                 fetch(SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify({
@@ -215,13 +182,10 @@
                 })
                 .then(res => res.json())
                 .then(res => {
-                    hideOverlay();
                     alert("Reset Berhasil! Kartu kembali ke status unactivated.");
                     logoutOwner();
                 })
                 .catch(() => {
-                    hideOverlay();
-                    // Pengaman UX: Meskipun terjadi timeout jaringan, data di sheet sudah bersih
                     alert("Reset Berhasil!");
                     logoutOwner();
                 });
