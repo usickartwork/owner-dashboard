@@ -19,7 +19,6 @@
         }
         .animate-logo-pulse { animation: logoPulse 1.4s ease-in-out infinite; }
 
-        /* Animasi Fade Halus untuk Intro */
         @keyframes fadeOutScreen {
             0% { opacity: 1; visibility: visible; }
             100% { opacity: 0; visibility: hidden; }
@@ -220,6 +219,10 @@
         }
 
         window.onload = function() {
+            // Pastikan dashboard dan login tersembunyi terlebih dahulu saat pertama kali load
+            document.getElementById("dashboardScreen").classList.add("hidden");
+            document.getElementById("loginScreen").classList.add("hidden");
+
             if (currentCardId && currentPin) {
                 refreshData(true);
             } else {
@@ -324,6 +327,7 @@
         function renderDashboard(data, targetId) {
             hideIntroScreen();
             
+            document.getElementById("loginScreen").classList.add("hidden");
             const dash = document.getElementById("dashboardScreen");
             dash.classList.remove("hidden");
             dash.classList.add("animate-page-fade-in");
@@ -414,6 +418,11 @@
         function logoutApp() {
             localStorage.clear();
             sessionStorage.clear();
+            
+            // Sembunyikan semua layar sebelum reload agar bersih
+            document.getElementById("dashboardScreen").classList.add("hidden");
+            document.getElementById("loginScreen").classList.add("hidden");
+            
             location.reload();
         }
     </script>
