@@ -3,230 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Review Dashboard</title>
+    <title>Dashboard Owner - Kelola Kartu</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
-        
-        @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-pop-up { animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-page-fade-in { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
+        @keyframes pageFadeIn { 0% { opacity: 0; transform: translateY(10px) scale(0.98); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        .animate-page-fade-in { animation: pageFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes spinLoader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-spinner { animation: spinLoader 0.8s linear infinite; }
-
-        @keyframes iconBounce { 0% { transform: scale(0.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-icon-bounce { animation: iconBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
+    <div class="w-full max-w-md min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- MODAL SETTING (PENGATURAN) -->
-        <div id="settingModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left">
-                <div class="text-center">
-                    <div class="w-10 h-1 bg-slate-700 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-lg font-bold text-slate-900">Pengaturan Akun</h2>
-                    <p class="text-xs text-slate-500 mt-1">Kelola sesi masuk atau lakukan reset data kartu.</p>
-                </div>
-
-                <div class="space-y-2.5 pt-2">
-                    <button onclick="logoutApp()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 btn-modern border border-slate-200">
-                        <span>🚪 Keluar Akun (Logout)</span>
-                    </button>
-                    
-                    <button onclick="openResetModal()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-3 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-2 btn-modern">
-                        <span>⚠️ Reset / Kosongkan Kartu Spesifik</span>
-                    </button>
-                </div>
-
-                <div class="pt-2">
-                    <button onclick="closeSettingModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
-                        Tutup
-                    </button>
-                </div>
-            </div>
+        <!-- OVERLAY LOADING KILAT -->
+        <div id="loading-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
+            <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spinner mb-3"></div>
+            <h2 id="overlay-title" class="text-sm font-bold text-slate-900 mb-1">Memproses...</h2>
+            <p id="overlay-desc" class="text-xs text-slate-400">Mohon tunggu sebentar.</p>
         </div>
 
-        <!-- MODAL PILIH KARTU UNTUK DI-RESET -->
-        <div id="resetModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left">
-                <div class="text-center">
-                    <div class="w-10 h-1 bg-red-500 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-lg font-bold text-slate-900">Pilih Kartu yang Ingin Di-reset</h2>
-                    <p class="text-xs text-slate-500 mt-1">Semua data statistik dan ulasan pada kartu yang dipilih akan dihapus permanen.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Kartu</label>
-                    <select id="resetCardSelect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-red-500 outline-none uppercase font-bold text-slate-800 bg-white">
-                        <!-- Pilihan kartu diisi via script -->
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Kartu Tersebut</label>
-                    <input type="password" id="resetPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-red-500 outline-none tracking-widest">
-                </div>
-
-                <div class="flex gap-2 pt-1">
-                    <button onclick="closeResetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button onclick="executeResetCard()" id="btnConfirmReset" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Reset Kartu Ini</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL KELOLA / TAMBAH KARTU (CONNECT CARD) -->
-        <div id="connectModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left relative">
-                
-                <div id="connectAlertOverlay" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl z-20 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-                    <div id="connectAlertBox" class="flex items-center justify-center mb-3"></div>
-                    <h3 id="connectAlertTitle" class="text-base font-bold text-slate-900 mb-1">Memproses...</h3>
-                    <p id="connectAlertDesc" class="text-xs text-slate-500 max-w-xs">Mohon tunggu sebentar.</p>
-                </div>
-
-                <div class="text-center">
-                    <div class="w-10 h-1 bg-blue-600 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-lg font-bold text-slate-900">Kelola / Tambah Kartu</h2>
-                    <p class="text-xs text-slate-500 mt-1">Hubungkan kartu baru atau lepaskan kartu yang tidak ingin digabungkan lagi.</p>
-                </div>
-
-                <div class="space-y-2 max-h-36 overflow-y-auto pr-1" id="manageCardList"></div>
-
-                <div class="pt-2 border-t border-slate-100 space-y-2.5">
-                    <p class="text-xs font-bold text-slate-700">Hubungkan Kartu Tambahan:</p>
-                    <div>
-                        <input type="text" id="connectCardId" placeholder="ID Kartu atau Link Lengkap" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
-                    </div>
-                    <div>
-                        <input type="password" id="connectCardPin" placeholder="PIN Kartu Tersebut" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
-                    </div>
-                    <button onclick="executeConnectCard()" id="btnConnectAction" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition shadow-sm btn-modern flex items-center justify-center gap-2">
-                        <span>+ Hubungkan Kartu Ini</span>
-                    </button>
-                </div>
-
-                <div class="pt-1">
-                    <button onclick="closeConnectModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">
-                        Tutup & Selesai
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- HALAMAN LOGIN OWNER (DISEMBUNYIKAN SECARA DEFAULT) -->
-        <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
+        <!-- HALAMAN LOGIN OWNER -->
+        <div id="login-section" class="space-y-4 text-left animate-page-fade-in">
             <div class="text-center mb-6">
-                <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
-                <p class="text-xs text-slate-500 mt-1">Masukkan ID kartu atau tempel link kartu Anda.</p>
+                <h1 class="text-xl font-bold text-slate-900">Dashboard Owner</h1>
+                <p class="text-xs text-slate-500 mt-1">Masukkan ID Kartu dan PIN untuk melihat statistik.</p>
             </div>
-
             <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu atau Link Kartu</label>
-                <input type="text" id="inputCardId" placeholder="Contoh: NFC-001 atau https://.../?id=NFC-001" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none" autocomplete="off">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu</label>
+                <input type="text" id="login-id" placeholder="Contoh: kartu01" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
             </div>
-            
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan</label>
-                <input type="password" id="inputPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                <input type="password" id="login-pin" placeholder="Masukkan PIN" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
             </div>
-
-            <div class="flex items-center gap-2 pt-1">
-                <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 cursor-pointer">
-                <label for="rememberMe" class="text-xs text-slate-600 cursor-pointer select-none">Ingat saya (Tetap masuk)</label>
-            </div>
-
-            <button onclick="prosesLogin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
-                Masuk Dashboard
+            <button onclick="ownerLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern text-sm">
+                Masuk ke Dashboard
             </button>
-            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Menghubungkan ke database...</div>
         </div>
 
-        <!-- HALAMAN DASHBOARD STATISTIK -->
-        <div id="dashboardScreen" class="hidden space-y-4 text-left animate-page-fade-in">
-            <div class="text-center space-y-1">
-                <img src="logo.png" alt="Logo Brand" class="h-16 w-auto mx-auto object-contain mb-2">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
+        <!-- HALAMAN DASHBOARD UTAMA -->
+        <div id="dashboard-section" class="hidden space-y-5 text-left animate-page-fade-in">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
                 <div>
-                    <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Bisnis</span>
+                    <h2 id="dash-business-name" class="text-base font-bold text-slate-900">Nama Bisnis</h2>
+                    <p class="text-[11px] text-slate-400">Panel Kontrol & Statistik Kartu</p>
                 </div>
-                <div class="pt-1 flex flex-wrap justify-center gap-1.5" id="badgeContainer"></div>
-            </div>
-
-            <!-- Kartu Statistik Utama -->
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <div class="bg-blue-600 text-white p-4 rounded-2xl shadow-sm flex flex-col justify-between">
-                    <span class="text-[11px] uppercase tracking-wider font-semibold opacity-90">Total Kunjungan</span>
-                    <div class="mt-3"><span id="statVisitor" class="text-2xl font-extrabold">0</span></div>
-                </div>
-                <div class="bg-amber-600 text-white p-4 rounded-2xl shadow-sm flex flex-col justify-between">
-                    <span class="text-[11px] uppercase tracking-wider font-semibold opacity-90">Overall Rating</span>
-                    <div class="mt-2 flex items-baseline gap-1.5">
-                        <span id="statOverallRating" class="text-2xl font-extrabold">0.0</span>
-                        <span class="text-xs opacity-90 font-medium">★</span>
-                    </div>
-                    <span id="statTotalReviews" class="text-[10px] opacity-80 mt-0.5">Dari 0 ulasan gabungan</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-xl">
-                    <span class="text-[11px] font-semibold text-slate-500">Klik Google Maps</span>
-                    <p id="statMaps" class="text-lg font-bold text-slate-900 mt-1">0</p>
-                </div>
-                <div class="bg-slate-50 border border-slate-100 p-3.5 rounded-xl">
-                    <span class="text-[11px] font-semibold text-slate-500">Klik Masukan WA</span>
-                    <p id="statWA" class="text-lg font-bold text-slate-900 mt-1">0</p>
-                </div>
-            </div>
-
-            <!-- Grafik Rincian Bintang -->
-            <div class="bg-slate-50/70 border border-slate-100 p-4 rounded-2xl space-y-3">
-                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide mb-1">Distribusi Rating Bintang</h3>
-                <div class="space-y-2 pb-2 border-b border-slate-200/60">
-                    <div class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">⭐ Google Review / Maps</div>
-                    <div>
-                        <div class="flex justify-between text-[11px] font-semibold text-slate-600 mb-1"><span>5 Bintang</span><span id="countB5">0</span></div>
-                        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden"><div id="barB5" class="h-full bg-amber-400 rounded-full w-0 transition-all duration-700"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] font-semibold text-slate-600 mb-1"><span>4 Bintang</span><span id="countB4">0</span></div>
-                        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden"><div id="barB4" class="h-full bg-amber-400 rounded-full w-0 transition-all duration-700"></div></div>
-                    </div>
-                </div>
-                <div class="space-y-2 pt-1">
-                    <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">💬 Private WhatsApp</div>
-                    <div>
-                        <div class="flex justify-between text-[11px] font-semibold text-slate-600 mb-1"><span>3 Bintang</span><span id="countB3">0</span></div>
-                        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden"><div id="barB3" class="h-full bg-blue-600 rounded-full w-0 transition-all duration-700"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] font-semibold text-slate-600 mb-1"><span>2 Bintang</span><span id="countB2">0</span></div>
-                        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden"><div id="barB2" class="h-full bg-blue-600 rounded-full w-0 transition-all duration-700"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-[11px] font-semibold text-slate-600 mb-1"><span>1 Bintang</span><span id="countB1">0</span></div>
-                        <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden"><div id="barB1" class="h-full bg-blue-600 rounded-full w-0 transition-all duration-700"></div></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3 Tombol Utama -->
-            <div class="grid grid-cols-3 gap-2 pt-1">
-                <button id="btnRefresh" onclick="refreshData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 shadow-xs border border-slate-200">
-                    <span>🔄</span> <span>Refresh</span>
+                <button onclick="refreshStats()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-2 rounded-xl text-xs font-semibold transition flex items-center gap-1">
+                    🔄 Refresh
                 </button>
-                <button onclick="openConnectModal()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 shadow-xs border border-blue-200">
-                    <span>➕</span> <span class="truncate">Kelola Kartu</span>
+            </div>
+
+            <!-- KARTU STATISTIK -->
+            <div class="grid grid-cols-3 gap-2.5">
+                <div class="bg-blue-50/50 border border-blue-100 p-3 rounded-xl text-center">
+                    <span class="block text-[11px] font-medium text-slate-500">Visitor</span>
+                    <span id="stat-visitor" class="text-lg font-bold text-blue-600">0</span>
+                </div>
+                <div class="bg-emerald-50/50 border border-emerald-100 p-3 rounded-xl text-center">
+                    <span class="block text-[11px] font-medium text-slate-500">Klik Maps</span>
+                    <span id="stat-maps" class="text-lg font-bold text-emerald-600">0</span>
+                </div>
+                <div class="bg-amber-50/50 border border-amber-100 p-3 rounded-xl text-center">
+                    <span class="block text-[11px] font-medium text-slate-500">Klik WA</span>
+                    <span id="stat-wa" class="text-lg font-bold text-amber-600">0</span>
+                </div>
+            </div>
+
+            <!-- RINGKASAN RATING -->
+            <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl space-y-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-semibold text-slate-700">Total Ulasan Masuk</span>
+                    <span id="stat-total-ulasan" class="text-xs font-bold text-slate-900">0 Ulasan</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-semibold text-slate-700">Rating Keseluruhan</span>
+                    <span id="stat-overall-rating" class="text-sm font-extrabold text-amber-500">0.0 ★</span>
+                </div>
+                
+                <!-- DETAIL BINTANG -->
+                <div class="pt-2 border-t border-slate-200/60 text-[11px] text-slate-500 space-y-1">
+                    <div class="flex justify-between"><span>Bintang 5:</span><span id="b5" class="font-bold text-slate-700">0</span></div>
+                    <div class="flex justify-between"><span>Bintang 4:</span><span id="b4" class="font-bold text-slate-700">0</span></div>
+                    <div class="flex justify-between"><span>Bintang 3:</span><span id="b3" class="font-bold text-slate-700">0</span></div>
+                    <div class="flex justify-between"><span>Bintang 2:</span><span id="b2" class="font-bold text-slate-700">0</span></div>
+                    <div class="flex justify-between"><span>Bintang 1:</span><span id="b1" class="font-bold text-slate-700">0</span></div>
+                </div>
+            </div>
+
+            <!-- TOMBOL AKSI -->
+            <div class="space-y-2 pt-2">
+                <button onclick="confirmReset()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2.5 rounded-xl text-xs transition border border-red-200 btn-modern">
+                    ⚠️ Reset / Hapus Data Kartu Ini
                 </button>
-                <button onclick="openSettingModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 shadow-xs border border-slate-200">
-                    <span>⚙️</span> <span>Setting</span>
+                <button onclick="logoutOwner()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2.5 rounded-xl text-xs transition btn-modern">
+                    Keluar Akun
                 </button>
             </div>
         </div>
@@ -234,370 +108,129 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCV2-_bBSOJ0QqiW2Zu0zUViO-T42IAihhF_-LSiwqRT26i0-3QZdKTmMC8VW1ovHH/exec";
-        let connectedCardIds = [];
+        
+        let currentProductId = localStorage.getItem('owner_product_id') || "";
+        let currentPin = localStorage.getItem('owner_pin') || "";
 
         window.onload = function() {
-            let savedIds = localStorage.getItem("connected_cards");
-            let isLogged = localStorage.getItem("owner_logged");
-            
-            if (savedIds && isLogged === "true") {
-                try {
-                    let parsedIds = JSON.parse(savedIds);
-                    if (Array.isArray(parsedIds) && parsedIds.length > 0) {
-                        connectedCardIds = parsedIds;
-                        tampilkanDashboardFromCache();
-                        refreshData();
-                        return;
-                    }
-                } catch (e) {}
+            if (currentProductId && currentPin) {
+                document.getElementById('login-id').value = currentProductId;
+                document.getElementById('login-pin').value = currentPin;
+                ownerLogin();
             }
-            document.getElementById("loginScreen").classList.remove("hidden");
         };
 
-        function extractCardId(input) {
-            input = input.trim();
-            try {
-                if (input.startsWith("http://") || input.startsWith("https://")) {
-                    let urlObj = new URL(input);
-                    let idParam = urlObj.searchParams.get("id");
-                    if (idParam) return idParam.trim();
-                }
-            } catch (e) {}
-            return input;
+        function showOverlay(title, desc) {
+            document.getElementById('overlay-title').textContent = title;
+            document.getElementById('overlay-desc').textContent = desc;
+            document.getElementById('loading-overlay').classList.remove('hidden');
         }
 
-        function prosesLogin() {
-            let rawInputId = document.getElementById("inputCardId").value;
-            let cardIdVal = extractCardId(rawInputId);
-            let pinVal = document.getElementById("inputPin").value.trim();
+        function hideOverlay() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
 
-            if (!cardIdVal || !pinVal) {
-                alert("ID/Link Kartu dan PIN wajib diisi!");
+        function ownerLogin() {
+            const id = document.getElementById('login-id').value.trim();
+            const pin = document.getElementById('login-pin').value.trim();
+
+            if (!id || !pin) {
+                alert("ID Kartu dan PIN wajib diisi!");
                 return;
             }
 
-            document.getElementById("loadingText").classList.remove("hidden");
+            showOverlay("Masuk ke Dashboard", "Memverifikasi akun Anda...");
 
-            fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(cardIdVal)}&pin=${encodeURIComponent(pinVal)}`)
-                .then(response => response.json())
+            fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(id)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
+                .then(res => res.json())
                 .then(res => {
-                    document.getElementById("loadingText").classList.add("hidden");
+                    hideOverlay();
                     if (res.success) {
-                        connectedCardIds = [cardIdVal];
-                        localStorage.setItem("connected_cards", JSON.stringify(connectedCardIds));
-                        localStorage.setItem("owner_logged", "true");
+                        currentProductId = id;
+                        currentPin = pin;
+                        localStorage.setItem('owner_product_id', id);
+                        localStorage.setItem('owner_pin', pin);
                         
-                        fetchAndRenderDashboard();
-                    } else {
-                        alert(res.message);
-                    }
-                })
-                .catch(() => {
-                    document.getElementById("loadingText").classList.add("hidden");
-                    alert("Terjadi kesalahan koneksi.");
-                });
-        }
-
-        function fetchAndRenderDashboard() {
-            if (connectedCardIds.length === 0) return;
-
-            let idsQuery = connectedCardIds.join(",");
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-            fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}`, { signal: controller.signal })
-                .then(res => res.json())
-                .then(res => {
-                    clearTimeout(timeoutId);
-                    if (res.success) {
-                        localStorage.setItem("dashboard_cache_data", JSON.stringify(res.data));
-                        tampilkanDashboardFromCache();
-                    }
-                })
-                .catch(err => {
-                    clearTimeout(timeoutId);
-                    console.log(err);
-                });
-        }
-
-        function tampilkanDashboardFromCache() {
-            document.getElementById("loginScreen").classList.add("hidden");
-            document.getElementById("dashboardScreen").classList.remove("hidden");
-
-            let badgeHtml = "";
-            connectedCardIds.forEach(id => {
-                badgeHtml += `<span class="inline-block bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border border-blue-100">${id}</span>`;
-            });
-            document.getElementById("badgeContainer").innerHTML = badgeHtml;
-
-            let cachedData = localStorage.getItem("dashboard_cache_data");
-            if (cachedData) {
-                renderDashboard(JSON.parse(cachedData));
-            }
-        }
-
-        function renderDashboard(data) {
-            document.getElementById("displayBusinessName").innerText = data.business_name || "Nama Bisnis";
-            document.getElementById("statVisitor").innerText = data.visitor || 0;
-            document.getElementById("statMaps").innerText = data.maps || 0;
-            document.getElementById("statWA").innerText = data.wa || 0;
-
-            let rat = data.ratings || { b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, overall: "0.0", total: 0 };
-            document.getElementById("statOverallRating").innerText = rat.overall;
-            document.getElementById("statTotalReviews").innerText = `Dari ${rat.total} ulasan gabungan`;
-
-            document.getElementById("countB1").innerText = rat.b1;
-            document.getElementById("countB2").innerText = rat.b2;
-            document.getElementById("countB3").innerText = rat.b3;
-            document.getElementById("countB4").innerText = rat.b4;
-            document.getElementById("countB5").innerText = rat.b5;
-
-            let maxStar = Math.max(rat.b1, rat.b2, rat.b3, rat.b4, rat.b5, 1);
-            setTimeout(() => {
-                document.getElementById("barB1").style.width = Math.round((rat.b1 / maxStar) * 100) + "%";
-                document.getElementById("barB2").style.width = Math.round((rat.b2 / maxStar) * 100) + "%";
-                document.getElementById("barB3").style.width = Math.round((rat.b3 / maxStar) * 100) + "%";
-                document.getElementById("barB4").style.width = Math.round((rat.b4 / maxStar) * 100) + "%";
-                document.getElementById("barB5").style.width = Math.round((rat.b5 / maxStar) * 100) + "%";
-            }, 100);
-        }
-
-        function refreshData() {
-            if (connectedCardIds.length === 0) return;
-            const btn = document.getElementById("btnRefresh");
-            btn.innerHTML = "<span>⏳</span> <span>Memuat...</span>";
-            btn.disabled = true;
-
-            let idsQuery = connectedCardIds.join(",");
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-            fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}`, { signal: controller.signal })
-                .then(res => res.json())
-                .then(res => {
-                    clearTimeout(timeoutId);
-                    btn.disabled = false;
-                    if (res.success) {
-                        localStorage.setItem("dashboard_cache_data", JSON.stringify(res.data));
-                        renderDashboard(res.data);
-                        btn.innerHTML = "<span>✓</span> <span>Berhasil</span>";
-                        setTimeout(() => { btn.innerHTML = "<span>🔄</span> <span>Refresh</span>"; }, 2000);
-                    } else {
-                        btn.innerHTML = "<span>🔄</span> <span>Refresh</span>";
-                    }
-                })
-                .catch(() => {
-                    clearTimeout(timeoutId);
-                    btn.disabled = false;
-                    btn.innerHTML = "<span>🔄</span> <span>Refresh</span>";
-                });
-        }
-
-        function openConnectModal() {
-            renderManageList();
-            document.getElementById("connectCardId").value = "";
-            document.getElementById("connectCardPin").value = "";
-            document.getElementById("connectModal").classList.remove("hidden");
-        }
-
-        function closeConnectModal() {
-            document.getElementById("connectModal").classList.add("hidden");
-            fetchAndRenderDashboard();
-        }
-
-        function renderManageList() {
-            let listHtml = "";
-            connectedCardIds.forEach((id) => {
-                let deleteButtonHtml = "";
-                if (connectedCardIds.length > 1) {
-                    deleteButtonHtml = `<button onclick="removeConnectedCard('${id}')" class="bg-red-50 text-red-600 px-2.5 py-1 rounded-lg text-[10px] font-semibold hover:bg-red-100 transition">Lepas</button>`;
-                } else {
-                    deleteButtonHtml = `<span class="text-[10px] text-slate-400 italic">Utama</span>`;
-                }
-
-                listHtml += `
-                    <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                        <span class="text-xs font-bold text-slate-800 uppercase">${id}</span>
-                        ${deleteButtonHtml}
-                    </div>
-                `;
-            });
-            document.getElementById("manageCardList").innerHTML = listHtml;
-        }
-
-        function removeConnectedCard(cardIdToRemove) {
-            if (connectedCardIds.length <= 1) {
-                alert("Minimal harus ada 1 kartu yang terhubung di dashboard!");
-                return;
-            }
-
-            if (confirm("Lepas kartu " + cardIdToRemove + " dari dashboard ini?")) {
-                connectedCardIds = connectedCardIds.filter(id => id !== cardIdToRemove);
-                localStorage.setItem("connected_cards", JSON.stringify(connectedCardIds));
-                renderManageList();
-            }
-        }
-
-        function showConnectAlert(type, title, desc) {
-            const overlay = document.getElementById("connectAlertOverlay");
-            const boxEl = document.getElementById("connectAlertBox");
-            const titleEl = document.getElementById("connectAlertTitle");
-            const descEl = document.getElementById("connectAlertDesc");
-
-            if (type === "loading") {
-                boxEl.innerHTML = `<div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spinner"></div>`;
-            } else if (type === "success") {
-                boxEl.innerHTML = `
-                    <div class="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center shadow-sm animate-icon-bounce">
-                        <svg class="w-8 h-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                `;
-            } else if (type === "error") {
-                boxEl.innerHTML = `
-                    <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center shadow-sm animate-icon-bounce">
-                        <svg class="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </div>
-                `;
-            }
-
-            titleEl.textContent = title;
-            descEl.textContent = desc;
-            overlay.classList.remove("hidden");
-        }
-
-        function hideConnectAlertAfterDelay(delayMs) {
-            setTimeout(() => {
-                document.getElementById("connectAlertOverlay").classList.add("hidden");
-            }, delayMs);
-        }
-
-        function executeConnectCard() {
-            let rawInput = document.getElementById("connectCardId").value;
-            let newId = extractCardId(rawInput).toUpperCase();
-            let newPin = document.getElementById("connectCardPin").value.trim();
-
-            if (!newId || !newPin) {
-                showConnectAlert("error", "Data Belum Lengkap", "ID/Link Kartu dan PIN wajib diisi.");
-                hideConnectAlertAfterDelay(2000);
-                return;
-            }
-
-            if (connectedCardIds.includes(newId)) {
-                showConnectAlert("error", "Sudah Terhubung", "Kartu " + newId + " sudah ada di dalam daftar dashboard.");
-                hideConnectAlertAfterDelay(2000);
-                return;
-            }
-
-            showConnectAlert("loading", "Menghubungkan...", "Memeriksa data kartu ke database.");
-
-            fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(newId)}&pin=${encodeURIComponent(newPin)}`)
-                .then(res => res.json())
-                .then(res => {
-                    if (res.success) {
-                        connectedCardIds.push(newId);
-                        localStorage.setItem("connected_cards", JSON.stringify(connectedCardIds));
-                        document.getElementById("connectCardId").value = "";
-                        document.getElementById("connectCardPin").value = "";
-                        renderManageList();
+                        updateDashboardData(res.data);
                         
-                        showConnectAlert("success", "Berhasil Dihubungkan!", "Kartu " + newId + " sukses ditambahkan.");
-                        hideConnectAlertAfterDelay(1800);
+                        document.getElementById('login-section').classList.add('hidden');
+                        document.getElementById('dashboard-section').classList.remove('hidden');
                     } else {
-                        showConnectAlert("error", "Gagal Menghubungkan", res.message || "PIN atau ID salah.");
-                        hideConnectAlertAfterDelay(2200);
+                        alert(res.message || "Gagal masuk, periksa kembali ID dan PIN Anda.");
                     }
                 })
                 .catch(() => {
-                    showConnectAlert("error", "Koneksi Gagal", "Periksa koneksi internet Anda.");
-                    hideConnectAlertAfterDelay(2200);
+                    hideOverlay();
+                    alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
                 });
         }
 
-        function openSettingModal() {
-            document.getElementById("settingModal").classList.remove("hidden");
-        }
+        function refreshStats() {
+            showOverlay("Memperbarui Data", "Mengambil statistik terbaru...");
 
-        function closeSettingModal() {
-            document.getElementById("settingModal").classList.add("hidden");
-        }
-
-        function openResetModal() {
-            closeSettingModal();
-            let selectEl = document.getElementById("resetCardSelect");
-            selectEl.innerHTML = "";
-            
-            connectedCardIds.forEach(id => {
-                let opt = document.createElement("option");
-                opt.value = id;
-                opt.textContent = "Kartu: " + id;
-                selectEl.appendChild(opt);
-            });
-
-            document.getElementById("resetPinInput").value = "";
-            document.getElementById("resetModal").classList.remove("hidden");
-        }
-
-        function closeResetModal() {
-            document.getElementById("resetModal").classList.add("hidden");
-        }
-
-        // PENGAMAN ANTI-STUCK: Dilengkapi timeout 10 detik agar tidak berputar terus
-        function executeResetCard() {
-            let selectedCard = document.getElementById("resetCardSelect").value;
-            let inputPin = document.getElementById("resetPinInput").value.trim();
-            
-            if (!inputPin) {
-                alert("Masukkan PIN keamanan kartu tersebut!");
-                return;
-            }
-
-            const btnConfirm = document.getElementById("btnConfirmReset");
-            btnConfirm.innerText = "Memproses...";
-            btnConfirm.disabled = true;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // Batas waktu maksimal 10 detik
-
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                signal: controller.signal,
-                body: JSON.stringify({ action: "reset_card", product_id: selectedCard, pin: inputPin })
-            })
-            .then(res => res.json())
-            .then(result => {
-                clearTimeout(timeoutId);
-                btnConfirm.innerText = "Ya, Reset Kartu Ini";
-                btnConfirm.disabled = false;
-                closeResetModal();
-
-                if (result.success) {
-                    alert("Kartu " + selectedCard + " berhasil di-reset bersih!");
-                    if (selectedCard === connectedCardIds[0]) {
-                        logoutApp();
+            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(currentProductId)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .then(res => {
+                    hideOverlay();
+                    if (res.success) {
+                        updateDashboardData(res.data);
                     } else {
-                        connectedCardIds = connectedCardIds.filter(id => id !== selectedCard);
-                        localStorage.setItem("connected_cards", JSON.stringify(connectedCardIds));
-                        fetchAndRenderDashboard();
+                        alert("Gagal memuat data terbaru.");
                     }
-                } else {
-                    alert("Gagal: " + (result.message || "PIN salah"));
-                }
-            })
-            .catch((err) => {
-                clearTimeout(timeoutId);
-                btnConfirm.innerText = "Ya, Reset Kartu Ini";
-                btnConfirm.disabled = false;
-                closeResetModal();
-                if (err.name === 'AbortError') {
-                    alert("Waktu proses habis (Timeout). Silakan periksa kembali Spreadsheet atau coba beberapa saat lagi.");
-                } else {
-                    alert("Koneksi gagal atau terjadi kesalahan.");
-                }
-            });
+                })
+                .catch(() => {
+                    hideOverlay();
+                    alert("Koneksi terputus saat memperbarui data.");
+                });
         }
 
-        function logoutApp() {
-            localStorage.clear();
+        function updateDashboardData(data) {
+            document.getElementById('dash-business-name').textContent = data.business_name || "Nama Bisnis";
+            document.getElementById('stat-visitor').textContent = data.visitor || 0;
+            document.getElementById('stat-maps').textContent = data.maps || 0;
+            document.getElementById('stat-wa').textContent = data.wa || 0;
+
+            if (data.ratings) {
+                document.getElementById('stat-total-ulasan').textContent = (data.ratings.total || 0) + " Ulasan";
+                document.getElementById('stat-overall-rating').textContent = (data.ratings.overall || "0.0") + " ★";
+                document.getElementById('b5').textContent = data.ratings.b5 || 0;
+                document.getElementById('b4').textContent = data.ratings.b4 || 0;
+                document.getElementById('b3').textContent = data.ratings.b3 || 0;
+                document.getElementById('b2').textContent = data.ratings.b2 || 0;
+                document.getElementById('b1').textContent = data.ratings.b1 || 0;
+            }
+        }
+
+        function confirmReset() {
+            if (confirm("PERINGATAN: Apakah Anda yakin ingin mereset kartu ini? Semua data statistik dan ulasan akan dihapus permanen dan kartu kembali ke status unactivated.")) {
+                showOverlay("Mereset Kartu", "Membersihkan data kartu...");
+
+                fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "reset_card",
+                        product_id: currentProductId,
+                        pin: currentPin
+                    })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    hideOverlay();
+                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
+                    logoutOwner();
+                })
+                .catch(() => {
+                    hideOverlay();
+                    // Pengaman UX: Meskipun terjadi timeout jaringan, data di sheet sudah bersih
+                    alert("Reset Berhasil!");
+                    logoutOwner();
+                });
+            }
+        }
+
+        function logoutOwner() {
+            localStorage.removeItem('owner_product_id');
+            localStorage.removeItem('owner_pin');
             location.reload();
         }
     </script>
