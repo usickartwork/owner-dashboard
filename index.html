@@ -545,8 +545,10 @@
             btnConfirm.innerText = "Memproses...";
             btnConfirm.disabled = true;
 
-            // Menggunakan metode GET agar bersih dari blokir CORS Vercel
-            fetch(`${SCRIPT_URL}?action=reset_card&product_id=${encodeURIComponent(primaryCardId)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`)
+            // Menggunakan metode GET bebas CORS dengan debugging konsol
+            let resetUrl = `${SCRIPT_URL}?action=reset_card&product_id=${encodeURIComponent(primaryCardId)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`;
+
+            fetch(resetUrl)
             .then(res => res.json())
             .then(result => {
                 btnConfirm.innerText = "Ya, Reset";
@@ -560,7 +562,8 @@
                     alert("Gagal: " + (result.message || "PIN salah"));
                 }
             })
-            .catch(() => {
+            .catch(err => {
+                console.error("Error reset:", err);
                 btnConfirm.innerText = "Ya, Reset";
                 btnConfirm.disabled = false;
                 closeResetModal();
