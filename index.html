@@ -154,7 +154,7 @@
     </div>
 
     <script>
-        // MASUKKAN SPREADSHEET ID ANDA DI SINI
+        // SPREADSHEET ID ANDA
         const SPREADSHEET_ID = "15YgXuKH-7BKOdcIjCsH1BTF11PQUOsbE_Qc-iYRZ_TE";
         const SHEET_NAME = "Sheet1";
         
@@ -210,7 +210,7 @@
 
         async function prosesLogin() {
             let rawInput = document.getElementById("inputCardId").value;
-            let cardId = extractCardId(rawInput).toLowerCase();
+            let cardId = extractCardId(rawInput).trim().toLowerCase();
             let pin = document.getElementById("inputPin").value.trim();
 
             if (!cardId || !pin) {
@@ -222,33 +222,36 @@
             let rows = await fetchSheetData();
             document.getElementById("loadingText").classList.add("hidden");
 
-            if (!rows) {
+            if (!rows || rows.length === 0) {
                 alert("Gagal membaca Google Spreadsheet. Pastikan link spreadsheet disetel Publik (Anyone with the link can view).");
                 return;
             }
 
             let found = false;
+            let matchedRow = null;
+
             for (let i = 1; i < rows.length; i++) {
-                let dbId = String(rows[i][0] || "").trim().toLowerCase(); // Kolom A: ID
-                let dbPin = String(rows[i][4] || "").trim();               // Kolom E: PIN
+                let row = rows[i];
+                let dbId = String(row[0] || "").trim().toLowerCase(); // Kolom A: ID Kartu
+                let dbPin = String(row[4] || "").trim();               // Kolom E: PIN Keamanan
 
                 if (dbId === cardId) {
                     if (dbPin === pin) {
                         found = true;
-                        currentCardId = cardId;
-                        currentPin = pin;
-                        localStorage.setItem("owner_card_id", cardId);
-                        localStorage.setItem("owner_pin", pin);
-                        renderDashboardFromRows(rows, cardId);
-                    } else {
-                        alert("PIN keamanan salah!");
+                        matchedRow = row;
+                        break;
                     }
-                    break;
                 }
             }
 
-            if (!found) {
-                alert("ID Kartu tidak terdaftar di database!");
+            if (found && matchedRow) {
+                currentCardId = cardId;
+                currentPin = pin;
+                localStorage.setItem("owner_card_id", cardId);
+                localStorage.setItem("owner_pin", pin);
+                renderDashboardFromRows(rows, cardId);
+            } else {
+                alert("ID Kartu atau PIN salah! Periksa kembali data Anda.");
             }
         }
 
