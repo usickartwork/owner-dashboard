@@ -15,10 +15,10 @@
         @keyframes spinLoader { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .animate-spinner { animation: spinLoader 0.8s linear infinite; }
 
-        /* Animasi Logo Intro Awal */
+        /* Animasi Logo Intro Awal (Murni bersih tanpa bayangan biru) */
         @keyframes logoIntro {
             0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 10px 15px rgba(37, 99, 235, 0.15)); }
+            50% { transform: scale(1.05); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
         .animate-logo-intro { animation: logoIntro 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
@@ -34,7 +34,7 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <!-- SPLASH SCREEN: INTRO LOGO BERLANJUT LOADING (MURNI ANIMASI) -->
+    <!-- SPLASH SCREEN: INTRO LOGO BERLANJUT LOADING (BERSIH TANPA BAYANGAN) -->
     <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300">
         <div id="introLogoContainer" class="space-y-6 animate-logo-intro">
             <!-- Logo Besar -->
@@ -233,7 +233,6 @@
         }
 
         window.onload = function() {
-            // Tampilkan logo besar selama 1 detik, lalu ubah ke animasi spinner loading murni
             setTimeout(() => {
                 showSpinnerLoading();
                 
