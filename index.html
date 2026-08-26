@@ -154,7 +154,6 @@
     </div>
 
     <script>
-        // SPREADSHEET ID ANDA
         const SPREADSHEET_ID = "15YgXuKH-7BKOdcIjCsH1BTF11PQUOsbE_Qc-iYRZ_TE";
         const SHEET_NAME = "Sheet1";
         
@@ -227,24 +226,20 @@
                 return;
             }
 
-            let found = false;
-            let matchedRow = null;
+            let foundRow = null;
 
             for (let i = 1; i < rows.length; i++) {
                 let row = rows[i];
-                let dbId = String(row[0] || "").trim().toLowerCase(); // Kolom A: ID Kartu
-                let dbPin = String(row[4] || "").trim();               // Kolom E: PIN Keamanan
+                let hasId = row.some(cell => String(cell || "").trim().toLowerCase() === cardId);
+                let hasPin = row.some(cell => String(cell || "").trim() === pin);
 
-                if (dbId === cardId) {
-                    if (dbPin === pin) {
-                        found = true;
-                        matchedRow = row;
-                        break;
-                    }
+                if (hasId && hasPin) {
+                    foundRow = row;
+                    break;
                 }
             }
 
-            if (found && matchedRow) {
+            if (foundRow) {
                 currentCardId = cardId;
                 currentPin = pin;
                 localStorage.setItem("owner_card_id", cardId);
@@ -273,10 +268,11 @@
             if (rows) {
                 let found = false;
                 for (let i = 1; i < rows.length; i++) {
-                    let dbId = String(rows[i][0] || "").trim().toLowerCase();
-                    let dbPin = String(rows[i][4] || "").trim();
+                    let row = rows[i];
+                    let hasId = row.some(cell => String(cell || "").trim().toLowerCase() === currentCardId);
+                    let hasPin = row.some(cell => String(cell || "").trim() === currentPin);
 
-                    if (dbId === currentCardId && dbPin === currentPin) {
+                    if (hasId && hasPin) {
                         found = true;
                         renderDashboardFromRows(rows, currentCardId);
                         break;
@@ -294,7 +290,7 @@
         function renderDashboardFromRows(rows, targetId) {
             let rowData = null;
             for (let i = 1; i < rows.length; i++) {
-                if (String(rows[i][0] || "").trim().toLowerCase() === targetId) {
+                if (rows[i].some(cell => String(cell || "").trim().toLowerCase() === targetId)) {
                     rowData = rows[i];
                     break;
                 }
@@ -305,15 +301,15 @@
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("dashboardScreen").classList.remove("hidden");
 
-            let bizName = rowData[3] || "Nama Bisnis"; // Kolom D
-            let visitor = Number(rowData[7]) || 0;     // Kolom H
-            let maps = Number(rowData[8]) || 0;        // Kolom I
-            let wa = Number(rowData[9]) || 0;          // Kolom J
-            let b1 = Number(rowData[10]) || 0;         // Kolom K
-            let b2 = Number(rowData[11]) || 0;         // Kolom L
-            let b3 = Number(rowData[12]) || 0;         // Kolom M
-            let b4 = Number(rowData[13]) || 0;         // Kolom N
-            let b5 = Number(rowData[14]) || 0;         // Kolom O
+            let bizName = rowData[3] || "Nama Bisnis"; 
+            let visitor = Number(rowData[7]) || 0;     
+            let maps = Number(rowData[8]) || 0;        
+            let wa = Number(rowData[9]) || 0;          
+            let b1 = Number(rowData[10]) || 0;         
+            let b2 = Number(rowData[11]) || 0;         
+            let b3 = Number(rowData[12]) || 0;         
+            let b4 = Number(rowData[13]) || 0;         
+            let b5 = Number(rowData[14]) || 0;         
 
             let totalUlasan = b1 + b2 + b3 + b4 + b5;
             let overallRating = totalUlasan > 0 ? ((1*b1 + 2*b2 + 3*b3 + 4*b4 + 5*b5) / totalUlasan).toFixed(1) : "0.0";
