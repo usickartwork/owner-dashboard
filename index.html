@@ -31,12 +31,16 @@
                 <div class="text-center">
                     <div class="w-10 h-1 bg-slate-700 mx-auto rounded-full mb-3"></div>
                     <h2 class="text-lg font-bold text-slate-900">Pengaturan Akun</h2>
-                    <p class="text-xs text-slate-500 mt-1">Kelola sesi masuk atau keluar akun.</p>
+                    <p class="text-xs text-slate-500 mt-1">Kelola sesi masuk atau lakukan reset data kartu.</p>
                 </div>
 
                 <div class="space-y-2.5 pt-2">
                     <button onclick="logoutApp()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 btn-modern border border-slate-200">
                         <span>🚪 Keluar Akun (Logout)</span>
+                    </button>
+                    
+                    <button onclick="openResetModal()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-3 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-2 btn-modern">
+                        <span>⚠️ Reset / Kosongkan Kartu Spesifik</span>
                     </button>
                 </div>
 
@@ -44,6 +48,32 @@
                     <button onclick="closeSettingModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
                         Tutup
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL PILIH KARTU UNTUK DI-RESET -->
+        <div id="resetModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
+            <div class="w-full max-w-sm space-y-4 text-left">
+                <div class="text-center">
+                    <div class="w-10 h-1 bg-red-500 mx-auto rounded-full mb-3"></div>
+                    <h2 class="text-lg font-bold text-slate-900">Reset Data Kartu</h2>
+                    <p class="text-xs text-slate-500 mt-1">Semua data statistik dan ulasan pada kartu ini akan dihapus permanen.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu yang Sedang Aktif</label>
+                    <input type="text" id="resetCardIdDisplay" disabled class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold text-slate-500 bg-slate-100">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Kartu Tersebut</label>
+                    <input type="password" id="resetPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-red-500 outline-none tracking-widest">
+                </div>
+
+                <div class="flex gap-2 pt-1">
+                    <button onclick="closeResetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
+                    <button onclick="executeResetCard()" id="btnConfirmReset" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Reset Kartu Ini</button>
                 </div>
             </div>
         </div>
@@ -69,7 +99,7 @@
             <button onclick="prosesLogin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
                 Masuk Dashboard
             </button>
-            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Membaca database spreadsheet...</div>
+            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Menghubungkan ke database...</div>
         </div>
 
         <!-- HALAMAN DASHBOARD STATISTIK -->
@@ -147,28 +177,21 @@
                     <span>🔄</span> <span>Refresh Data</span>
                 </button>
                 <button onclick="openSettingModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl text-xs transition btn-modern flex items-center justify-center gap-1 border border-slate-200">
-                    <span>⚙️</span> <span>Setting / Logout</span>
+                    <span>⚙️</span> <span>Setting</span>
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        const SPREADSHEET_ID = "15YgXuKH-7BKOdcIjCsH1BTF11PQUOsbE_Qc-iYRZ_TE";
-        const SHEET_NAME = "Sheet1";
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP SKRIP DASHBOARD OWNER ANDA
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlx2XWqbTd_iHzTNEkN3XoHJ0cHV5dfFMWTxsFQSpJPFbTPD0w3wsEMgpMd8pg9B4V/exec";
         
-        const API_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
-
-        let currentCardId = "";
-        let currentPin = "";
+        let currentCardId = localStorage.getItem("owner_card_id") || "";
+        let currentPin = localStorage.getItem("owner_pin") || "";
 
         window.onload = function() {
-            let savedId = localStorage.getItem("owner_card_id");
-            let savedPin = localStorage.getItem("owner_pin");
-            
-            if (savedId && savedPin) {
-                currentCardId = savedId;
-                currentPin = savedPin;
+            if (currentCardId && currentPin) {
                 refreshData(true);
             } else {
                 document.getElementById("loginScreen").classList.remove("hidden");
@@ -187,27 +210,7 @@
             return input;
         }
 
-        async function fetchSheetData() {
-            try {
-                let res = await fetch(`${API_URL}&t=${new Date().getTime()}`);
-                let text = await res.text();
-                let json = JSON.parse(text.substring(47).slice(0, -2));
-                let rows = json.table.rows;
-                
-                let parsedData = [];
-                rows.forEach(r => {
-                    if (!r.c) return;
-                    let rowVals = r.c.map(cell => (cell ? (cell.v !== null ? cell.v : "") : ""));
-                    parsedData.push(rowVals);
-                });
-                return parsedData;
-            } catch (err) {
-                console.error(err);
-                return null;
-            }
-        }
-
-        async function prosesLogin() {
+        function prosesLogin() {
             let rawInput = document.getElementById("inputCardId").value;
             let cardId = extractCardId(rawInput).trim().toLowerCase();
             let pin = document.getElementById("inputPin").value.trim();
@@ -218,122 +221,91 @@
             }
 
             document.getElementById("loadingText").classList.remove("hidden");
-            let rows = await fetchSheetData();
-            document.getElementById("loadingText").classList.add("hidden");
 
-            if (!rows || rows.length === 0) {
-                alert("Gagal membaca Google Spreadsheet. Pastikan link spreadsheet disetel Publik (Anyone with the link can view).");
-                return;
-            }
-
-            let foundRow = null;
-
-            for (let i = 1; i < rows.length; i++) {
-                let row = rows[i];
-                let hasId = row.some(cell => String(cell || "").trim().toLowerCase() === cardId);
-                let hasPin = row.some(cell => String(cell || "").trim() === pin);
-
-                if (hasId && hasPin) {
-                    foundRow = row;
-                    break;
-                }
-            }
-
-            if (foundRow) {
-                currentCardId = cardId;
-                currentPin = pin;
-                localStorage.setItem("owner_card_id", cardId);
-                localStorage.setItem("owner_pin", pin);
-                renderDashboardFromRows(rows, cardId);
-            } else {
-                alert("ID Kartu atau PIN salah! Periksa kembali data Anda.");
-            }
+            fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(cardId)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .then(res => {
+                    document.getElementById("loadingText").classList.add("hidden");
+                    if (res.success) {
+                        currentCardId = cardId;
+                        currentPin = pin;
+                        localStorage.setItem("owner_card_id", cardId);
+                        localStorage.setItem("owner_pin", pin);
+                        renderDashboard(res.data, cardId);
+                    } else {
+                        alert(res.message || "ID Kartu atau PIN salah!");
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("loadingText").classList.add("hidden");
+                    alert("Terjadi kesalahan koneksi.");
+                });
         }
 
-        async function refreshData(isInitial = false) {
+        function refreshData(isInitial = false) {
             if (!isInitial) {
                 const btn = document.getElementById("btnRefresh");
                 btn.innerHTML = "<span>⏳</span> <span>Memuat...</span>";
                 btn.disabled = true;
             }
 
-            let rows = await fetchSheetData();
-            
-            if (!isInitial) {
-                const btn = document.getElementById("btnRefresh");
-                btn.disabled = false;
-                btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
-            }
-
-            if (rows) {
-                let found = false;
-                for (let i = 1; i < rows.length; i++) {
-                    let row = rows[i];
-                    let hasId = row.some(cell => String(cell || "").trim().toLowerCase() === currentCardId);
-                    let hasPin = row.some(cell => String(cell || "").trim() === currentPin);
-
-                    if (hasId && hasPin) {
-                        found = true;
-                        renderDashboardFromRows(rows, currentCardId);
-                        break;
+            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(currentCardId)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (!isInitial) {
+                        const btn = document.getElementById("btnRefresh");
+                        btn.disabled = false;
+                        btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
                     }
-                }
-                if (!found && !isInitial) {
-                    alert("Sesi kedaluwarsa atau kartu telah di-reset.");
-                    logoutApp();
-                }
-            } else if (!isInitial) {
-                alert("Gagal memperbarui data dari spreadsheet.");
-            }
+
+                    if (res.success) {
+                        renderDashboard(res.data, currentCardId);
+                    } else {
+                        if (!isInitial) alert("Sesi kedaluwarsa atau kartu telah di-reset.");
+                        logoutApp();
+                    }
+                })
+                .catch(() => {
+                    if (!isInitial) {
+                        const btn = document.getElementById("btnRefresh");
+                        btn.disabled = false;
+                        btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
+                    }
+                    if (!isInitial) alert("Gagal memperbarui data.");
+                });
         }
 
-        function renderDashboardFromRows(rows, targetId) {
-            let rowData = null;
-            for (let i = 1; i < rows.length; i++) {
-                if (rows[i].some(cell => String(cell || "").trim().toLowerCase() === targetId)) {
-                    rowData = rows[i];
-                    break;
-                }
-            }
-
-            if (!rowData) return;
-
+        function renderDashboard(data, targetId) {
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("dashboardScreen").classList.remove("hidden");
 
-            let bizName = rowData[3] || "Nama Bisnis"; 
-            let visitor = Number(rowData[7]) || 0;     
-            let maps = Number(rowData[8]) || 0;        
-            let wa = Number(rowData[9]) || 0;          
-            let b1 = Number(rowData[10]) || 0;         
-            let b2 = Number(rowData[11]) || 0;         
-            let b3 = Number(rowData[12]) || 0;         
-            let b4 = Number(rowData[13]) || 0;         
-            let b5 = Number(rowData[14]) || 0;         
-
-            let totalUlasan = b1 + b2 + b3 + b4 + b5;
-            let overallRating = totalUlasan > 0 ? ((1*b1 + 2*b2 + 3*b3 + 4*b4 + 5*b5) / totalUlasan).toFixed(1) : "0.0";
+            let bizName = data.business_name || "Nama Bisnis"; 
+            let visitor = data.visitor || 0;     
+            let maps = data.maps || 0;        
+            let wa = data.wa || 0;          
+            
+            let rat = data.ratings || { b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, overall: "0.0", total: 0 };
 
             document.getElementById("displayBusinessName").innerText = bizName;
             document.getElementById("statVisitor").innerText = visitor;
             document.getElementById("statMaps").innerText = maps;
             document.getElementById("statWA").innerText = wa;
-            document.getElementById("statOverallRating").innerText = overallRating;
-            document.getElementById("statTotalReviews").innerText = `Dari ${totalUlasan} ulasan gabungan`;
+            document.getElementById("statOverallRating").innerText = rat.overall;
+            document.getElementById("statTotalReviews").innerText = `Dari ${rat.total} ulasan gabungan`;
 
-            document.getElementById("countB1").innerText = b1;
-            document.getElementById("countB2").innerText = b2;
-            document.getElementById("countB3").innerText = b3;
-            document.getElementById("countB4").innerText = b4;
-            document.getElementById("countB5").innerText = b5;
+            document.getElementById("countB1").innerText = rat.b1;
+            document.getElementById("countB2").innerText = rat.b2;
+            document.getElementById("countB3").innerText = rat.b3;
+            document.getElementById("countB4").innerText = rat.b4;
+            document.getElementById("countB5").innerText = rat.b5;
 
-            let maxStar = Math.max(b1, b2, b3, b4, b5, 1);
+            let maxStar = Math.max(rat.b1, rat.b2, rat.b3, rat.b4, rat.b5, 1);
             setTimeout(() => {
-                document.getElementById("barB1").style.width = Math.round((b1 / maxStar) * 100) + "%";
-                document.getElementById("barB2").style.width = Math.round((b2 / maxStar) * 100) + "%";
-                document.getElementById("barB3").style.width = Math.round((b3 / maxStar) * 100) + "%";
-                document.getElementById("barB4").style.width = Math.round((b4 / maxStar) * 100) + "%";
-                document.getElementById("barB5").style.width = Math.round((b5 / maxStar) * 100) + "%";
+                document.getElementById("barB1").style.width = Math.round((rat.b1 / maxStar) * 100) + "%";
+                document.getElementById("barB2").style.width = Math.round((rat.b2 / maxStar) * 100) + "%";
+                document.getElementById("barB3").style.width = Math.round((rat.b3 / maxStar) * 100) + "%";
+                document.getElementById("barB4").style.width = Math.round((rat.b4 / maxStar) * 100) + "%";
+                document.getElementById("barB5").style.width = Math.round((rat.b5 / maxStar) * 100) + "%";
             }, 100);
 
             let badgeHtml = `<span class="inline-block bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border border-blue-100">${targetId}</span>`;
@@ -342,6 +314,54 @@
 
         function openSettingModal() { document.getElementById("settingModal").classList.remove("hidden"); }
         function closeSettingModal() { document.getElementById("settingModal").classList.add("hidden"); }
+
+        function openResetModal() {
+            closeSettingModal();
+            document.getElementById("resetCardIdDisplay").value = currentCardId.toUpperCase();
+            document.getElementById("resetPinInput").value = "";
+            document.getElementById("resetModal").classList.remove("hidden");
+        }
+
+        function closeResetModal() {
+            document.getElementById("resetModal").classList.add("hidden");
+        }
+
+        function executeResetCard() {
+            let inputPin = document.getElementById("resetPinInput").value.trim();
+            if (!inputPin) {
+                alert("Masukkan PIN keamanan kartu Anda!");
+                return;
+            }
+
+            const btnConfirm = document.getElementById("btnConfirmReset");
+            btnConfirm.innerText = "Memproses...";
+            btnConfirm.disabled = true;
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "reset_card", product_id: currentCardId, pin: inputPin })
+            })
+            .then(res => res.json())
+            .then(result => {
+                btnConfirm.innerText = "Ya, Reset Kartu Ini";
+                btnConfirm.disabled = false;
+                closeResetModal();
+
+                if (result.success) {
+                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
+                    logoutApp();
+                } else {
+                    alert("Gagal: " + (result.message || "PIN salah"));
+                }
+            })
+            .catch(() => {
+                btnConfirm.innerText = "Ya, Reset Kartu Ini";
+                btnConfirm.disabled = false;
+                closeResetModal();
+                alert("Koneksi gagal atau terjadi kesalahan.");
+            });
+        }
+
         function logoutApp() {
             localStorage.clear();
             location.reload();
