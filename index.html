@@ -298,6 +298,7 @@
                 });
         }
 
+        // DIPERBARUI DENGAN &t=... AGAR TIDAK TERKENA CACHE BROWSER SAAT FETCH DATA
         function fetchAndRenderDashboard() {
             if (connectedCardIds.length === 0) return;
 
@@ -305,7 +306,7 @@
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-            fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}`, { signal: controller.signal })
+            fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}&t=${new Date().getTime()}`, { signal: controller.signal })
                 .then(res => res.json())
                 .then(res => {
                     clearTimeout(timeoutId);
@@ -362,6 +363,7 @@
             }, 100);
         }
 
+        // DIPERBARUI DENGAN &t=... AGAR REFRESH SELALU MENARIK DATA SEGAR DARI SERVER
         function refreshData() {
             if (connectedCardIds.length === 0) return;
             const btn = document.getElementById("btnRefresh");
@@ -372,7 +374,7 @@
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-            fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}`, { signal: controller.signal })
+            fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}&t=${new Date().getTime()}`, { signal: controller.signal })
                 .then(res => res.json())
                 .then(res => {
                     clearTimeout(timeoutId);
@@ -541,7 +543,6 @@
             document.getElementById("resetModal").classList.add("hidden");
         }
 
-        // DIPERBARUI: Mengganti pesan timeout menjadi "Reset Berhasil!" dan otomatis kembali ke login
         function executeResetCard() {
             let selectedCard = document.getElementById("resetCardSelect").value;
             let inputPin = document.getElementById("resetPinInput").value.trim();
@@ -589,8 +590,6 @@
                 btnConfirm.disabled = false;
                 closeResetModal();
                 
-                // UX FIX: Meskipun terkendala timeout jaringan, data di sheet sudah terhapus bersih, 
-                // maka tetap tampilkan "Reset Berhasil!" dan kembalikan ke login.
                 alert("Reset Berhasil!");
                 logoutApp();
             });
