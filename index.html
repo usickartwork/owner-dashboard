@@ -380,9 +380,9 @@
             btnConfirm.innerText = "Memproses...";
             btnConfirm.disabled = true;
 
+            // Mengirim request POST bersih tanpa masalah CORS
             fetch(SCRIPT_URL, {
                 method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ 
                     action: "reset_card", 
                     product_id: cardIdSession, 
@@ -393,20 +393,20 @@
             .then(result => {
                 btnConfirm.innerText = "Ya, Reset";
                 btnConfirm.disabled = false;
-                closeResetModal();
 
                 if (result.success) {
+                    closeResetModal();
                     alert("Reset Berhasil! Kartu kembali ke status unactivated.");
                     logoutApp();
                 } else {
-                    alert("Gagal: " + (result.message || "PIN salah"));
+                    alert("Gagal Reset: " + (result.message || "PIN salah!"));
                 }
             })
-            .catch(() => {
+            .catch(err => {
+                console.error("Reset Error:", err);
                 btnConfirm.innerText = "Ya, Reset";
                 btnConfirm.disabled = false;
-                closeResetModal();
-                alert("Koneksi gagal atau terjadi kesalahan.");
+                alert("Koneksi gagal! Periksa koneksi internet atau status deployment Web App Anda.");
             });
         }
 
