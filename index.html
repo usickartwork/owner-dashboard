@@ -238,10 +238,13 @@
 
         window.onload = function() {
             let savedIds = localStorage.getItem("connected_cards");
-            if (savedIds) {
+            let isLogged = localStorage.getItem("owner_logged");
+            
+            if (savedIds && isLogged === "true") {
                 try {
-                    connectedCardIds = JSON.parse(savedIds);
-                    if (connectedCardIds.length > 0 && localStorage.getItem("owner_logged") === "true") {
+                    let parsedIds = JSON.parse(savedIds);
+                    if (Array.isArray(parsedIds) && parsedIds.length > 0) {
+                        connectedCardIds = parsedIds;
                         tampilkanDashboardFromCache();
                         refreshData();
                     }
@@ -297,8 +300,6 @@
             if (connectedCardIds.length === 0) return;
 
             let idsQuery = connectedCardIds.join(",");
-            
-            // Tambahkan pengaman timeout agar tidak stuck
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 8000);
 
@@ -359,7 +360,6 @@
             }, 100);
         }
 
-        // FUNGSI REFRESH ANTI-STUCK DENGAN TIMEOUT PENGAMAN
         function refreshData() {
             if (connectedCardIds.length === 0) return;
             const btn = document.getElementById("btnRefresh");
@@ -368,7 +368,7 @@
 
             let idsQuery = connectedCardIds.join(",");
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000); // Batas waktu maksimal 8 detik
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
 
             fetch(`${SCRIPT_URL}?action=connect_cards&ids=${encodeURIComponent(idsQuery)}`, { signal: controller.signal })
                 .then(res => res.json())
@@ -391,7 +391,6 @@
                 });
         }
 
-        // KELOLA / TAMBAH KARTU (CONNECT)
         function openConnectModal() {
             renderManageList();
             document.getElementById("connectCardId").value = "";
