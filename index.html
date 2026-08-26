@@ -12,7 +12,6 @@
         .animate-pop-up { animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-page-fade-in { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-        /* Animasi Denyut Logo Terus-menerus */
         @keyframes logoPulse {
             0% { transform: scale(0.92); opacity: 0.85; }
             50% { transform: scale(1.06); opacity: 1; }
@@ -20,21 +19,28 @@
         }
         .animate-logo-pulse { animation: logoPulse 1.4s ease-in-out infinite; }
 
-        @keyframes fadeOutScreen {
-            0% { opacity: 1; visibility: visible; }
-            100% { opacity: 0; visibility: hidden; }
+        /* Animasi Transisi Meluncur ke Atas */
+        .logo-transitioning {
+            position: fixed !important;
+            z-index: 999;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .animate-fade-out-screen { animation: fadeOutScreen 0.5s ease forwards; }
+
+        @keyframes fadeOutBg {
+            0% { background-color: rgba(255, 255, 255, 1); }
+            100% { background-color: rgba(255, 255, 255, 0); visibility: hidden; }
+        }
+        .animate-fade-out-bg { animation: fadeOutBg 0.6s ease forwards; }
 
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <!-- SPLASH SCREEN: LOGO TERUS BERDENYUT SAMPAI DATA SIAP -->
-    <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300">
+    <!-- SPLASH SCREEN INTRO -->
+    <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="space-y-6">
-            <img src="logo.png" alt="Logo Brand" class="h-32 w-auto mx-auto object-contain animate-logo-pulse">
+            <img id="introLogo" src="logo.png" alt="Logo Brand" class="h-32 w-auto mx-auto object-contain animate-logo-pulse">
         </div>
     </div>
 
@@ -127,7 +133,8 @@
         <!-- HALAMAN DASHBOARD STATISTIK -->
         <div id="dashboardScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center space-y-1">
-                <img src="logo.png" alt="Logo Brand" class="h-16 w-auto mx-auto object-contain mb-2">
+                <!-- Target Logo di Dashboard -->
+                <img id="dashboardLogo" src="logo.png" alt="Logo Brand" class="h-16 w-auto mx-auto object-contain mb-2 opacity-0 transition-opacity duration-300">
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
                 <div>
                     <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Bisnis</span>
@@ -211,24 +218,60 @@
         let currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
 
-        function hideIntroScreen() {
-            const introEl = document.getElementById("introScreen");
-            if (introEl && !introEl.classList.contains("animate-fade-out-screen")) {
-                introEl.classList.add("animate-fade-out-screen");
-                setTimeout(() => introEl.remove(), 500);
+        // Fungsi Animasi Morphing / Meluncur Logo ke Dashboard
+        function morphLogoToDashboard(callback) {
+            const introLogo = document.getElementById("introLogo");
+            const targetLogo = document.getElementById("dashboardLogo");
+            const introScreen = document.getElementById("introScreen");
+
+            if (!introLogo || !targetLogo) {
+                if(callback) callback();
+                return;
             }
+
+            // Ambil posisi awal dan tujuan
+            const startRect = introLogo.getBoundingClientRect();
+            const targetRect = targetLogo.getBoundingClientRect();
+
+            // Ubah logo intro menjadi posisi melayang (fixed) di atas layar
+            introLogo.style.position = "fixed";
+            introLogo.style.left = startRect.left + "px";
+            introLogo.style.top = startRect.top + "px";
+            introLogo.style.width = startRect.width + "px";
+            introLogo.style.height = startRect.height + "px";
+            introLogo.classList.remove("animate-logo-pulse");
+            introLogo.classList.add("logo-transitioning");
+
+            // Mulai pudar latar belakang putih intro
+            introScreen.classList.add("animate-fade-out-bg");
+
+            // Jalankan perpindahan koordinat dan ukuran menuju posisi logo target di dashboard
+            requestAnimationFrame(() => {
+                introLogo.style.left = targetRect.left + "px";
+                introLogo.style.top = targetRect.top + "px";
+                introLogo.style.width = targetRect.width + "px";
+                introLogo.style.height = targetRect.height + "px";
+            });
+
+            // Setelah animasi meluncur selesai (700ms), hapus elemen intro dan tampilkan logo asli dashboard
+            setTimeout(() => {
+                introScreen.remove();
+                targetLogo.style.opacity = "1";
+                if(callback) callback();
+            }, 700);
         }
 
         window.onload = function() {
             if (currentCardId && currentPin) {
-                // Selama data ditarik di latar belakang, logo terus berdenyut lembut
                 refreshData(true);
             } else {
-                // Beri sedikit jeda denyut (1 detik) lalu tampilkan halaman login
+                // Jika belum login, beri jeda denyut logo 1.5 detik, lalu hilangkan intro dan tampilkan login
                 setTimeout(() => {
-                    hideIntroScreen();
+                    const introEl = document.getElementById("introScreen");
+                    introEl.classList.add("animate-fade-out-bg");
+                    setTimeout(() => introEl.remove(), 500);
                     document.getElementById("loginScreen").classList.remove("hidden");
-                }, 1000);
+                }, 1500);
             }
         };
 
@@ -306,8 +349,19 @@
                     }
 
                     if (res.success) {
-                        renderDashboard(res.data, currentCardId);
-                        hideIntroScreen();
+                        // Tampilkan dulu kontainer dashboard secara tersembunyi agar posisi logo header terbaca sempurna
+                        const dash = document.getElementById("dashboardScreen");
+                        dash.classList.remove("hidden");
+                        dash.style.opacity = "0";
+
+                        // Isi data statistik
+                        populateDashboardData(res.data, currentCardId);
+
+                        // Jalankan animasi logo meluncur ke atas
+                        morphLogoToDashboard(() => {
+                            dash.style.opacity = "1";
+                            dash.classList.add("animate-page-fade-in");
+                        });
                     } else {
                         if (!isInitial) alert("Sesi kedaluwarsa atau kartu telah di-reset.");
                         logoutApp();
@@ -319,16 +373,24 @@
                         btn.disabled = false;
                         btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
                     }
-                    hideIntroScreen();
+                    const introEl = document.getElementById("introScreen");
+                    if(introEl) introEl.remove();
                     document.getElementById("loginScreen").classList.remove("hidden");
                 });
         }
 
         function renderDashboard(data, targetId) {
-            hideIntroScreen();
+            const introEl = document.getElementById("introScreen");
+            if(introEl) introEl.remove();
             document.getElementById("loginScreen").classList.add("hidden");
-            document.getElementById("dashboardScreen").classList.remove("hidden");
+            const dash = document.getElementById("dashboardScreen");
+            dash.classList.remove("hidden");
+            document.getElementById("dashboardLogo").style.opacity = "1";
 
+            populateDashboardData(data, targetId);
+        }
+
+        function populateDashboardData(data, targetId) {
             let bizName = data.business_name || "Nama Bisnis"; 
             let visitor = data.visitor || 0;     
             let maps = data.maps || 0;        
