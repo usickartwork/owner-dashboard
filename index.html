@@ -34,16 +34,15 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <!-- SPLASH SCREEN: INTRO LOGO BERLANJUT LOADING -->
+    <!-- SPLASH SCREEN: INTRO LOGO BERLANJUT LOADING (MURNI ANIMASI) -->
     <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-300">
         <div id="introLogoContainer" class="space-y-6 animate-logo-intro">
             <!-- Logo Besar -->
             <img src="logo.png" alt="Logo Brand" class="h-32 w-auto mx-auto object-contain">
         </div>
-        <!-- Spinner Loading (Awalnya tersembunyi, akan muncul setelah intro logo) -->
+        <!-- Spinner Loading Murni (Tanpa Teks) -->
         <div id="introSpinnerContainer" class="hidden space-y-3 mt-4 animate-pop-up">
-            <div class="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spinner mx-auto"></div>
-            <p id="introStatusText" class="text-xs font-medium text-slate-400 tracking-wide">Memproses data...</p>
+            <div class="w-9 h-9 border-3 border-blue-600 border-t-transparent rounded-full animate-spinner mx-auto"></div>
         </div>
     </div>
 
@@ -220,9 +219,8 @@
         let currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
 
-        function showSpinnerLoading(text = "Memproses data...") {
+        function showSpinnerLoading() {
             document.getElementById("introLogoContainer").classList.add("hidden");
-            document.getElementById("introStatusText").innerText = text;
             document.getElementById("introSpinnerContainer").classList.remove("hidden");
         }
 
@@ -235,9 +233,9 @@
         }
 
         window.onload = function() {
-            // Tahap 1: Tampilkan Intro Logo Besar selama 1 detik, lalu ubah ke animasi spinner loading
+            // Tampilkan logo besar selama 1 detik, lalu ubah ke animasi spinner loading murni
             setTimeout(() => {
-                showSpinnerLoading(currentCardId ? "Memuat data dashboard..." : "Menyiapkan halaman...");
+                showSpinnerLoading();
                 
                 if (currentCardId && currentPin) {
                     refreshData(true);
@@ -426,7 +424,7 @@
                 btnConfirm.innerText = "Ya, Reset Kartu Ini";
                 btnConfirm.disabled = false;
                 closeResetModal();
-                alert("Koneksi gagal atau terjadilah kesalahan.");
+                alert("Koneksi gagal atau terjadi kesalahan.");
             });
         }
 
