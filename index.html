@@ -96,6 +96,14 @@
                 <input type="password" id="inputPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
             </div>
 
+            <!-- TAMBAHAN: Checkbox Remember Me -->
+            <div class="flex items-center justify-between pt-1">
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                    <span class="text-xs text-slate-600 font-medium">Ingat Saya (Remember Me)</span>
+                </label>
+            </div>
+
             <button onclick="prosesLogin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
                 Masuk Dashboard
             </button>
@@ -185,12 +193,13 @@
 
     <script>
         // GANTI URL DI BAWAH INI DENGAN URL WEB APP SKRIP DASHBOARD OWNER ANDA
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlx2XWqbTd_iHzTNEkN3XoHJ0cHV5dfFMWTxsFQSpJPFbTPD0w3wsEMgpMd8pg9B4V/exec";
+        const SCRIPT_URL = "MASUKKAN_URL_WEB_APP_KHUSUS_DASHBOARD_DISINI";
         
         let currentCardId = localStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || "";
 
         window.onload = function() {
+            // Jika fitur remember me aktif atau data tersimpan, langsung masuk otomatis
             if (currentCardId && currentPin) {
                 refreshData(true);
             } else {
@@ -214,6 +223,7 @@
             let rawInput = document.getElementById("inputCardId").value;
             let cardId = extractCardId(rawInput).trim().toLowerCase();
             let pin = document.getElementById("inputPin").value.trim();
+            let isRememberChecked = document.getElementById("rememberMe").checked;
 
             if (!cardId || !pin) {
                 alert("ID/Link Kartu dan PIN wajib diisi!");
@@ -229,8 +239,17 @@
                     if (res.success) {
                         currentCardId = cardId;
                         currentPin = pin;
-                        localStorage.setItem("owner_card_id", cardId);
-                        localStorage.setItem("owner_pin", pin);
+
+                        // Jika "Ingat Saya" dicentang, simpan permanen di localStorage
+                        if (isRememberChecked) {
+                            localStorage.setItem("owner_card_id", cardId);
+                            localStorage.setItem("owner_pin", pin);
+                        } else {
+                            // Jika tidak dicentang, simpan sementara di sessionStorage (hilang jika browser/tab ditutup)
+                            sessionStorage.setItem("owner_card_id", cardId);
+                            sessionStorage.setItem("owner_pin", pin);
+                        }
+
                         renderDashboard(res.data, cardId);
                     } else {
                         alert(res.message || "ID Kartu atau PIN salah!");
@@ -243,6 +262,12 @@
         }
 
         function refreshData(isInitial = false) {
+            // Cek juga sessionStorage jika localStorage kosong
+            if (!currentCardId || !currentPin) {
+                currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
+                currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
+            }
+
             if (!isInitial) {
                 const btn = document.getElementById("btnRefresh");
                 btn.innerHTML = "<span>⏳</span> <span>Memuat...</span>";
@@ -364,6 +389,7 @@
 
         function logoutApp() {
             localStorage.clear();
+            sessionStorage.clear();
             location.reload();
         }
     </script>
