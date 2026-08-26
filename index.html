@@ -119,8 +119,8 @@
             </div>
         </div>
 
-        <!-- HALAMAN LOGIN OWNER -->
-        <div id="loginScreen" class="space-y-4 text-left animate-page-fade-in">
+        <!-- HALAMAN LOGIN OWNER (DISEMBUNYIKAN SECARA DEFAULT AGAR TIDAK MUNCUL KILASAN) -->
+        <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center mb-6">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
@@ -247,9 +247,13 @@
                         connectedCardIds = parsedIds;
                         tampilkanDashboardFromCache();
                         refreshData();
+                        return; // Berhenti agar tidak menampilkan halaman login
                     }
                 } catch (e) {}
             }
+            
+            // Jika belum login, baru tampilkan halaman login
+            document.getElementById("loginScreen").classList.remove("hidden");
         };
 
         function extractCardId(input) {
