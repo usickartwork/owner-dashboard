@@ -39,26 +39,41 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- MODAL SETTING (PENGATURAN) -->
+        <!-- MODAL SETTING (PENGATURAN & KELOLA KARTU) -->
         <div id="settingModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left">
+            <div class="w-full max-w-sm space-y-4 text-left max-h-[90vh] overflow-y-auto px-1">
                 <div class="text-center">
                     <div class="w-10 h-1 bg-slate-700 mx-auto rounded-full mb-3"></div>
                     <h2 class="text-lg font-bold text-slate-900">Pengaturan Akun</h2>
-                    <p class="text-xs text-slate-500 mt-1">Kelola sesi masuk atau lakukan reset data kartu.</p>
+                    <p class="text-xs text-slate-500 mt-1">Kelola kartu terhubung, sesi, atau reset data.</p>
                 </div>
 
-                <div class="space-y-2.5 pt-2">
+                <!-- Bagian Kelola Kartu Terhubung -->
+                <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl space-y-2.5">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">🔗 Kelola Kartu Terhubung</h3>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">Gabungkan kartu lain ke dashboard ini agar data statistik menjadi satu.</p>
+                    
+                    <div id="connectedCardsList" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                        <!-- Daftar kartu terhubung akan muncul disini -->
+                    </div>
+
+                    <div class="pt-1 flex gap-2">
+                        <input type="text" id="inputNewCardId" placeholder="ID Kartu Lain (Contoh: NFC-002)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase focus:ring-2 focus:ring-blue-600 outline-none">
+                        <button onclick="connectNewCard()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-2 rounded-lg text-xs transition whitespace-nowrap btn-modern">Connect</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2 pt-1">
                     <button onclick="logoutApp()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 btn-modern border border-slate-200">
                         <span>🚪 Keluar Akun (Logout)</span>
                     </button>
                     
                     <button onclick="openResetModal()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-semibold py-3 rounded-xl text-xs transition border border-red-200 flex items-center justify-center gap-2 btn-modern">
-                        <span>⚠️ Reset / Kosongkan Kartu Spesifik</span>
+                        <span>⚠️ Reset Kartu Utama Ini</span>
                     </button>
                 </div>
 
-                <div class="pt-2">
+                <div class="pt-1">
                     <button onclick="closeSettingModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
                         Tutup
                     </button>
@@ -66,7 +81,7 @@
             </div>
         </div>
 
-        <!-- MODAL PILIH KARTU UNTUK DI-RESET -->
+        <!-- MODAL PILIH KARTU UTAMA UNTUK DI-RESET -->
         <div id="resetModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-4 text-left">
                 <div class="text-center">
@@ -76,7 +91,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu yang Sedang Aktif</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu Utama</label>
                     <input type="text" id="resetCardIdDisplay" disabled class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold text-slate-500 bg-slate-100">
                 </div>
 
@@ -207,8 +222,9 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlx2XWqbTd_iHzTNEkN3XoHJ0cHV5dfFMWTxsFQSpJPFbTPD0w3wsEMgpMd8pg9B4V/exec";
         
-        let currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
+        let primaryCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
+        let connectedCards = JSON.parse(localStorage.getItem("owner_connected_cards") || "[]");
 
         function hideIntroScreen() {
             const introEl = document.getElementById("introScreen");
@@ -222,7 +238,7 @@
             document.getElementById("dashboardScreen").classList.add("hidden");
             document.getElementById("loginScreen").classList.add("hidden");
 
-            if (currentCardId && currentPin) {
+            if (primaryCardId && currentPin) {
                 refreshData(true);
             } else {
                 setTimeout(() => {
@@ -262,18 +278,20 @@
                 .then(res => {
                     document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
-                        currentCardId = cardId;
+                        primaryCardId = cardId;
                         currentPin = pin;
+                        connectedCards = [];
 
                         if (isRememberChecked) {
                             localStorage.setItem("owner_card_id", cardId);
                             localStorage.setItem("owner_pin", pin);
+                            localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
                         } else {
                             sessionStorage.setItem("owner_card_id", cardId);
                             sessionStorage.setItem("owner_pin", pin);
                         }
 
-                        renderDashboard(res.data, cardId);
+                        fetchAllCardsData();
                     } else {
                         alert(res.message || "ID Kartu atau PIN salah!");
                     }
@@ -285,8 +303,8 @@
         }
 
         function refreshData(isInitial = false) {
-            if (!currentCardId || !currentPin) {
-                currentCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
+            if (!primaryCardId || !currentPin) {
+                primaryCardId = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
                 currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
             }
 
@@ -296,80 +314,171 @@
                 btn.disabled = true;
             }
 
-            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(currentCardId)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
-                .then(res => res.json())
-                .then(res => {
-                    if (!isInitial) {
-                        const btn = document.getElementById("btnRefresh");
-                        btn.disabled = false;
-                        btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
-                    }
-
-                    if (res.success) {
-                        renderDashboard(res.data, currentCardId);
-                    } else {
-                        if (!isInitial) alert("Sesi kedaluwarsa atau kartu telah di-reset.");
-                        logoutApp();
-                    }
-                })
-                .catch(() => {
-                    if (!isInitial) {
-                        const btn = document.getElementById("btnRefresh");
-                        btn.disabled = false;
-                        btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
-                    }
-                    hideIntroScreen();
-                    document.getElementById("loginScreen").classList.remove("hidden");
-                });
+            fetchAllCardsData(isInitial);
         }
 
-        function renderDashboard(data, targetId) {
+        function fetchAllCardsData(isInitial = false) {
+            let allCardsToFetch = [primaryCardId, ...connectedCards];
+            let promises = allCardsToFetch.map(id => 
+                fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(id)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .catch(() => ({ success: false }))
+            );
+
+            Promise.all(promises).then(results => {
+                if (!isInitial) {
+                    const btn = document.getElementById("btnRefresh");
+                    btn.disabled = false;
+                    btn.innerHTML = "<span>🔄</span> <span>Refresh Data</span>";
+                }
+
+                let aggregatedData = {
+                    business_name: "",
+                    visitor: 0,
+                    maps: 0,
+                    wa: 0,
+                    ratings: { b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, total: 0, overall: "0.0" }
+                };
+
+                let validCount = 0;
+                results.forEach((res, index) => {
+                    if (res.success && res.data) {
+                        validCount++;
+                        let d = res.data;
+                        if (index === 0) aggregatedData.business_name = d.business_name;
+                        
+                        aggregatedData.visitor += Number(d.visitor) || 0;
+                        aggregatedData.maps += Number(d.maps) || 0;
+                        aggregatedData.wa += Number(d.wa) || 0;
+
+                        if (d.ratings) {
+                            aggregatedData.ratings.b1 += Number(d.ratings.b1) || 0;
+                            aggregatedData.ratings.b2 += Number(d.ratings.b2) || 0;
+                            aggregatedData.ratings.b3 += Number(d.ratings.b3) || 0;
+                            aggregatedData.ratings.b4 += Number(d.ratings.b4) || 0;
+                            aggregatedData.ratings.b5 += Number(d.ratings.b5) || 0;
+                        }
+                    } else if (index === 0) {
+                        if (!isInitial) alert("Sesi kedaluwarsa atau kartu utama telah di-reset.");
+                        logoutApp();
+                        return;
+                    }
+                });
+
+                if (validCount > 0) {
+                    let r = aggregatedData.ratings;
+                    r.total = r.b1 + r.b2 + r.b3 + r.b4 + r.b5;
+                    if (r.total > 0) {
+                        let sumScore = (r.b1 * 1) + (r.b2 * 2) + (r.b3 * 3) + (r.b4 * 4) + (r.b5 * 5);
+                        r.overall = (sumScore / r.total).toFixed(1);
+                    } else {
+                        r.overall = "0.0";
+                    }
+
+                    renderDashboard(aggregatedData);
+                    hideIntroScreen();
+                }
+            });
+        }
+
+        function connectNewCard() {
+            let newId = extractCardId(document.getElementById("inputNewCardId").value).trim().toLowerCase();
+            if (!newId) {
+                alert("Masukkan ID atau Link kartu yang ingin di-connect!");
+                return;
+            }
+            if (newId === primaryCardId || connectedCards.includes(newId)) {
+                alert("Kartu tersebut sudah terhubung ke dashboard ini.");
+                return;
+            }
+
+            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(newId)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        connectedCards.push(newId);
+                        localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
+                        document.getElementById("inputNewCardId").value = "";
+                        alert("Berhasil menghubungkan kartu " + newId.toUpperCase() + "!");
+                        renderConnectedCardsList();
+                        refreshData();
+                    } else {
+                        alert("Gagal connect: Pastikan ID kartu benar dan PIN keamanannya sama.");
+                    }
+                })
+                .catch(() => alert("Terjadi kesalahan koneksi."));
+        }
+
+        function disconnectCard(cardId) {
+            connectedCards = connectedCards.filter(id => id !== cardId);
+            localStorage.setItem("owner_connected_cards", JSON.stringify(connectedCards));
+            renderConnectedCardsList();
+            refreshData();
+        }
+
+        function renderConnectedCardsList() {
+            let html = `<div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 text-xs">
+                <span class="font-bold text-slate-700 uppercase">⭐ ${primaryCardId} (Utama)</span>
+            </div>`;
+
+            if (connectedCards.length === 0) {
+                html += `<p class="text-[10px] text-slate-400 italic text-center py-1">Belum ada kartu lain yang terhubung.</p>`;
+            } else {
+                connectedCards.forEach(id => {
+                    html += `<div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 text-xs">
+                        <span class="font-semibold text-slate-600 uppercase">${id}</span>
+                        <button onclick="disconnectCard('${id}')" class="text-red-500 hover:text-red-700 font-bold px-2 py-0.5 text-[10px]">Lepas</button>
+                    </div>`;
+                });
+            }
+            document.getElementById("connectedCardsList").innerHTML = html;
+        }
+
+        function renderDashboard(data) {
             hideIntroScreen();
-            
             document.getElementById("loginScreen").classList.add("hidden");
             const dash = document.getElementById("dashboardScreen");
             dash.classList.remove("hidden");
             dash.classList.add("animate-page-fade-in");
 
-            let bizName = data.business_name || "Nama Bisnis"; 
-            let visitor = data.visitor || 0;     
-            let maps = data.maps || 0;        
-            let wa = data.wa || 0;          
-            
-            let rat = data.ratings || { b1: 0, b2: 0, b3: 0, b4: 0, b5: 0, overall: "0.0", total: 0 };
+            document.getElementById("displayBusinessName").innerText = data.business_name || "Nama Bisnis";
+            document.getElementById("statVisitor").innerText = data.visitor;
+            document.getElementById("statMaps").innerText = data.maps;
+            document.getElementById("statWA").innerText = data.wa;
+            document.getElementById("statOverallRating").innerText = data.ratings.overall;
+            document.getElementById("statTotalReviews").innerText = `Dari ${data.ratings.total} ulasan gabungan`;
 
-            document.getElementById("displayBusinessName").innerText = bizName;
-            document.getElementById("statVisitor").innerText = visitor;
-            document.getElementById("statMaps").innerText = maps;
-            document.getElementById("statWA").innerText = wa;
-            document.getElementById("statOverallRating").innerText = rat.overall;
-            document.getElementById("statTotalReviews").innerText = `Dari ${rat.total} ulasan gabungan`;
+            document.getElementById("countB1").innerText = data.ratings.b1;
+            document.getElementById("countB2").innerText = data.ratings.b2;
+            document.getElementById("countB3").innerText = data.ratings.b3;
+            document.getElementById("countB4").innerText = data.ratings.b4;
+            document.getElementById("countB5").innerText = data.ratings.b5;
 
-            document.getElementById("countB1").innerText = rat.b1;
-            document.getElementById("countB2").innerText = rat.b2;
-            document.getElementById("countB3").innerText = rat.b3;
-            document.getElementById("countB4").innerText = rat.b4;
-            document.getElementById("countB5").innerText = rat.b5;
-
-            let maxStar = Math.max(rat.b1, rat.b2, rat.b3, rat.b4, rat.b5, 1);
+            let maxStar = Math.max(data.ratings.b1, data.ratings.b2, data.ratings.b3, data.ratings.b4, data.ratings.b5, 1);
             setTimeout(() => {
-                document.getElementById("barB1").style.width = Math.round((rat.b1 / maxStar) * 100) + "%";
-                document.getElementById("barB2").style.width = Math.round((rat.b2 / maxStar) * 100) + "%";
-                document.getElementById("barB3").style.width = Math.round((rat.b3 / maxStar) * 100) + "%";
-                document.getElementById("barB4").style.width = Math.round((rat.b4 / maxStar) * 100) + "%";
-                document.getElementById("barB5").style.width = Math.round((rat.b5 / maxStar) * 100) + "%";
+                document.getElementById("barB1").style.width = Math.round((data.ratings.b1 / maxStar) * 100) + "%";
+                document.getElementById("barB2").style.width = Math.round((data.ratings.b2 / maxStar) * 100) + "%";
+                document.getElementById("barB3").style.width = Math.round((data.ratings.b3 / maxStar) * 100) + "%";
+                document.getElementById("barB4").style.width = Math.round((data.ratings.b4 / maxStar) * 100) + "%";
+                document.getElementById("barB5").style.width = Math.round((data.ratings.b5 / maxStar) * 100) + "%";
             }, 100);
 
-            let badgeHtml = `<span class="inline-block bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border border-blue-100">${targetId}</span>`;
+            let allActiveBadges = [primaryCardId, ...connectedCards];
+            let badgeHtml = allActiveBadges.map(id => 
+                `<span class="inline-block bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border border-blue-100">${id}</span>`
+            ).join(' ');
             document.getElementById("badgeContainer").innerHTML = badgeHtml;
         }
 
-        function openSettingModal() { document.getElementById("settingModal").classList.remove("hidden"); }
+        function openSettingModal() { 
+            renderConnectedCardsList();
+            document.getElementById("settingModal").classList.remove("hidden"); 
+        }
         function closeSettingModal() { document.getElementById("settingModal").classList.add("hidden"); }
 
         function openResetModal() {
             closeSettingModal();
-            document.getElementById("resetCardIdDisplay").value = currentCardId.toUpperCase();
+            document.getElementById("resetCardIdDisplay").value = primaryCardId.toUpperCase();
             document.getElementById("resetPinInput").value = "";
             document.getElementById("resetModal").classList.remove("hidden");
         }
@@ -381,7 +490,7 @@
         function executeResetCard() {
             let inputPin = document.getElementById("resetPinInput").value.trim();
             if (!inputPin) {
-                alert("Masukkan PIN keamanan kartu Anda!");
+                alert("Masukkan PIN keamanan kartu utama Anda!");
                 return;
             }
 
@@ -391,7 +500,7 @@
 
             fetch(SCRIPT_URL, {
                 method: "POST",
-                body: JSON.stringify({ action: "reset_card", product_id: currentCardId, pin: inputPin })
+                body: JSON.stringify({ action: "reset_card", product_id: primaryCardId, pin: inputPin })
             })
             .then(res => res.json())
             .then(result => {
@@ -400,7 +509,7 @@
                 closeResetModal();
 
                 if (result.success) {
-                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
+                    alert("Reset Berhasil! Kartu utama kembali ke status unactivated.");
                     logoutApp();
                 } else {
                     alert("Gagal: " + (result.message || "PIN salah"));
