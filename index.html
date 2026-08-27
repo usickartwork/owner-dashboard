@@ -683,7 +683,7 @@
             document.getElementById("manageCardsScreen").classList.remove("hidden");
         }
 
-        function openSubManage(type) {
+        function openSubManage(type, preselectId = "") {
             hideAllScreens();
 
             let selectDisc = document.getElementById("selectCardToDisconnect");
@@ -722,6 +722,10 @@
                     opt3.value = card.id; opt3.text = label;
                     selectReset.appendChild(opt3);
                 });
+
+                if (preselectId) {
+                    selectName.value = preselectId;
+                }
 
                 if (selectName.options.length > 0) {
                     let activeOpt = selectName.options[selectName.selectedIndex];
@@ -791,6 +795,8 @@
                 }
             }
 
+            let formattedCardId = newCardId.toUpperCase();
+
             showLoading();
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
@@ -799,16 +805,33 @@
             .then(res => {
                 hideLoading();
                 if (res.success) {
-                    // Pop-up sukses langsung muncul tanpa jeda, setelah diklik OK kembali ke menu utama kelola kartu
-                    showToast(res.message || "Kartu berhasil dihubungkan!", () => {
-                        fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
-                        .then(r => r.json())
-                        .then(resp => {
-                            if (resp.success && resp.data) {
-                                globalCardsDetail = resp.data.cards_detail || [];
+                    // Refresh data terlebih dahulu untuk mengecek apakah kartu baru ini sudah memiliki nama kustom atau belum
+                    showLoading();
+                    fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
+                    .then(r => r.json())
+                    .then(resp => {
+                        hideLoading();
+                        if (resp.success && resp.data) {
+                            globalCardsDetail = resp.data.cards_detail || [];
+                        }
+
+                        // Cari detail kartu yang baru ditambahkan
+                        let targetCard = globalCardsDetail.find(c => c.id === formattedCardId);
+                        let hasCustomName = targetCard && targetCard.name && targetCard.name.trim() !== "";
+
+                        showToast(res.message || "Kartu berhasil dihubungkan!", () => {
+                            if (!hasCustomName) {
+                                // Jika BELUM dinamai, arahkan ke halaman ubah nama kustom
+                                openSubManage('name', formattedCardId);
+                            } else {
+                                // Jika SUDAH dinamai, langsung kembali ke dashboard utama secara smooth
+                                refreshData();
                             }
-                            openManageCardsPage();
                         });
+                    })
+                    .catch(() => {
+                        hideLoading();
+                        refreshData();
                     });
                 } else {
                     alert(res.message || "Gagal menghubungkan kartu.");
