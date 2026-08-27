@@ -34,14 +34,14 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <!-- SPLASH SCREEN / FULL WHITE BACKGROUND -->
+    <!-- SPLASH SCREEN -->
     <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center">
         <div class="space-y-4 flex flex-col items-center">
             <img src="logo.png" alt="Logo Brand" class="h-32 w-auto object-contain animate-logo-pulse">
         </div>
     </div>
 
-    <!-- CUSTOM TOAST NOTIFICATION / ANIMASI CEKLIST BERHASIL -->
+    <!-- CUSTOM TOAST NOTIFICATION -->
     <div id="toastNotification" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-2xl p-6 shadow-xl max-w-xs w-full text-center space-y-3 animate-page-fade-in border border-slate-100">
             <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto animate-check shadow-sm">
@@ -57,7 +57,7 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- HALAMAN LOGIN / REGISTER / FORGOT PASSWORD -->
+        <!-- HALAMAN LOGIN / REGISTER / FORGOT -->
         <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center mb-4">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
@@ -102,7 +102,7 @@
                 </div>
             </div>
 
-            <!-- FORM FORGOT PASSWORD (STEP-BY-STEP) -->
+            <!-- FORM FORGOT PASSWORD -->
             <div id="formForgot" class="hidden space-y-3">
                 <p id="forgotInstruction" class="text-xs text-slate-500 bg-blue-50 p-3 rounded-xl border border-blue-100 leading-relaxed">Masukkan email terdaftar Anda. Kami akan mengirimkan kode OTP untuk mereset password Anda.</p>
                 
@@ -226,64 +226,110 @@
             </div>
         </div>
 
-        <!-- HALAMAN KELOLA KARTU -->
+        <!-- HALAMAN KELOLA KARTU (MENU UTAMA) -->
         <div id="manageCardsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <button type="button" onclick="closeManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
                 <h2 class="text-sm font-extrabold text-slate-900">Kelola Kartu Fisik</h2>
             </div>
 
-            <div class="space-y-4 pt-1">
-                <!-- 1. Hubungkan / Putuskan Kartu -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-                    <h3 class="text-xs font-bold text-slate-800">Hubungkan / Putuskan Kartu</h3>
-                    
-                    <div class="space-y-2 pb-3 border-b border-slate-200/60">
-                        <label class="block text-[11px] font-semibold text-slate-600">Hubungkan Kartu Baru</label>
-                        <input type="text" id="inputNewCardId" placeholder="ID Kartu atau Paste Link Kartu (cth: NFC-001)" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-600 mb-2">
-                        <input type="password" id="inputNewCardPin" placeholder="PIN Keamanan Kartu" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-600 mb-2">
-                        <button type="button" onclick="executeAddCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan Kartu Ini</button>
-                    </div>
+            <p class="text-xs text-slate-500">Pilih menu manajemen kartu di bawah ini:</p>
 
-                    <div class="space-y-2 pt-1">
-                        <label class="block text-[11px] font-semibold text-slate-600">Putuskan Kartu dari Akun</label>
-                        <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-slate-400 uppercase mb-2">
-                        </select>
-                        <button type="button" onclick="executeDisconnectCard()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Putuskan Kartu Terpilih</button>
-                    </div>
-                </div>
-
-                <!-- 2. Custom Name (Nama Kustom Kartu) -->
-                <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
-                    <h3 class="text-xs font-bold text-blue-900">Ubah Nama Kustom Kartu (Custom Name)</h3>
-                    <p class="text-[11px] text-blue-700 leading-relaxed">Beri nama panggilan pada kartu (misal: "Meja 1", "Kasir") tanpa mengubah ID asli kartu.</p>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu</label>
-                        <select id="selectCardToName" onchange="onCardNameSelected()" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-blue-500 uppercase mb-2">
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Kustom Baru</label>
-                        <input type="text" id="inputCustomName" placeholder="Contoh: Meja 1 / Kasir Utama" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2">
-                    </div>
-                    <button type="button" onclick="executeUpdateCardName()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Simpan Nama Kustom</button>
-                </div>
-
-                <!-- 3. Reset Total Kartu Spesifik -->
-                <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200 space-y-3">
-                    <h3 class="text-xs font-bold text-amber-900">Reset Total Kartu Spesifik (Kondisi Pabrik)</h3>
-                    <p class="text-[11px] text-amber-700 leading-relaxed">Mengosongkan profil & statistik kartu, serta mengubah statusnya kembali menjadi unactivated.</p>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu Terhubung</label>
-                        <select id="selectCardToReset" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
-                        </select>
-                    </div>
-                    <button type="button" onclick="executeResetCardStats()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Reset Kartu Ke Kondisi Pabrik</button>
-                </div>
+            <div class="space-y-2.5 pt-1">
+                <button type="button" onclick="openSubManage('add')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
+                    <span>➕ Hubungkan Kartu Baru</span>
+                    <span class="text-slate-400">&rarr;</span>
+                </button>
+                <button type="button" onclick="openSubManage('name')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
+                    <span>✏️ Ubah Nama Kustom Kartu</span>
+                    <span class="text-slate-400">&rarr;</span>
+                </button>
+                <button type="button" onclick="openSubManage('disconnect')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
+                    <span>🔗 Putuskan Kartu dari Akun</span>
+                    <span class="text-slate-400">&rarr;</span>
+                </button>
+                <button type="button" onclick="openSubManage('reset')" class="w-full flex items-center justify-between p-3.5 bg-amber-50/60 hover:bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-900 transition btn-modern">
+                    <span>🔄 Reset Total Kartu (Pabrik)</span>
+                    <span class="text-amber-500">&rarr;</span>
+                </button>
             </div>
         </div>
 
-        <!-- HALAMAN KHUSUS PENGATURAN AKUN -->
+        <!-- SUB MENU 1: HUBUNGKAN KARTU -->
+        <div id="subManageAdd" class="hidden space-y-4 text-left animate-page-fade-in">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <h2 class="text-sm font-extrabold text-slate-900">Hubungkan Kartu Baru</h2>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">ID atau Link Kartu</label>
+                    <input type="text" id="inputNewCardId" placeholder="Contoh: NFC-001 atau URL" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">PIN Keamanan Kartu</label>
+                    <input type="password" id="inputNewCardPin" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <button type="button" onclick="executeAddCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Hubungkan Kartu Ini</button>
+            </div>
+        </div>
+
+        <!-- SUB MENU 2: UBAH NAMA KUSTOM -->
+        <div id="subManageName" class="hidden space-y-4 text-left animate-page-fade-in">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <h2 class="text-sm font-extrabold text-slate-900">Nama Kustom Kartu</h2>
+            </div>
+            <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
+                <p class="text-[11px] text-blue-700 leading-relaxed">Beri nama panggilan (misal: "Meja 1", "Kasir") tanpa mengubah ID asli kartu.</p>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu</label>
+                    <select id="selectCardToName" onchange="onCardNameSelected()" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-blue-500 uppercase">
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Kustom Baru</label>
+                    <input type="text" id="inputCustomName" placeholder="Contoh: Meja 1 / Kasir Utama" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                </div>
+                <button type="button" onclick="executeUpdateCardName()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Simpan Nama Kustom</button>
+            </div>
+        </div>
+
+        <!-- SUB MENU 3: PUTUSKAN KARTU -->
+        <div id="subManageDisconnect" class="hidden space-y-4 text-left animate-page-fade-in">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <h2 class="text-sm font-extrabold text-slate-900">Putuskan Kartu</h2>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <p class="text-[11px] text-slate-600 leading-relaxed">Melepaskan kartu dari akun Anda (nama kustom juga akan terhapus otomatis).</p>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu Terhubung</label>
+                    <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-slate-400 uppercase">
+                    </select>
+                </div>
+                <button type="button" onclick="executeDisconnectCard()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Putuskan Kartu Terpilih</button>
+            </div>
+        </div>
+
+        <!-- SUB MENU 4: RESET KONDISI PABRIK -->
+        <div id="subManageReset" class="hidden space-y-4 text-left animate-page-fade-in">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <h2 class="text-sm font-extrabold text-amber-900">Reset Total Kartu</h2>
+            </div>
+            <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200 space-y-3">
+                <p class="text-[11px] text-amber-700 leading-relaxed">Mengosongkan profil & statistik kartu, serta mengubah statusnya kembali menjadi unactivated.</p>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu Terhubung</label>
+                    <select id="selectCardToReset" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+                    </select>
+                </div>
+                <button type="button" onclick="executeResetCardStats()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Reset Kartu Ke Pabrik</button>
+            </div>
+        </div>
+
+        <!-- HALAMAN PENGATURAN AKUN -->
         <div id="accountSettingsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <button type="button" onclick="closeAccountSettingsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
@@ -291,7 +337,6 @@
             </div>
 
             <div class="space-y-4 pt-1">
-                <!-- 1. Informasi Akun -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
                     <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Informasi Akun</h3>
                     <div>
@@ -300,7 +345,6 @@
                     </div>
                 </div>
 
-                <!-- 2. Ganti Password (Bertahap) -->
                 <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
                     <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wide">Keamanan Akun</h3>
                     
@@ -340,9 +384,7 @@
             const intro = document.getElementById("introScreen");
             if (intro && !intro.classList.contains("animate-fade-out-screen")) {
                 intro.classList.add("animate-fade-out-screen");
-                setTimeout(() => {
-                    intro.style.visibility = "hidden";
-                }, 400);
+                setTimeout(() => { intro.style.visibility = "hidden"; }, 400);
             }
         }
 
@@ -368,11 +410,7 @@
         }
 
         window.onload = function() {
-            document.getElementById("dashboardScreen").classList.add("hidden");
-            document.getElementById("manageCardsScreen").classList.add("hidden");
-            document.getElementById("accountSettingsScreen").classList.add("hidden");
-            document.getElementById("loginScreen").classList.add("hidden");
-
+            hideAllScreens();
             if (masterEmailSession && masterPinSession) {
                 showLoading();
                 refreshData(true);
@@ -383,6 +421,17 @@
                 }, 600);
             }
         };
+
+        function hideAllScreens() {
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("dashboardScreen").classList.add("hidden");
+            document.getElementById("manageCardsScreen").classList.add("hidden");
+            document.getElementById("subManageAdd").classList.add("hidden");
+            document.getElementById("subManageName").classList.add("hidden");
+            document.getElementById("subManageDisconnect").classList.add("hidden");
+            document.getElementById("subManageReset").classList.add("hidden");
+            document.getElementById("accountSettingsScreen").classList.add("hidden");
+        }
 
         function switchForm(type) {
             document.getElementById("formLogin").classList.add("hidden");
@@ -425,10 +474,8 @@
                     if (res.success) {
                         masterEmailSession = email;
                         masterPinSession = pin;
-
                         localStorage.setItem("master_email", email);
                         localStorage.setItem("master_pin", pin);
-
                         fetchCardData();
                     } else {
                         hideLoading();
@@ -452,9 +499,7 @@
 
             showLoading();
 
-            let url = `${SCRIPT_URL}?action=register_master&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`;
-
-            fetch(url)
+            fetch(`${SCRIPT_URL}?action=register_master&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     hideLoading();
@@ -519,9 +564,7 @@
 
             showLoading();
 
-            let url = `${SCRIPT_URL}?action=verify_otp&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&t=${new Date().getTime()}`;
-
-            fetch(url)
+            fetch(`${SCRIPT_URL}?action=verify_otp&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 hideLoading();
@@ -553,16 +596,12 @@
 
             showLoading();
 
-            let url = `${SCRIPT_URL}?action=save_new_pin&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&new_pin=${encodeURIComponent(newPin)}&t=${new Date().getTime()}`;
-
-            fetch(url)
+            fetch(`${SCRIPT_URL}?action=save_new_pin&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&new_pin=${encodeURIComponent(newPin)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 hideLoading();
                 if (res.success) {
-                    showToast(res.message, () => {
-                        switchForm('login');
-                    });
+                    showToast(res.message, () => { switchForm('login'); });
                 } else {
                     alert(res.message);
                 }
@@ -579,10 +618,7 @@
                 masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
             }
 
-            if (!isInitial) {
-                showLoading();
-            }
-
+            if (!isInitial) { showLoading(); }
             fetchCardData(isInitial);
         }
 
@@ -607,16 +643,13 @@
         }
 
         function renderDashboard(data) {
-            document.getElementById("loginScreen").classList.add("hidden");
-            document.getElementById("manageCardsScreen").classList.add("hidden");
-            document.getElementById("accountSettingsScreen").classList.add("hidden");
+            hideAllScreens();
             const dash = document.getElementById("dashboardScreen");
             dash.classList.remove("hidden");
             dash.classList.add("animate-page-fade-in");
 
             document.getElementById("displayBusinessName").innerText = data.business_name || "Dashboard Bisnis Anda";
             
-            // Format Badge Kartu Terhubung dengan Custom Name jika ada
             let cardBadgeText = "Belum ada";
             if (globalCardsDetail.length > 0) {
                 cardBadgeText = globalCardsDetail.map(c => c.name ? `${c.id} (${c.name})` : c.id).join(", ");
@@ -646,32 +679,27 @@
         }
 
         function openManageCardsPage() {
-            document.getElementById("dashboardScreen").classList.add("hidden");
-            
+            hideAllScreens();
+            document.getElementById("manageCardsScreen").classList.remove("hidden");
+        }
+
+        function openSubManage(type) {
+            hideAllScreens();
+
             let selectDisc = document.getElementById("selectCardToDisconnect");
             let selectName = document.getElementById("selectCardToName");
             let selectReset = document.getElementById("selectCardToReset");
-            
+
             selectDisc.innerHTML = "";
             selectName.innerHTML = "";
             selectReset.innerHTML = "";
-            
+
             if (globalCardsDetail.length === 0) {
-                let opt1 = document.createElement("option");
-                opt1.value = ""; opt1.text = "Belum ada kartu terhubung";
-                selectDisc.appendChild(opt1);
-                selectDisc.disabled = true;
-
-                let opt2 = document.createElement("option");
-                opt2.value = ""; opt2.text = "Belum ada kartu terhubung";
-                selectName.appendChild(opt2);
-                selectName.disabled = true;
-
-                let opt3 = document.createElement("option");
-                opt3.value = ""; opt3.text = "Belum ada kartu terhubung";
-                selectReset.appendChild(opt3);
-                selectReset.disabled = true;
-                
+                let emptyOpt = document.createElement("option");
+                emptyOpt.value = ""; emptyOpt.text = "Belum ada kartu terhubung";
+                selectDisc.appendChild(emptyOpt); selectDisc.disabled = true;
+                selectName.appendChild(emptyOpt.cloneNode(true)); selectName.disabled = true;
+                selectReset.appendChild(emptyOpt.cloneNode(true)); selectReset.disabled = true;
                 document.getElementById("inputCustomName").value = "";
             } else {
                 selectDisc.disabled = false;
@@ -695,15 +723,22 @@
                     selectReset.appendChild(opt3);
                 });
 
-                // Set nilai awal input custom name sesuai kartu pertama
                 if (selectName.options.length > 0) {
                     document.getElementById("inputCustomName").value = selectName.options[0].getAttribute("data-name") || "";
                 }
             }
 
-            document.getElementById("inputNewCardId").value = "";
-            document.getElementById("inputNewCardPin").value = "";
-            document.getElementById("manageCardsScreen").classList.remove("hidden");
+            if (type === 'add') {
+                document.getElementById("inputNewCardId").value = "";
+                document.getElementById("inputNewCardPin").value = "";
+                document.getElementById("subManageAdd").classList.remove("hidden");
+            } else if (type === 'name') {
+                document.getElementById("subManageName").classList.remove("hidden");
+            } else if (type === 'disconnect') {
+                document.getElementById("subManageDisconnect").classList.remove("hidden");
+            } else if (type === 'reset') {
+                document.getElementById("subManageReset").classList.remove("hidden");
+            }
         }
 
         function onCardNameSelected() {
@@ -715,7 +750,21 @@
         }
 
         function closeManageCardsPage() {
-            document.getElementById("manageCardsScreen").classList.add("hidden");
+            showLoading();
+            refreshData();
+        }
+
+        function openAccountSettingsPage() {
+            hideAllScreens();
+            document.getElementById("infoUserEmail").value = masterEmailSession;
+            document.getElementById("inputAccOldPin").value = "";
+            document.getElementById("inputAccNewPin").value = "";
+            document.getElementById("accPinStepOld").classList.remove("hidden");
+            document.getElementById("accPinStepNew").classList.add("hidden");
+            document.getElementById("accountSettingsScreen").classList.remove("hidden");
+        }
+
+        function closeAccountSettingsPage() {
             showLoading();
             refreshData();
         }
@@ -741,13 +790,7 @@
                 }
             }
 
-            if (!newCardId) {
-                alert("Format ID atau Link Kartu tidak valid!");
-                return;
-            }
-
             showLoading();
-
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
             fetch(url)
@@ -757,7 +800,6 @@
                 if (res.success) {
                     showToast(res.message || "Kartu berhasil dihubungkan!", () => {
                         refreshData();
-                        openManageCardsPage();
                     });
                 } else {
                     alert(res.message || "Gagal menghubungkan kartu.");
@@ -780,7 +822,6 @@
             }
 
             showLoading();
-
             let url = `${SCRIPT_URL}?action=update_card_name&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&custom_name=${encodeURIComponent(customName)}&t=${new Date().getTime()}`;
 
             fetch(url)
@@ -790,7 +831,6 @@
                 if (res.success) {
                     showToast(res.message || "Nama kustom berhasil disimpan!", () => {
                         refreshData();
-                        openManageCardsPage();
                     });
                 } else {
                     alert(res.message || "Gagal menyimpan nama kustom.");
@@ -811,20 +851,16 @@
                 return;
             }
 
-            if (!confirm(`Yakin ingin memutuskan kartu ${targetCardId} dari akun Anda?`)) {
-                return;
-            }
+            if (!confirm(`Yakin ingin memutuskan kartu ${targetCardId} dari akun Anda?`)) { return; }
 
             showLoading();
-
             fetch(`${SCRIPT_URL}?action=disconnect_card_master&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 hideLoading();
                 if (res.success) {
-                    showToast(res.message || "Kartu berhasil diputus dari akun.", () => {
+                    showToast(res.message || "Kartu berhasil diputus.", () => {
                         refreshData();
-                        openManageCardsPage();
                     });
                 } else {
                     alert(res.message || "Gagal memutus kartu.");
@@ -845,20 +881,16 @@
                 return;
             }
 
-            if (!confirm(`Yakin ingin mereset total kartu ${targetCardId} kembali ke kondisi pabrik (status unactivated)?`)) {
-                return;
-            }
+            if (!confirm(`Yakin ingin mereset total kartu ${targetCardId} kembali ke kondisi pabrik?`)) { return; }
 
             showLoading();
-
             fetch(`${SCRIPT_URL}?action=reset_card_stats&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 hideLoading();
                 if (res.success) {
-                    showToast(res.message || "Kartu berhasil di-reset total ke kondisi pabrik!", () => {
+                    showToast(res.message || "Kartu berhasil di-reset!", () => {
                         refreshData();
-                        openManageCardsPage();
                     });
                 } else {
                     alert(res.message || "Gagal mereset kartu.");
@@ -872,16 +904,8 @@
 
         function verifyAccOldPin() {
             let oldPin = document.getElementById("inputAccOldPin").value.trim();
-            if (!oldPin) {
-                alert("Masukkan password lama Anda!");
-                return;
-            }
-
-            if (oldPin !== masterPinSession) {
-                alert("Password Lama salah!");
-                return;
-            }
-
+            if (!oldPin) { alert("Masukkan password lama Anda!"); return; }
+            if (oldPin !== masterPinSession) { alert("Password Lama salah!"); return; }
             document.getElementById("accPinStepOld").classList.add("hidden");
             document.getElementById("accPinStepNew").classList.remove("hidden");
         }
@@ -889,14 +913,9 @@
         function saveNewAccountPin() {
             let oldPin = document.getElementById("inputAccOldPin").value.trim();
             let newPin = document.getElementById("inputAccNewPin").value.trim();
-
-            if (!newPin) {
-                alert("Masukkan password baru Anda!");
-                return;
-            }
+            if (!newPin) { alert("Masukkan password baru Anda!"); return; }
 
             showLoading();
-
             let url = `${SCRIPT_URL}?action=change_pin_dashboard&email=${encodeURIComponent(masterEmailSession)}&old_pin=${encodeURIComponent(oldPin)}&new_pin=${encodeURIComponent(newPin)}&t=${new Date().getTime()}`;
 
             fetch(url)
@@ -908,7 +927,7 @@
                         masterPinSession = newPin;
                         localStorage.setItem("master_pin", newPin);
                         sessionStorage.setItem("master_pin", newPin);
-                        closeAccountSettingsPage();
+                        refreshData();
                     });
                 } else {
                     alert(res.message);
