@@ -237,6 +237,8 @@
             } else {
                 document.getElementById("formRegister").classList.add("hidden");
                 document.getElementById("formLogin").classList.remove("hidden");
+                document.getElementById("loginEmail").value = "";
+                document.getElementById("loginPin").value = "";
                 document.getElementById("formSubTitle").innerText = "Masuk ke akun master Anda untuk melihat statistik.";
             }
         }
@@ -283,7 +285,7 @@
                 return;
             }
 
-            document.getElementById("loadingText").classList.remove("hidden");
+            document.getElementById("loadingText").classList.add("hidden");
 
             let url = `${SCRIPT_URL}?action=register_master&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`;
 
@@ -293,11 +295,10 @@
                     document.getElementById("loadingText").classList.add("hidden");
                     alert(res.message || "Berhasil.");
                     if (res.success) {
-                        masterEmailSession = email;
-                        masterPinSession = pin;
-                        localStorage.setItem("master_email", email);
-                        localStorage.setItem("master_pin", pin);
-                        fetchCardData();
+                        // Reset form register & arahkan kembali ke halaman login (tidak masuk dashboard)
+                        document.getElementById("regEmail").value = "";
+                        document.getElementById("regPin").value = "";
+                        switchForm('login');
                     }
                 })
                 .catch(() => {
