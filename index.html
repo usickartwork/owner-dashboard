@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Review Dashboard</title>
+    <title>Google Review Master Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
         @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -36,38 +35,42 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- HALAMAN LOGIN GMAIL -->
-        <div id="loginScreen" class="hidden space-y-6 text-left animate-page-fade-in">
-            <div class="text-center mb-4">
+        <!-- HALAMAN LOGIN MASTER -->
+        <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
+            <div class="text-center mb-6">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
-                <p class="text-xs text-slate-500 mt-1">Masuk menggunakan akun Gmail Anda untuk mengelola statistik.</p>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Dashboard</h1>
+                <p class="text-xs text-slate-500 mt-1">Masukkan ID Kartu Master dan PIN Keamanan Anda.</p>
             </div>
 
-            <div class="pt-4 flex flex-col items-center">
-                <!-- Tombol Google Sign In -->
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-                <div class="g_id_signin"
-                     data-type="standard"
-                     data-shape="pill"
-                     data-theme="outline"
-                     data-text="sign_in_with"
-                     data-size="large"
-                     data-logo_alignment="left">
-                </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu Master</label>
+                <input type="text" id="inputMasterId" placeholder="Contoh: NFC-001" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none uppercase" autocomplete="off">
             </div>
-            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Memverifikasi akun Gmail...</div>
+            
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Master</label>
+                <input type="password" id="inputPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+            </div>
+
+            <div class="flex items-center justify-between pt-1">
+                <label class="flex items-center gap-2 cursor-pointer select-none">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                    <span class="text-xs text-slate-600 font-medium">Ingat Saya</span>
+                </label>
+            </div>
+
+            <button type="button" onclick="prosesLoginMaster()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
+                Masuk Master Dashboard
+            </button>
+            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Memverifikasi Master ID...</div>
         </div>
 
         <!-- HALAMAN UTAMA DASHBOARD -->
         <div id="dashboardScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center space-y-1">
                 <img src="logo.png" alt="Logo Brand" class="h-16 w-auto mx-auto object-contain mb-2">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Dashboard</h1>
                 <div>
                     <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nama Bisnis</span>
                 </div>
@@ -140,7 +143,7 @@
                     Refresh Statistik
                 </button>
                 <button type="button" onclick="openManageCardsPage()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-blue-200 btn-modern">
-                    Kelola Kartu Saya
+                    Tambah / Kelola Kartu
                 </button>
             </div>
             <div class="text-center pt-1">
@@ -152,14 +155,14 @@
         <div id="manageCardsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <button type="button" onclick="closeManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
-                <h2 class="text-sm font-extrabold text-slate-900">Manajemen Kartu</h2>
+                <h2 class="text-sm font-extrabold text-slate-900">Manajemen Kartu Master</h2>
             </div>
 
             <div class="space-y-4 pt-1">
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                    <h3 class="text-xs font-bold text-slate-800">Hubungkan Kartu Baru (Connect)</h3>
-                    <input type="text" id="inputNewCardId" placeholder="ID Kartu Baru (Contoh: NFC-002)" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold outline-none focus:ring-2 focus:ring-blue-600">
-                    <button type="button" onclick="executeConnectCard()" id="btnConfirmConnect" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan Kartu</button>
+                    <h3 class="text-xs font-bold text-slate-800">Tambah Kartu Baru 1 per 1 (Connect)</h3>
+                    <input type="text" id="inputNewCardId" placeholder="ID Kartu (Contoh: NFC-002)" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold outline-none focus:ring-2 focus:ring-blue-600">
+                    <button type="button" onclick="executeAddCard()" id="btnConfirmAdd" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Tambahkan Kartu Ini</button>
                 </div>
 
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
@@ -176,7 +179,8 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTKJkitt5ntrPbXWvXz4u1Px9lzczgcQO3ywc-GhMg1nlBOvg6cAlWBe1KBVf9oYJD/exec";
         
-        let ownerEmailSession = localStorage.getItem("owner_email") || sessionStorage.getItem("owner_email") || "";
+        let masterIdSession = localStorage.getItem("master_card_id") || sessionStorage.getItem("master_card_id") || "";
+        let masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
         let globalConnectedCards = [];
 
         function hideIntroScreen() {
@@ -192,7 +196,7 @@
             document.getElementById("manageCardsScreen").classList.add("hidden");
             document.getElementById("loginScreen").classList.add("hidden");
 
-            if (ownerEmailSession) {
+            if (masterIdSession && masterPinSession) {
                 refreshData(true);
             } else {
                 setTimeout(() => {
@@ -202,31 +206,37 @@
             }
         };
 
-        function parseJwt(token) {
-            var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
-        }
+        function prosesLoginMaster() {
+            let masterId = document.getElementById("inputMasterId").value.trim().toLowerCase();
+            let pin = document.getElementById("inputPin").value.trim();
+            let isRememberChecked = document.getElementById("rememberMe").checked;
 
-        function handleCredentialResponse(response) {
-            let responsePayload = parseJwt(response.credential);
-            let email = responsePayload.email;
+            if (!masterId || !pin) {
+                alert("ID Master dan PIN wajib diisi!");
+                return;
+            }
 
             document.getElementById("loadingText").classList.remove("hidden");
 
-            fetch(`${SCRIPT_URL}?action=owner_login_gmail&email=${encodeURIComponent(email)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=master_login&master_id=${encodeURIComponent(masterId)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
-                        ownerEmailSession = email;
-                        localStorage.setItem("owner_email", email);
+                        masterIdSession = masterId;
+                        masterPinSession = pin;
+
+                        if (isRememberChecked) {
+                            localStorage.setItem("master_card_id", masterId);
+                            localStorage.setItem("master_pin", pin);
+                        } else {
+                            sessionStorage.setItem("master_card_id", masterId);
+                            sessionStorage.setItem("master_pin", pin);
+                        }
+
                         fetchCardData();
                     } else {
-                        alert(res.message || "Email tidak terdaftar di sistem.");
+                        alert(res.message || "ID Master atau PIN salah!");
                     }
                 })
                 .catch(() => {
@@ -236,8 +246,9 @@
         }
 
         function refreshData(isInitial = false) {
-            if (!ownerEmailSession) {
-                ownerEmailSession = localStorage.getItem("owner_email") || sessionStorage.getItem("owner_email") || "";
+            if (!masterIdSession || !masterPinSession) {
+                masterIdSession = localStorage.getItem("master_card_id") || sessionStorage.getItem("master_card_id") || "";
+                masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
             }
 
             if (!isInitial) {
@@ -250,7 +261,7 @@
         }
 
         function fetchCardData(isInitial = false) {
-            fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(ownerEmailSession)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=refresh_stats&master_id=${encodeURIComponent(masterIdSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     if (!isInitial) {
@@ -260,11 +271,11 @@
                     }
 
                     if (res.success && res.data) {
-                        globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [];
+                        globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [masterIdSession.toUpperCase()];
                         renderDashboard(res.data);
                         hideIntroScreen();
                     } else {
-                        if (!isInitial) alert("Sesi kedaluwarsa.");
+                        if (!isInitial) alert("Sesi kedaluwarsa atau Master di-reset.");
                         logoutApp();
                     }
                 })
@@ -310,17 +321,20 @@
             }, 100);
         }
 
-        // --- NAVIGASI HALAMAN KELOLA KARTU ---
+        // --- MANAJEMEN KARTU (TAMBAH SATU PER SATU) ---
         function openManageCardsPage() {
             document.getElementById("dashboardScreen").classList.add("hidden");
             
             let selectEl = document.getElementById("selectCardToDisconnect");
             selectEl.innerHTML = "";
             globalConnectedCards.forEach(cardId => {
-                let opt = document.createElement("option");
-                opt.value = cardId;
-                opt.text = cardId;
-                selectEl.appendChild(opt);
+                // Master tidak bisa memutuskan dirinya sendiri dari daftar pilihan disconnect
+                if (cardId.toLowerCase() !== masterIdSession.toLowerCase()) {
+                    let opt = document.createElement("option");
+                    opt.value = cardId;
+                    opt.text = cardId;
+                    selectEl.appendChild(opt);
+                }
             });
 
             document.getElementById("inputNewCardId").value = "";
@@ -332,22 +346,21 @@
             refreshData();
         }
 
-        // --- CONNECT KARTU VIA GMAIL ---
-        function executeConnectCard() {
+        function executeAddCard() {
             let newCardId = document.getElementById("inputNewCardId").value.trim();
             if (!newCardId) {
                 alert("Masukkan ID kartu baru!");
                 return;
             }
 
-            const btn = document.getElementById("btnConfirmConnect");
-            btn.innerText = "Menghubungkan...";
+            const btn = document.getElementById("btnConfirmAdd");
+            btn.innerText = "Menambahkan...";
             btn.disabled = true;
 
-            fetch(`${SCRIPT_URL}?action=connect_card_gmail&email=${encodeURIComponent(ownerEmailSession)}&new_card_id=${encodeURIComponent(newCardId)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=add_card_master&master_id=${encodeURIComponent(masterIdSession)}&new_card_id=${encodeURIComponent(newCardId)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
-                btn.innerText = "Hubungkan Kartu";
+                btn.innerText = "Tambahkan Kartu Ini";
                 btn.disabled = false;
                 alert(res.message || "Berhasil.");
                 if (res.success) {
@@ -355,13 +368,12 @@
                 }
             })
             .catch(() => {
-                btn.innerText = "Hubungkan Kartu";
+                btn.innerText = "Tambahkan Kartu Ini";
                 btn.disabled = false;
                 alert("Terjadi kesalahan koneksi.");
             });
         }
 
-        // --- DISCONNECT KARTU VIA GMAIL ---
         function executeDisconnectCard() {
             let selectEl = document.getElementById("selectCardToDisconnect");
             let targetCardId = selectEl.value;
@@ -375,7 +387,7 @@
             btn.innerText = "Memproses...";
             btn.disabled = true;
 
-            fetch(`${SCRIPT_URL}?action=disconnect_card_gmail&email=${encodeURIComponent(ownerEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=disconnect_card_master&master_id=${encodeURIComponent(masterIdSession)}&product_id=${encodeURIComponent(targetCardId)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 btn.innerText = "Putuskan Kartu Terpilih";
