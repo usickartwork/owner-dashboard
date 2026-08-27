@@ -52,7 +52,7 @@
                     <input type="email" id="loginEmail" placeholder="owner@email.com" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
                     <input type="password" id="loginPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
                 <button type="button" onclick="prosesLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
@@ -60,7 +60,7 @@
                 </button>
                 <div class="flex items-center justify-between pt-2 px-1">
                     <button type="button" onclick="switchForm('register')" class="text-xs text-blue-600 font-semibold hover:underline">Daftar Akun Baru</button>
-                    <button type="button" onclick="switchForm('forgot')" class="text-xs text-slate-500 hover:text-blue-600 underline">Lupa PIN?</button>
+                    <button type="button" onclick="switchForm('forgot')" class="text-xs text-slate-500 hover:text-blue-600 underline">Lupa Password?</button>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
                     <input type="email" id="regEmail" placeholder="owner@email.com" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Buat PIN Keamanan</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Buat Password</label>
                     <input type="password" id="regPin" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
                 <button type="button" onclick="prosesRegister()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
@@ -84,7 +84,7 @@
 
             <!-- FORM FORGOT PASSWORD (STEP-BY-STEP) -->
             <div id="formForgot" class="hidden space-y-3">
-                <p id="forgotInstruction" class="text-xs text-slate-500 bg-blue-50 p-3 rounded-xl border border-blue-100 leading-relaxed">Masukkan email terdaftar Anda. Kami akan mengirimkan kode OTP untuk mereset PIN Anda.</p>
+                <p id="forgotInstruction" class="text-xs text-slate-500 bg-blue-50 p-3 rounded-xl border border-blue-100 leading-relaxed">Masukkan email terdaftar Anda. Kami akan mengirimkan kode OTP untuk mereset password Anda.</p>
                 
                 <div id="stepEmail" class="space-y-3">
                     <div>
@@ -104,10 +104,10 @@
 
                 <div id="stepNewPin" class="hidden space-y-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Buat PIN Baru</label>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Buat Password Baru</label>
                         <input type="password" id="forgotNewPin" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-600">
                     </div>
-                    <button type="button" onclick="saveNewPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Simpan PIN Baru</button>
+                    <button type="button" onclick="saveNewPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Simpan Password Baru</button>
                 </div>
 
                 <div class="text-center pt-2">
@@ -264,21 +264,21 @@
                     </div>
                 </div>
 
-                <!-- 2. Ganti Password / PIN (Bertahap) -->
+                <!-- 2. Ganti Password (Bertahap) -->
                 <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
                     <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wide">Keamanan Akun</h3>
                     
-                    <!-- Step 1: Input PIN Lama -->
+                    <!-- Step 1: Input Password Lama -->
                     <div id="accPinStepOld" class="space-y-2">
-                        <label class="block text-[11px] font-semibold text-slate-600">Ganti Password (PIN)</label>
-                        <input type="password" id="inputAccOldPin" placeholder="Masukkan PIN Lama" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2">
+                        <label class="block text-[11px] font-semibold text-slate-600">Ganti Password</label>
+                        <input type="password" id="inputAccOldPin" placeholder="Masukkan Password Lama" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2">
                         <button type="button" onclick="verifyAccOldPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Lanjutkan Ganti Password</button>
                     </div>
 
-                    <!-- Step 2: Input PIN Baru (Muncul setelah verifikasi) -->
+                    <!-- Step 2: Input Password Baru (Muncul setelah verifikasi) -->
                     <div id="accPinStepNew" class="hidden space-y-2">
-                        <label class="block text-[11px] font-semibold text-emerald-700">PIN Lama Terverifikasi ✓</label>
-                        <input type="password" id="inputAccNewPin" placeholder="Masukkan PIN Baru" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 bg-white mb-2">
+                        <label class="block text-[11px] font-semibold text-emerald-700">Password Lama Terverifikasi ✓</label>
+                        <input type="password" id="inputAccNewPin" placeholder="Masukkan Password Baru" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 bg-white mb-2">
                         <button type="button" onclick="saveNewAccountPin()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Simpan Password Baru</button>
                     </div>
                 </div>
@@ -336,7 +336,7 @@
 
             if (type === 'register') {
                 document.getElementById("formRegister").classList.remove("hidden");
-                document.getElementById("formSubTitle").innerText = "Daftar akun master baru dengan email dan PIN.";
+                document.getElementById("formSubTitle").innerText = "Daftar akun master baru dengan email dan password.";
             } else if (type === 'forgot') {
                 document.getElementById("formForgot").classList.remove("hidden");
                 document.getElementById("stepEmail").classList.remove("hidden");
@@ -344,7 +344,7 @@
                 document.getElementById("stepNewPin").classList.add("hidden");
                 document.getElementById("forgotEmail").value = "";
                 document.getElementById("forgotInstruction").innerText = "Masukkan email terdaftar Anda. Kami akan mengirimkan kode OTP.";
-                document.getElementById("formSubTitle").innerText = "Reset PIN via verifikasi kode OTP Email.";
+                document.getElementById("formSubTitle").innerText = "Reset Password via verifikasi kode OTP Email.";
             } else {
                 document.getElementById("formLogin").classList.remove("hidden");
                 document.getElementById("loginEmail").value = "";
@@ -358,7 +358,7 @@
             let pin = document.getElementById("loginPin").value.trim();
 
             if (!email || !pin) {
-                alert("Email dan PIN wajib diisi!");
+                alert("Email dan Password wajib diisi!");
                 return;
             }
 
@@ -377,7 +377,7 @@
                         fetchCardData();
                     } else {
                         hideLoading();
-                        alert(res.message || "Email atau PIN salah!");
+                        alert(res.message || "Email atau Password salah!");
                     }
                 })
                 .catch(() => {
@@ -391,7 +391,7 @@
             let pin = document.getElementById("regPin").value.trim();
 
             if (!email || !pin) {
-                alert("Email dan PIN wajib diisi!");
+                alert("Email dan Password wajib diisi!");
                 return;
             }
 
@@ -468,7 +468,7 @@
                 if (res.success) {
                     document.getElementById("stepOtp").classList.add("hidden");
                     document.getElementById("stepNewPin").classList.remove("hidden");
-                    document.getElementById("forgotInstruction").innerText = "OTP valid. Silakan buat PIN baru untuk akun Anda.";
+                    document.getElementById("forgotInstruction").innerText = "OTP valid. Silakan buat password baru untuk akun Anda.";
                 }
             })
             .catch(() => {
@@ -483,11 +483,11 @@
             let newPin = document.getElementById("forgotNewPin").value.trim();
 
             if (!newPin) {
-                alert("Masukkan PIN baru Anda!");
+                alert("Masukkan password baru Anda!");
                 return;
             }
 
-            showLoading("Menyimpan PIN baru...");
+            showLoading("Menyimpan password baru...");
 
             let url = `${SCRIPT_URL}?action=save_new_pin&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&new_pin=${encodeURIComponent(newPin)}&t=${new Date().getTime()}`;
 
@@ -529,7 +529,7 @@
                         hideLoading();
                     } else {
                         hideLoading();
-                        if (!isInitial) alert("Sesi kedaluwarsa atau PIN diubah.");
+                        if (!isInitial) alert("Sesi kedaluwarsa atau password diubah.");
                         logoutApp();
                     }
                 })
@@ -731,31 +731,31 @@
             });
         }
 
-        // STEP 1 Ganti Password Akun: Verifikasi PIN Lama
+        // STEP 1 Ganti Password Akun: Verifikasi Password Lama
         function verifyAccOldPin() {
             let oldPin = document.getElementById("inputAccOldPin").value.trim();
             if (!oldPin) {
-                alert("Masukkan PIN lama Anda!");
+                alert("Masukkan password lama Anda!");
                 return;
             }
 
             if (oldPin !== masterPinSession) {
-                alert("PIN Lama salah!");
+                alert("Password Lama salah!");
                 return;
             }
 
-            // Jika benar, tampilkan kolom input PIN baru
+            // Jika benar, tampilkan kolom input password baru
             document.getElementById("accPinStepOld").classList.add("hidden");
             document.getElementById("accPinStepNew").classList.remove("hidden");
         }
 
-        // STEP 2 Ganti Password Akun: Simpan PIN Baru
+        // STEP 2 Ganti Password Akun: Simpan Password Baru
         function saveNewAccountPin() {
             let oldPin = document.getElementById("inputAccOldPin").value.trim();
             let newPin = document.getElementById("inputAccNewPin").value.trim();
 
             if (!newPin) {
-                alert("Masukkan PIN baru Anda!");
+                alert("Masukkan password baru Anda!");
                 return;
             }
 
