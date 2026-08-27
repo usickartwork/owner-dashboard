@@ -376,14 +376,34 @@
                 return;
             }
 
-            // Membuka jalur GET langsung (Dijamin 100% tembus tanpa error CORS/koneksi)
-            let directResetUrl = `${SCRIPT_URL}?action=reset_card_direct&product_id=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(inputPin)}`;
-            
-            window.open(directResetUrl, '_blank');
-            
-            closeResetModal();
-            alert("Perintah reset dikirim ke tab baru. Cek tab yang terbuka untuk melihat status suksesnya!");
-            logoutApp();
+            const btnConfirm = document.getElementById("btnConfirmReset");
+            btnConfirm.innerText = "Memproses...";
+            btnConfirm.disabled = true;
+
+            // Menggunakan jalur GET secara senyap di latar belakang (Stay di Dashboard)
+            let directResetUrl = `${SCRIPT_URL}?action=reset_card_direct&product_id=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`;
+
+            fetch(directResetUrl)
+            .then(res => res.text())
+            .then(resultText => {
+                btnConfirm.innerText = "Ya, Reset";
+                btnConfirm.disabled = false;
+                closeResetModal();
+
+                if (resultText.includes("BERHASIL")) {
+                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
+                    logoutApp();
+                } else {
+                    alert("Gagal Reset: " + resultText.replace(/❌|✅/g, "").trim());
+                }
+            })
+            .catch(err => {
+                console.error("Error Reset:", err);
+                btnConfirm.innerText = "Ya, Reset";
+                btnConfirm.disabled = false;
+                closeResetModal();
+                alert("Terjadi kesalahan koneksi.");
+            });
         }
 
         function logoutApp() {
