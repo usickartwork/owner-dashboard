@@ -273,7 +273,7 @@
         
         let cardIdSession = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
-        let globalConnectedCards = []; // Menyimpan daftar kartu yang terhubung
+        let globalConnectedCards = [];
 
         function hideIntroScreen() {
             const introEl = document.getElementById("introScreen");
@@ -375,7 +375,6 @@
                     }
 
                     if (res.success && res.data) {
-                        // Simpan daftar kartu terhubung ke variabel global
                         globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [cardIdSession.toUpperCase()];
                         renderDashboard(res.data);
                         hideIntroScreen();
@@ -476,7 +475,6 @@
         function openDisconnectModal() {
             closeSettingModal();
             
-            // Isi dropdown dengan daftar kartu yang sedang terhubung
             let selectEl = document.getElementById("selectCardToDisconnect");
             selectEl.innerHTML = "";
             
@@ -506,8 +504,7 @@
             btn.innerText = "Memproses...";
             btn.disabled = true;
 
-            // Kirim request disconnect untuk kartu spesifik yang dipilih di dropdown
-            let url = `${SCRIPT_URL}?action=disconnect_card&product_id=${encodeURIComponent(targetCardId)}&pin=${encodeURIComponent(pinInput)}&t=${new Date().getTime()}`;
+            let url = `${SCRIPT_URL}?action=disconnect_card&product_id=${encodeURIComponent(targetCardId)}&login_card=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(pinInput)}&t=${new Date().getTime()}`;
 
             fetch(url)
             .then(res => res.text())
@@ -519,11 +516,10 @@
                 alert(resultText.replace(/❌|✅/g, "").trim());
 
                 if (resultText.includes("BERHASIL")) {
-                    // Jika kartu yang di-disconnect adalah kartu yang sedang dipakai login, logout aplikasi
                     if (targetCardId.toLowerCase() === cardIdSession.toLowerCase()) {
                         logoutApp();
                     } else {
-                        refreshData(); // Refresh statistik jika kartu lain yang dilepas
+                        refreshData();
                     }
                 }
             })
