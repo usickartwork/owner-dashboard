@@ -17,6 +17,19 @@
         }
         .animate-logo-pulse { animation: logoPulse 1.2s ease-in-out infinite; }
         
+        @keyframes spinCustom {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(37, 99, 235, 0.15);
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spinCustom 0.8s linear infinite;
+        }
+
         @keyframes fadeOutScreen {
             0% { opacity: 1; visibility: visible; }
             100% { opacity: 0; visibility: hidden; }
@@ -27,11 +40,11 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <!-- SPLASH SCREEN / LOADING LOGO ANIMATION -->
+    <!-- SPLASH SCREEN / MODERN LOADING SPINNER -->
     <div id="introScreen" class="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
-        <div class="space-y-4">
-            <img src="logo.png" alt="Logo Brand" class="h-28 w-auto mx-auto object-contain animate-logo-pulse">
-            <p id="loadingLabel" class="text-xs font-semibold text-slate-400 tracking-wider">Menyiapkan sistem...</p>
+        <div class="space-y-4 flex flex-col items-center">
+            <img src="logo.png" alt="Logo Brand" class="h-20 w-auto object-contain animate-logo-pulse mb-1">
+            <div class="spinner"></div>
         </div>
     </div>
 
@@ -292,8 +305,7 @@
         let masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
         let globalConnectedCards = [];
 
-        function showLoading(text = "Memuat data...") {
-            document.getElementById("loadingLabel").innerText = text;
+        function showLoading() {
             const intro = document.getElementById("introScreen");
             intro.classList.remove("animate-fade-out-screen");
             intro.style.visibility = "visible";
@@ -317,7 +329,7 @@
             document.getElementById("loginScreen").classList.add("hidden");
 
             if (masterEmailSession && masterPinSession) {
-                showLoading("Menghubungkan ke server...");
+                showLoading();
                 refreshData(true);
             } else {
                 setTimeout(() => {
@@ -360,7 +372,7 @@
                 return;
             }
 
-            showLoading("Memverifikasi akun...");
+            showLoading();
 
             fetch(`${SCRIPT_URL}?action=master_login&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
@@ -393,7 +405,7 @@
                 return;
             }
 
-            showLoading("Mendaftarkan akun...");
+            showLoading();
 
             let url = `${SCRIPT_URL}?action=register_master&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`;
 
@@ -424,7 +436,7 @@
             let btn = document.getElementById("btnSendOtp");
             if (btn) { btn.disabled = true; btn.innerText = "Mengirim..."; }
 
-            showLoading("Mengirim kode OTP ke email...");
+            showLoading();
 
             fetch(`${SCRIPT_URL}?action=request_otp&email=${encodeURIComponent(email)}&t=${new Date().getTime()}`)
             .then(res => res.json())
@@ -454,7 +466,7 @@
                 return;
             }
 
-            showLoading("Memverifikasi kode OTP...");
+            showLoading();
 
             let url = `${SCRIPT_URL}?action=verify_otp&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&t=${new Date().getTime()}`;
 
@@ -485,7 +497,7 @@
                 return;
             }
 
-            showLoading("Menyimpan password baru...");
+            showLoading();
 
             let url = `${SCRIPT_URL}?action=save_new_pin&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&new_pin=${encodeURIComponent(newPin)}&t=${new Date().getTime()}`;
 
@@ -511,7 +523,7 @@
             }
 
             if (!isInitial) {
-                showLoading("Memperbarui statistik...");
+                showLoading();
             }
 
             fetchCardData(isInitial);
@@ -612,7 +624,7 @@
 
         function closeManageCardsPage() {
             document.getElementById("manageCardsScreen").classList.add("hidden");
-            showLoading("Memuat ulang dashboard...");
+            showLoading();
             refreshData();
         }
 
@@ -657,7 +669,7 @@
                 return;
             }
 
-            showLoading("Menghubungkan kartu...");
+            showLoading();
 
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
@@ -690,7 +702,7 @@
                 return;
             }
 
-            showLoading("Memutuskan kartu...");
+            showLoading();
 
             fetch(`${SCRIPT_URL}?action=disconnect_card_master&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
@@ -721,7 +733,7 @@
                 return;
             }
 
-            showLoading("Mereset kartu ke kondisi pabrik...");
+            showLoading();
 
             fetch(`${SCRIPT_URL}?action=reset_card_stats&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
@@ -764,7 +776,7 @@
                 return;
             }
 
-            showLoading("Memperbarui password...");
+            showLoading();
 
             let url = `${SCRIPT_URL}?action=change_pin_dashboard&email=${encodeURIComponent(masterEmailSession)}&old_pin=${encodeURIComponent(oldPin)}&new_pin=${encodeURIComponent(newPin)}&t=${new Date().getTime()}`;
 
