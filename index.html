@@ -274,6 +274,8 @@
         let cardIdSession = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
         let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
         let globalConnectedCards = [];
+        let isMasterCard = true; // Status apakah kartu yang login adalah master
+        let masterCardIdGlobal = "";
 
         function hideIntroScreen() {
             const introEl = document.getElementById("introScreen");
@@ -376,6 +378,8 @@
 
                     if (res.success && res.data) {
                         globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [cardIdSession.toUpperCase()];
+                        isMasterCard = res.data.is_master;
+                        masterCardIdGlobal = res.data.master_card;
                         renderDashboard(res.data);
                         hideIntroScreen();
                     } else {
@@ -427,8 +431,19 @@
         function openSettingModal() { document.getElementById("settingModal").classList.remove("hidden"); }
         function closeSettingModal() { document.getElementById("settingModal").classList.add("hidden"); }
 
-        // --- FITUR CONNECT KARTU ---
+        // --- VALIDASI AKSES MASTER CARD ---
+        function checkMasterAccess() {
+            if (!isMasterCard) {
+                alert(`⚠️ Akses Ditolak!\n\nPengaturan Hubungkan/Putuskan Kartu hanya dapat dikelola melalui Kartu Master (${masterCardIdGlobal}). Anda sedang login menggunakan kartu cabang.`);
+                closeSettingModal();
+                return false;
+            }
+            return true;
+        }
+
+        // --- FITUR CONNECT KARTU (Hanya Master) ---
         function openConnectModal() {
+            if (!checkMasterAccess()) return;
             closeSettingModal();
             document.getElementById("inputNewCardId").value = "";
             document.getElementById("connectPinInput").value = "";
@@ -471,17 +486,28 @@
             });
         }
 
-        // --- FITUR DISCONNECT KARTU ---
+        // --- FITUR DISCONNECT KARTU (Hanya Master) ---
         function openDisconnectModal() {
+            if (!checkMasterAccess()) return;
             closeSettingModal();
             let selectEl = document.getElementById("selectCardToDisconnect");
             selectEl.innerHTML = "";
             globalConnectedCards.forEach(cardId => {
-                let opt = document.createElement("option");
-                opt.value = cardId;
-                opt.text = cardId;
-                selectEl.appendChild(opt);
+                // Kartu master tidak bisa di-disconnect dari dirinya sendiri
+                if (cardId.toLowerCase() !== masterCardIdGlobal.toLowerCase()) {
+                    let opt = document.createElement("option");
+                    opt.value = cardId;
+                    opt.text = cardId;
+                    selectEl.appendChild(opt);
+                }
             });
+
+            if (selectEl.options.length === 0) {
+                alert("Tidak ada kartu cabang yang terhubung untuk dilepas.");
+                openSettingModal();
+                return;
+            }
+
             document.getElementById("disconnectPinInput").value = "";
             document.getElementById("disconnectModal").classList.remove("hidden");
         }
@@ -512,17 +538,7 @@
                 alert(res.message || "Berhasil.");
 
                 if (res.success) {
-                    if (targetCardId.toLowerCase() === cardIdSession.toLowerCase()) {
-                        let sisaKartu = globalConnectedCards.filter(c => c.toLowerCase() !== targetCardId.toLowerCase());
-                        if (sisaKartu.length > 0) {
-                            cardIdSession = sisaKartu[0].toLowerCase();
-                            refreshData();
-                        } else {
-                            logoutApp();
-                        }
-                    } else {
-                        refreshData();
-                    }
+                    refreshData();
                 }
             })
             .catch(() => {
