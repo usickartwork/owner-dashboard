@@ -175,6 +175,7 @@
             </div>
 
             <div class="space-y-4 pt-1">
+                <!-- 1. Hubungkan Kartu Baru -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                     <h3 class="text-xs font-bold text-slate-800">Hubungkan Kartu Fisik Baru</h3>
                     <div>
@@ -188,14 +189,27 @@
                     <button type="button" onclick="executeAddCard()" id="btnConfirmAdd" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan Kartu Ini</button>
                 </div>
 
+                <!-- 2. Reset Statistik Kartu Spesifik -->
+                <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-900">Reset Data Statistik Kartu Spesifik</h3>
+                    <p class="text-[11px] text-amber-700 leading-relaxed">Mengosongkan/menolkan kembali seluruh data kunjungan dan rating pada kartu tertentu.</p>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu untuk Di-reset</label>
+                        <select id="selectCardToReset" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+                        </select>
+                    </div>
+                    <button type="button" onclick="executeResetCardStats()" id="btnConfirmReset" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Reset Statistik Kartu Ini</button>
+                </div>
+
+                <!-- 3. Putuskan Kartu (Disconnect) -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                     <h3 class="text-xs font-bold text-slate-800">Putuskan / Hapus Kartu dari Akun</h3>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu Terhubung</label>
-                        <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+                        <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-slate-400 uppercase">
                         </select>
                     </div>
-                    <button type="button" onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Putuskan Kartu Terpilih</button>
+                    <button type="button" onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Putuskan Kartu Terpilih</button>
                 </div>
             </div>
         </div>
@@ -388,23 +402,35 @@
         function openManageCardsPage() {
             document.getElementById("dashboardScreen").classList.add("hidden");
             
-            let selectEl = document.getElementById("selectCardToDisconnect");
-            selectEl.innerHTML = "";
+            let selectDisc = document.getElementById("selectCardToDisconnect");
+            let selectReset = document.getElementById("selectCardToReset");
+            
+            selectDisc.innerHTML = "";
+            selectReset.innerHTML = "";
             
             if (globalConnectedCards.length === 0) {
-                let opt = document.createElement("option");
-                opt.value = "";
-                opt.text = "Belum ada kartu terhubung";
-                selectEl.appendChild(opt);
-                selectEl.disabled = true;
+                let opt1 = document.createElement("option");
+                opt1.value = ""; opt1.text = "Belum ada kartu terhubung";
+                selectDisc.appendChild(opt1);
+                selectDisc.disabled = true;
+
+                let opt2 = document.createElement("option");
+                opt2.value = ""; opt2.text = "Belum ada kartu terhubung";
+                selectReset.appendChild(opt2);
+                selectReset.disabled = true;
             } else {
-                selectEl.disabled = false;
+                selectDisc.disabled = false;
+                selectReset.disabled = false;
+
                 globalConnectedCards.forEach(cardId => {
                     if (cardId) {
-                        let opt = document.createElement("option");
-                        opt.value = cardId;
-                        opt.text = cardId;
-                        selectEl.appendChild(opt);
+                        let opt1 = document.createElement("option");
+                        opt1.value = cardId; opt1.text = cardId;
+                        selectDisc.appendChild(opt1);
+
+                        let opt2 = document.createElement("option");
+                        opt2.value = cardId; opt2.text = cardId;
+                        selectReset.appendChild(opt2);
                     }
                 });
             }
@@ -449,12 +475,47 @@
             });
         }
 
+        function executeResetCardStats() {
+            let selectEl = document.getElementById("selectCardToReset");
+            let targetCardId = selectEl.value;
+
+            if (!targetCardId) {
+                alert("Pilih kartu yang ingin di-reset statistiknya!");
+                return;
+            }
+
+            if (!confirm(`Yakin ingin mereset seluruh data statistik (kunjungan & rating) pada kartu ${targetCardId} menjadi 0?`)) {
+                return;
+            }
+
+            showLoading("Mereset statistik kartu...");
+
+            fetch(`${SCRIPT_URL}?action=reset_card_stats&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
+            .then(res => res.json())
+            .then(res => {
+                hideLoading();
+                alert(res.message || "Berhasil.");
+                if (res.success) {
+                    refreshData();
+                    openManageCardsPage();
+                }
+            })
+            .catch(() => {
+                hideLoading();
+                alert("Terjadi kesalahan koneksi.");
+            });
+        }
+
         function executeDisconnectCard() {
             let selectEl = document.getElementById("selectCardToDisconnect");
             let targetCardId = selectEl.value;
 
             if (!targetCardId) {
                 alert("Pilih kartu yang ingin diputus!");
+                return;
+            }
+
+            if (!confirm(`Yakin ingin memutuskan kartu ${targetCardId} dari akun Anda?`)) {
                 return;
             }
 
