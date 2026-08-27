@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Review Master Dashboard</title>
+    <title>Master Account Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
@@ -35,35 +35,67 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- HALAMAN LOGIN MASTER -->
+        <!-- HALAMAN LOGIN / REGISTER MASTER -->
         <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
-            <div class="text-center mb-6">
+            <div class="text-center mb-4">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Dashboard</h1>
-                <p class="text-xs text-slate-500 mt-1">Masukkan ID Kartu Master dan PIN Keamanan Anda.</p>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Account</h1>
+                <p id="formSubTitle" class="text-xs text-slate-500 mt-1">Masuk ke akun master Anda untuk melihat statistik.</p>
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu Master</label>
-                <input type="text" id="inputMasterId" placeholder="Contoh: NFC-001" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none uppercase" autocomplete="off">
-            </div>
-            
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Master</label>
-                <input type="password" id="inputPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+            <!-- FORM LOGIN -->
+            <div id="formLogin" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email / Username Master</label>
+                    <input type="email" id="loginEmail" placeholder="owner@email.com" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan</label>
+                    <input type="password" id="loginPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <button type="button" onclick="prosesLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
+                    Masuk Dashboard
+                </button>
+                <div class="text-center pt-2">
+                    <button type="button" onclick="switchForm('register')" class="text-xs text-blue-600 font-semibold hover:underline">Belum punya akun? Daftar Master Baru</button>
+                </div>
             </div>
 
-            <div class="flex items-center justify-between pt-1">
-                <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                    <span class="text-xs text-slate-600 font-medium">Ingat Saya</span>
-                </label>
+            <!-- FORM REGISTER -->
+            <div id="formRegister" class="hidden space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email / Username Master</label>
+                    <input type="email" id="regEmail" placeholder="owner@email.com" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Buat PIN Keamanan</label>
+                    <input type="password" id="regPin" placeholder="••••" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Bisnis</label>
+                    <input type="text" id="regBizName" placeholder="Contoh: Kedai Kopi Senja" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu Master Pertama</label>
+                    <input type="text" id="regCardId" placeholder="Contoh: NFC-001" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs uppercase font-bold outline-none focus:ring-2 focus:ring-blue-600">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Link Google Review</label>
+                    <input type="url" id="regReviewUrl" placeholder="https://g.page/r/..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Link WhatsApp (Opsional)</label>
+                    <input type="text" id="regWaLink" placeholder="https://wa.me/..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+                <button type="button" onclick="prosesRegister()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
+                    Daftar Akun Master
+                </button>
+                <div class="text-center pt-2">
+                    <button type="button" onclick="switchForm('login')" class="text-xs text-slate-600 font-semibold hover:underline">&larr; Sudah punya akun? Masuk di sini</button>
+                </div>
             </div>
 
-            <button type="button" onclick="prosesLoginMaster()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
-                Masuk Master Dashboard
-            </button>
-            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Memverifikasi Master ID...</div>
+            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Memproses ke database...</div>
         </div>
 
         <!-- HALAMAN UTAMA DASHBOARD -->
@@ -151,7 +183,7 @@
             </div>
         </div>
 
-        <!-- HALAMAN KELOLA KARTU (DEDICATED PAGE) -->
+        <!-- HALAMAN KELOLA KARTU -->
         <div id="manageCardsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <button type="button" onclick="closeManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
@@ -179,7 +211,7 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTKJkitt5ntrPbXWvXz4u1Px9lzczgcQO3ywc-GhMg1nlBOvg6cAlWBe1KBVf9oYJD/exec";
         
-        let masterIdSession = localStorage.getItem("master_card_id") || sessionStorage.getItem("master_card_id") || "";
+        let masterEmailSession = localStorage.getItem("master_email") || sessionStorage.getItem("master_email") || "";
         let masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
         let globalConnectedCards = [];
 
@@ -196,7 +228,7 @@
             document.getElementById("manageCardsScreen").classList.add("hidden");
             document.getElementById("loginScreen").classList.add("hidden");
 
-            if (masterIdSession && masterPinSession) {
+            if (masterEmailSession && masterPinSession) {
                 refreshData(true);
             } else {
                 setTimeout(() => {
@@ -206,37 +238,79 @@
             }
         };
 
-        function prosesLoginMaster() {
-            let masterId = document.getElementById("inputMasterId").value.trim().toLowerCase();
-            let pin = document.getElementById("inputPin").value.trim();
-            let isRememberChecked = document.getElementById("rememberMe").checked;
+        function switchForm(type) {
+            if (type === 'register') {
+                document.getElementById("formLogin").classList.add("hidden");
+                document.getElementById("formRegister").classList.remove("hidden");
+                document.getElementById("formSubTitle").innerText = "Daftar akun master baru untuk bisnis Anda.";
+            } else {
+                document.getElementById("formRegister").classList.add("hidden");
+                document.getElementById("formLogin").classList.remove("hidden");
+                document.getElementById("formSubTitle").innerText = "Masuk ke akun master Anda untuk melihat statistik.";
+            }
+        }
 
-            if (!masterId || !pin) {
-                alert("ID Master dan PIN wajib diisi!");
+        function prosesLogin() {
+            let email = document.getElementById("loginEmail").value.trim().toLowerCase();
+            let pin = document.getElementById("loginPin").value.trim();
+
+            if (!email || !pin) {
+                alert("Email dan PIN wajib diisi!");
                 return;
             }
 
             document.getElementById("loadingText").classList.remove("hidden");
 
-            fetch(`${SCRIPT_URL}?action=master_login&master_id=${encodeURIComponent(masterId)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=master_login&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
-                        masterIdSession = masterId;
+                        masterEmailSession = email;
                         masterPinSession = pin;
 
-                        if (isRememberChecked) {
-                            localStorage.setItem("master_card_id", masterId);
-                            localStorage.setItem("master_pin", pin);
-                        } else {
-                            sessionStorage.setItem("master_card_id", masterId);
-                            sessionStorage.setItem("master_pin", pin);
-                        }
+                        localStorage.setItem("master_email", email);
+                        localStorage.setItem("master_pin", pin);
 
                         fetchCardData();
                     } else {
-                        alert(res.message || "ID Master atau PIN salah!");
+                        alert(res.message || "Email atau PIN salah!");
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("loadingText").classList.add("hidden");
+                    alert("Terjadi kesalahan koneksi.");
+                });
+        }
+
+        function prosesRegister() {
+            let email = document.getElementById("regEmail").value.trim().toLowerCase();
+            let pin = document.getElementById("regPin").value.trim();
+            let bizName = document.getElementById("regBizName").value.trim();
+            let cardId = document.getElementById("regCardId").value.trim().toUpperCase();
+            let reviewUrl = document.getElementById("regReviewUrl").value.trim();
+            let waLink = document.getElementById("regWaLink").value.trim();
+
+            if (!email || !pin || !bizName || !cardId || !reviewUrl) {
+                alert("Harap lengkapi data registrasi!");
+                return;
+            }
+
+            document.getElementById("loadingText").classList.remove("hidden");
+
+            let url = `${SCRIPT_URL}?action=register_master&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&business_name=${encodeURIComponent(bizName)}&master_card_id=${encodeURIComponent(cardId)}&review_url=${encodeURIComponent(reviewUrl)}&whatsapp_link=${encodeURIComponent(waLink)}&t=${new Date().getTime()}`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(res => {
+                    document.getElementById("loadingText").classList.add("hidden");
+                    alert(res.message || "Berhasil.");
+                    if (res.success) {
+                        masterEmailSession = email;
+                        masterPinSession = pin;
+                        localStorage.setItem("master_email", email);
+                        localStorage.setItem("master_pin", pin);
+                        fetchCardData();
                     }
                 })
                 .catch(() => {
@@ -246,8 +320,8 @@
         }
 
         function refreshData(isInitial = false) {
-            if (!masterIdSession || !masterPinSession) {
-                masterIdSession = localStorage.getItem("master_card_id") || sessionStorage.getItem("master_card_id") || "";
+            if (!masterEmailSession || !masterPinSession) {
+                masterEmailSession = localStorage.getItem("master_email") || sessionStorage.getItem("master_email") || "";
                 masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
             }
 
@@ -261,7 +335,7 @@
         }
 
         function fetchCardData(isInitial = false) {
-            fetch(`${SCRIPT_URL}?action=refresh_stats&master_id=${encodeURIComponent(masterIdSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     if (!isInitial) {
@@ -271,11 +345,11 @@
                     }
 
                     if (res.success && res.data) {
-                        globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [masterIdSession.toUpperCase()];
+                        globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [];
                         renderDashboard(res.data);
                         hideIntroScreen();
                     } else {
-                        if (!isInitial) alert("Sesi kedaluwarsa atau Master di-reset.");
+                        if (!isInitial) alert("Sesi kedaluwarsa.");
                         logoutApp();
                     }
                 })
@@ -321,20 +395,17 @@
             }, 100);
         }
 
-        // --- MANAJEMEN KARTU (TAMBAH SATU PER SATU) ---
+        // --- MANAJEMEN KARTU ---
         function openManageCardsPage() {
             document.getElementById("dashboardScreen").classList.add("hidden");
             
             let selectEl = document.getElementById("selectCardToDisconnect");
             selectEl.innerHTML = "";
             globalConnectedCards.forEach(cardId => {
-                // Master tidak bisa memutuskan dirinya sendiri dari daftar pilihan disconnect
-                if (cardId.toLowerCase() !== masterIdSession.toLowerCase()) {
-                    let opt = document.createElement("option");
-                    opt.value = cardId;
-                    opt.text = cardId;
-                    selectEl.appendChild(opt);
-                }
+                let opt = document.createElement("option");
+                opt.value = cardId;
+                opt.text = cardId;
+                selectEl.appendChild(opt);
             });
 
             document.getElementById("inputNewCardId").value = "";
@@ -357,7 +428,7 @@
             btn.innerText = "Menambahkan...";
             btn.disabled = true;
 
-            fetch(`${SCRIPT_URL}?action=add_card_master&master_id=${encodeURIComponent(masterIdSession)}&new_card_id=${encodeURIComponent(newCardId)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 btn.innerText = "Tambahkan Kartu Ini";
@@ -387,7 +458,7 @@
             btn.innerText = "Memproses...";
             btn.disabled = true;
 
-            fetch(`${SCRIPT_URL}?action=disconnect_card_master&master_id=${encodeURIComponent(masterIdSession)}&product_id=${encodeURIComponent(targetCardId)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=disconnect_card_master&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
                 btn.innerText = "Putuskan Kartu Terpilih";
