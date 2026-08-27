@@ -372,7 +372,6 @@
         let masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
         let globalCardsDetail = [];
         let toastCallback = null;
-        let newlyConnectedCardId = ""; // Menyimpan ID kartu yang baru dihubungkan
 
         function showLoading() {
             const intro = document.getElementById("introScreen");
@@ -684,7 +683,7 @@
             document.getElementById("manageCardsScreen").classList.remove("hidden");
         }
 
-        function openSubManage(type, preselectId = "") {
+        function openSubManage(type) {
             hideAllScreens();
 
             let selectDisc = document.getElementById("selectCardToDisconnect");
@@ -696,7 +695,7 @@
             selectReset.innerHTML = "";
 
             if (globalCardsDetail.length === 0) {
-                let emptyOpt = document.option ? document.option : document.createElement("option");
+                let emptyOpt = document.createElement("option");
                 emptyOpt.value = ""; emptyOpt.text = "Belum ada kartu terhubung";
                 selectDisc.appendChild(emptyOpt); selectDisc.disabled = true;
                 selectName.appendChild(emptyOpt.cloneNode(true)); selectName.disabled = true;
@@ -723,10 +722,6 @@
                     opt3.value = card.id; opt3.text = label;
                     selectReset.appendChild(opt3);
                 });
-
-                if (preselectId) {
-                    selectName.value = preselectId;
-                }
 
                 if (selectName.options.length > 0) {
                     let activeOpt = selectName.options[selectName.selectedIndex];
@@ -796,8 +791,6 @@
                 }
             }
 
-            newlyConnectedCardId = newCardId.toUpperCase();
-
             showLoading();
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
@@ -806,15 +799,15 @@
             .then(res => {
                 hideLoading();
                 if (res.success) {
-                    // Setelah sukses hubungkan, ambil data terbaru lalu arahkan ke menu Ubah Nama Kustom
-                    fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
-                    .then(r => r.json())
-                    .then(resp => {
-                        if (resp.success && resp.data) {
-                            globalCardsDetail = resp.data.cards_detail || [];
-                        }
-                        showToast("Kartu berhasil dihubungkan! Silakan beri nama kustom.", () => {
-                            openSubManage('name', newlyConnectedCardId);
+                    // Pop-up sukses langsung muncul tanpa jeda, setelah diklik OK kembali ke menu utama kelola kartu
+                    showToast(res.message || "Kartu berhasil dihubungkan!", () => {
+                        fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
+                        .then(r => r.json())
+                        .then(resp => {
+                            if (resp.success && resp.data) {
+                                globalCardsDetail = resp.data.cards_detail || [];
+                            }
+                            openManageCardsPage();
                         });
                     });
                 } else {
