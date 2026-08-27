@@ -35,7 +35,7 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-       <!-- MODAL PENGATURAN AKUN -->
+        <!-- MODAL PENGATURAN AKUN -->
         <div id="settingModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-3 text-left">
                 <div class="text-center">
@@ -55,7 +55,6 @@
                         <span class="text-amber-400 font-bold">&rarr;</span>
                     </button>
 
-                    <!-- Pastikan memanggil openResetModal() dengan benar -->
                     <button type="button" onclick="openResetModal()" class="w-full bg-red-50/50 hover:bg-red-50 text-red-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-red-100 flex items-center justify-between btn-modern">
                         <span>Reset Data Kartu</span>
                         <span class="text-red-400 font-bold">&rarr;</span>
@@ -95,8 +94,8 @@
                 </div>
 
                 <div class="flex gap-2 pt-1">
-                    <button onclick="closeConnectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button onclick="executeConnectCard()" id="btnConfirmConnect" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan</button>
+                    <button type="button" onclick="closeConnectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
+                    <button type="button" onclick="executeConnectCard()" id="btnConfirmConnect" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan</button>
                 </div>
             </div>
         </div>
@@ -123,13 +122,13 @@
                 </div>
 
                 <div class="flex gap-2 pt-1">
-                    <button onclick="closeDisconnectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Disconnect</button>
+                    <button type="button" onclick="closeDisconnectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
+                    <button type="button" onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Disconnect</button>
                 </div>
             </div>
         </div>
 
-       <!-- MODAL RESET KARTU SPESIFIK -->
+        <!-- MODAL RESET KARTU SPESIFIK -->
         <div id="resetModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-4 text-left">
                 <div class="text-center">
@@ -151,8 +150,8 @@
                 </div>
 
                 <div class="flex gap-2 pt-1">
-                    <button onclick="closeResetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button onclick="executeResetCard()" id="btnConfirmReset" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Reset</button>
+                    <button type="button" onclick="closeResetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
+                    <button type="button" onclick="executeResetCard()" id="btnConfirmReset" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Reset</button>
                 </div>
             </div>
         </div>
@@ -182,7 +181,7 @@
                 </label>
             </div>
 
-            <button onclick="prosesLogin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
+            <button type="button" onclick="prosesLogin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
                 Masuk Dashboard
             </button>
             <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Menghubungkan ke database...</div>
@@ -261,10 +260,10 @@
 
             <!-- Tombol Navigasi Bawah Dashboard -->
             <div class="grid grid-cols-2 gap-2 pt-1">
-                <button id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
+                <button type="button" id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Refresh Statistik
                 </button>
-                <button onclick="openSettingModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
+                <button type="button" onclick="openSettingModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Pengaturan Akun
                 </button>
             </div>
@@ -456,13 +455,13 @@
             let url = `${SCRIPT_URL}?action=connect_card&current_id=${encodeURIComponent(cardIdSession)}&new_card_id=${encodeURIComponent(newCardId)}&pin=${encodeURIComponent(pinInput)}&t=${new Date().getTime()}`;
 
             fetch(url)
-            .then(res => res.text())
-            .then(resultText => {
+            .then(res => res.json())
+            .then(res => {
                 btn.innerText = "Hubungkan";
                 btn.disabled = false;
                 closeConnectModal();
-                alert(resultText.replace(/❌|✅/g, "").trim());
-                if (resultText.includes("BERHASIL")) {
+                alert(res.message ? res.message.replace(/❌|✅/g, "").trim() : "Berhasil.");
+                if (res.success || JSON.stringify(res).includes("BERHASIL")) {
                     refreshData();
                 }
             })
@@ -474,7 +473,7 @@
             });
         }
 
-        // --- FITUR DISCONNECT KARTU (PILIH KARTU SPESIFIK TANPA LOGOUT JIKA MASIH ADA KARTU LAIN) ---
+        // --- FITUR DISCONNECT KARTU ---
         function openDisconnectModal() {
             closeSettingModal();
             
@@ -510,34 +509,24 @@
             let url = `${SCRIPT_URL}?action=disconnect_card&product_id=${encodeURIComponent(targetCardId)}&login_card=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(pinInput)}&t=${new Date().getTime()}`;
 
             fetch(url)
-            .then(res => res.text())
-            .then(resultText => {
+            .then(res => res.json())
+            .then(res => {
                 btn.innerText = "Ya, Disconnect";
                 btn.disabled = false;
                 closeDisconnectModal();
 
-                alert(resultText.replace(/❌|✅/g, "").trim());
+                alert(res.message ? res.message.replace(/❌|✅/g, "").trim() : "Berhasil.");
 
-                if (resultText.includes("BERHASIL")) {
-                    // Cek apakah kartu yang di-disconnect adalah kartu utama tempat login DAN apakah sisa kartu sudah habis
+                if (res.success || JSON.stringify(res).includes("BERHASIL")) {
                     if (targetCardId.toLowerCase() === cardIdSession.toLowerCase()) {
-                        // Jika kartu utama yang dilepas, cek apakah masih ada kartu lain di sisa daftar
                         let sisaKartu = globalConnectedCards.filter(c => c.toLowerCase() !== targetCardId.toLowerCase());
                         if (sisaKartu.length > 0) {
-                            // Jika masih ada kartu lain, pindahkan sesi login ke kartu pertama yang tersisa secara otomatis tanpa logout!
                             cardIdSession = sisaKartu[0].toLowerCase();
-                            if (localStorage.getItem("owner_card_id")) {
-                                localStorage.setItem("owner_card_id", cardIdSession);
-                            } else {
-                                sessionStorage.setItem("owner_card_id", cardIdSession);
-                            }
-                            refreshData(); // Refresh dashboard dengan sesi kartu baru yang tersisa
+                            refreshData();
                         } else {
-                            // Jika benar-benar habis, baru lakukan logout
                             logoutApp();
                         }
                     } else {
-                        // Jika kartu cabang/lain yang dilepas, langsung refresh data dashboard saja tanpa logout
                         refreshData();
                     }
                 }
@@ -550,19 +539,39 @@
             });
         }
 
-        // --- FITUR RESET KARTU ---
+        // --- FITUR RESET KARTU SPESIFIK ---
         function openResetModal() {
-            closeSettingModal();
-            document.getElementById("resetCardIdDisplay").value = cardIdSession.toUpperCase();
+            document.getElementById("settingModal").classList.add("hidden");
+            
+            let selectEl = document.getElementById("selectCardToReset");
+            selectEl.innerHTML = "";
+            
+            globalConnectedCards.forEach(cardId => {
+                let opt = document.createElement("option");
+                opt.value = cardId;
+                opt.text = cardId;
+                selectEl.appendChild(opt);
+            });
+
             document.getElementById("resetPinInput").value = "";
-            document.getElementById("resetModal").classList.remove("hidden");
+            
+            setTimeout(() => {
+                document.getElementById("resetModal").classList.remove("hidden");
+            }, 50);
         }
         function closeResetModal() { document.getElementById("resetModal").classList.add("hidden"); }
 
         function executeResetCard() {
+            let selectEl = document.getElementById("selectCardToReset");
+            let targetCardId = selectEl.value;
             let inputPin = document.getElementById("resetPinInput").value.trim();
-            if (!inputPin) {
-                alert("Masukkan PIN keamanan kartu Anda!");
+
+            if (!targetCardId || !inputPin) {
+                alert("Pilih kartu dan masukkan PIN keamanan!");
+                return;
+            }
+
+            if (!confirm(`Apakah Anda yakin ingin mereset total data kartu ${targetCardId}? Data dan statistik kartu ini akan bersih dari awal.`)) {
                 return;
             }
 
@@ -570,20 +579,29 @@
             btnConfirm.innerText = "Memproses...";
             btnConfirm.disabled = true;
 
-            let directResetUrl = `${SCRIPT_URL}?action=reset_card_direct&product_id=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`;
+            let directResetUrl = `${SCRIPT_URL}?action=reset_card_direct&product_id=${encodeURIComponent(targetCardId)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`;
 
             fetch(directResetUrl)
-            .then(res => res.text())
-            .then(resultText => {
+            .then(res => res.json())
+            .then(res => {
                 btnConfirm.innerText = "Ya, Reset";
                 btnConfirm.disabled = false;
                 closeResetModal();
 
-                if (resultText.includes("BERHASIL")) {
-                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
-                    logoutApp();
-                } else {
-                    alert("Gagal Reset: " + resultText.replace(/❌|✅/g, "").trim());
+                alert(res.message ? res.message.replace(/❌|✅/g, "").trim() : "Berhasil.");
+
+                if (res.success || JSON.stringify(res).includes("BERHASIL")) {
+                    if (targetCardId.toLowerCase() === cardIdSession.toLowerCase()) {
+                        let sisaKartu = globalConnectedCards.filter(c => c.toLowerCase() !== targetCardId.toLowerCase());
+                        if (sisaKartu.length > 0) {
+                            cardIdSession = sisaKartu[0].toLowerCase();
+                            refreshData();
+                        } else {
+                            logoutApp();
+                        }
+                    } else {
+                        refreshData();
+                    }
                 }
             })
             .catch(() => {
