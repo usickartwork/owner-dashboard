@@ -433,10 +433,12 @@
         function closeConnectModal() { document.getElementById("connectModal").classList.add("hidden"); }
 
         function executeConnectCard() {
-            let newCardId = document.getElementById("inputNewCardId").value.trim();
+            let rawInput = document.getElementById("inputNewCardId").value.trim();
+            let newCardId = extractCardId(rawInput).trim(); // Bisa baca ID langsung atau link lengkap!
             let pinInput = document.getElementById("connectPinInput").value.trim();
+            
             if (!newCardId || !pinInput) {
-                alert("ID Kartu baru dan PIN akun wajib diisi!");
+                alert("ID/Link Kartu baru dan PIN akun wajib diisi!");
                 return;
             }
 
@@ -454,7 +456,7 @@
                 closeConnectModal();
                 alert(resultText.replace(/❌|✅/g, "").trim());
                 if (resultText.includes("BERHASIL")) {
-                    refreshData(); // Langsung akumulasi data terbaru setelah connect
+                    refreshData(); // Refresh dashboard untuk menampilkan akumulasi kartu baru
                 }
             })
             .catch(() => {
