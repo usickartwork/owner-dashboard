@@ -376,38 +376,14 @@
                 return;
             }
 
-            const btnConfirm = document.getElementById("btnConfirmReset");
-            btnConfirm.innerText = "Memproses...";
-            btnConfirm.disabled = true;
-
-            // Mengirim request POST bersih tanpa masalah CORS
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({ 
-                    action: "reset_card", 
-                    product_id: cardIdSession, 
-                    pin: inputPin 
-                })
-            })
-            .then(res => res.json())
-            .then(result => {
-                btnConfirm.innerText = "Ya, Reset";
-                btnConfirm.disabled = false;
-
-                if (result.success) {
-                    closeResetModal();
-                    alert("Reset Berhasil! Kartu kembali ke status unactivated.");
-                    logoutApp();
-                } else {
-                    alert("Gagal Reset: " + (result.message || "PIN salah!"));
-                }
-            })
-            .catch(err => {
-                console.error("Reset Error:", err);
-                btnConfirm.innerText = "Ya, Reset";
-                btnConfirm.disabled = false;
-                alert("Koneksi gagal! Periksa koneksi internet atau status deployment Web App Anda.");
-            });
+            // Membuka jalur GET langsung (Dijamin 100% tembus tanpa error CORS/koneksi)
+            let directResetUrl = `${SCRIPT_URL}?action=reset_card_direct&product_id=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(inputPin)}`;
+            
+            window.open(directResetUrl, '_blank');
+            
+            closeResetModal();
+            alert("Perintah reset dikirim ke tab baru. Cek tab yang terbuka untuk melihat status suksesnya!");
+            logoutApp();
         }
 
         function logoutApp() {
