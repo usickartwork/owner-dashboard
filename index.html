@@ -35,7 +35,7 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- MODAL PENGATURAN AKUN -->
+       <!-- MODAL PENGATURAN AKUN -->
         <div id="settingModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
             <div class="w-full max-w-sm space-y-3 text-left">
                 <div class="text-center">
@@ -45,29 +45,30 @@
                 </div>
 
                 <div class="space-y-2 pt-1">
-                    <button onclick="openConnectModal()" class="w-full bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-blue-100 flex items-center justify-between btn-modern">
+                    <button type="button" onclick="openConnectModal()" class="w-full bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-blue-100 flex items-center justify-between btn-modern">
                         <span>Hubungkan Kartu Baru (Connect)</span>
                         <span class="text-blue-400 font-bold">&rarr;</span>
                     </button>
 
-                    <button onclick="openDisconnectModal()" class="w-full bg-amber-50/50 hover:bg-amber-50 text-amber-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-amber-100 flex items-center justify-between btn-modern">
+                    <button type="button" onclick="openDisconnectModal()" class="w-full bg-amber-50/50 hover:bg-amber-50 text-amber-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-amber-100 flex items-center justify-between btn-modern">
                         <span>Putuskan Kartu (Disconnect)</span>
                         <span class="text-amber-400 font-bold">&rarr;</span>
                     </button>
 
-                    <button onclick="openResetModal()" class="w-full bg-red-50/50 hover:bg-red-50 text-red-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-red-100 flex items-center justify-between btn-modern">
+                    <!-- Pastikan memanggil openResetModal() dengan benar -->
+                    <button type="button" onclick="openResetModal()" class="w-full bg-red-50/50 hover:bg-red-50 text-red-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-red-100 flex items-center justify-between btn-modern">
                         <span>Reset Data Kartu</span>
                         <span class="text-red-400 font-bold">&rarr;</span>
                     </button>
                     
-                    <button onclick="logoutApp()" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium py-3 px-4 rounded-xl text-xs transition flex items-center justify-between btn-modern border border-slate-200">
+                    <button type="button" onclick="logoutApp()" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium py-3 px-4 rounded-xl text-xs transition flex items-center justify-between btn-modern border border-slate-200">
                         <span>Keluar Akun (Logout)</span>
                         <span class="text-slate-400 font-bold">&rarr;</span>
                     </button>
                 </div>
 
                 <div class="pt-2">
-                    <button onclick="closeSettingModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
+                    <button type="button" onclick="closeSettingModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
                         Tutup
                     </button>
                 </div>
