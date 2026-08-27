@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Review Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
         @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -35,157 +36,34 @@
 
     <div id="main-container" class="w-full max-w-lg min-h-screen md:min-h-0 bg-white md:rounded-2xl md:shadow-sm md:border md:border-slate-100 p-6 sm:p-8 text-center flex flex-col justify-center relative overflow-hidden">
         
-        <!-- MODAL PENGATURAN AKUN -->
-        <div id="settingModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-3 text-left">
-                <div class="text-center">
-                    <div class="w-8 h-1 bg-slate-300 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-base font-bold text-slate-900">Pengaturan Akun</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Kelola sesi, sambungkan kartu, atau reset data.</p>
-                </div>
-
-                <div class="space-y-2 pt-1">
-                    <button type="button" onclick="openConnectModal()" class="w-full bg-blue-50/50 hover:bg-blue-50 text-blue-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-blue-100 flex items-center justify-between btn-modern">
-                        <span>Hubungkan Kartu Baru (Connect)</span>
-                        <span class="text-blue-400 font-bold">&rarr;</span>
-                    </button>
-
-                    <button type="button" onclick="openDisconnectModal()" class="w-full bg-amber-50/50 hover:bg-amber-50 text-amber-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-amber-100 flex items-center justify-between btn-modern">
-                        <span>Putuskan Kartu (Disconnect)</span>
-                        <span class="text-amber-400 font-bold">&rarr;</span>
-                    </button>
-
-                    <button type="button" onclick="openResetModal()" class="w-full bg-red-50/50 hover:bg-red-50 text-red-600 font-medium py-3 px-4 rounded-xl text-xs transition border border-red-100 flex items-center justify-between btn-modern">
-                        <span>Reset Data Kartu</span>
-                        <span class="text-red-400 font-bold">&rarr;</span>
-                    </button>
-                    
-                    <button type="button" onclick="logoutApp()" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium py-3 px-4 rounded-xl text-xs transition flex items-center justify-between btn-modern border border-slate-200">
-                        <span>Keluar Akun (Logout)</span>
-                        <span class="text-slate-400 font-bold">&rarr;</span>
-                    </button>
-                </div>
-
-                <div class="pt-2">
-                    <button type="button" onclick="closeSettingModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL CONNECT KARTU -->
-        <div id="connectModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left">
-                <div class="text-center">
-                    <div class="w-8 h-1 bg-blue-600 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-base font-bold text-slate-900">Hubungkan Kartu Baru</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Tautkan kartu fisik lain ke profil bisnis Anda saat ini.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu / Link Kartu Baru</label>
-                    <input type="text" id="inputNewCardId" placeholder="Contoh: NFC-002" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold outline-none focus:ring-2 focus:ring-blue-600">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Akun Anda</label>
-                    <input type="password" id="connectPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 outline-none tracking-widest">
-                </div>
-
-                <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="closeConnectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button type="button" onclick="executeConnectCard()" id="btnConfirmConnect" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL DISCONNECT KARTU -->
-        <div id="disconnectModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left">
-                <div class="text-center">
-                    <div class="w-8 h-1 bg-amber-500 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-base font-bold text-slate-900">Putuskan Kartu (Disconnect)</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Pilih kartu spesifik yang ingin dilepas dari akun ini.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Kartu yang Mau Dilepas</label>
-                    <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Akun</label>
-                    <input type="password" id="disconnectPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 outline-none tracking-widest">
-                </div>
-
-                <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="closeDisconnectModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button type="button" onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Disconnect</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MODAL RESET KARTU SPESIFIK -->
-        <div id="resetModal" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center animate-pop-up">
-            <div class="w-full max-w-sm space-y-4 text-left">
-                <div class="text-center">
-                    <div class="w-8 h-1 bg-red-500 mx-auto rounded-full mb-3"></div>
-                    <h2 class="text-base font-bold text-slate-900">Reset Data Kartu Spesifik</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Pilih kartu yang ingin dibersihkan datanya secara total.</p>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Kartu yang Mau Di-reset</label>
-                    <select id="selectCardToReset" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-red-500 uppercase">
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan Akun</label>
-                    <input type="password" id="resetPinInput" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-red-500 outline-none tracking-widest">
-                </div>
-
-                <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="closeResetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-xs transition btn-modern">Batal</button>
-                    <button type="button" onclick="executeResetCard()" id="btnConfirmReset" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Ya, Reset</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- HALAMAN LOGIN OWNER -->
-        <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
-            <div class="text-center mb-6">
+        <!-- HALAMAN LOGIN GMAIL -->
+        <div id="loginScreen" class="hidden space-y-6 text-left animate-page-fade-in">
+            <div class="text-center mb-4">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
-                <p class="text-xs text-slate-500 mt-1">Masukkan ID kartu atau tempel link kartu Anda.</p>
+                <p class="text-xs text-slate-500 mt-1">Masuk menggunakan akun Gmail Anda untuk mengelola statistik.</p>
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">ID Kartu atau Link Kartu</label>
-                <input type="text" id="inputCardId" placeholder="Contoh: NFC-001 atau https://.../?id=NFC-001" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none uppercase" autocomplete="off">
+            <div class="pt-4 flex flex-col items-center">
+                <!-- Tombol Google Sign In -->
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="pill"
+                     data-theme="outline"
+                     data-text="sign_in_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
             </div>
-            
-            <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">PIN Keamanan</label>
-                <input type="password" id="inputPin" placeholder="••••" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-600 outline-none">
-            </div>
-
-            <div class="flex items-center justify-between pt-1">
-                <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
-                    <span class="text-xs text-slate-600 font-medium">Ingat Saya (Remember Me)</span>
-                </label>
-            </div>
-
-            <button type="button" onclick="prosesLogin()" id="btn-login" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition shadow-sm mt-2 btn-modern">
-                Masuk Dashboard
-            </button>
-            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Menghubungkan ke database...</div>
+            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Memverifikasi akun Gmail...</div>
         </div>
 
-        <!-- HALAMAN DASHBOARD STATISTIK -->
+        <!-- HALAMAN UTAMA DASHBOARD -->
         <div id="dashboardScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center space-y-1">
                 <img src="logo.png" alt="Logo Brand" class="h-16 w-auto mx-auto object-contain mb-2">
@@ -261,21 +139,45 @@
                 <button type="button" id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Refresh Statistik
                 </button>
-                <button type="button" onclick="openSettingModal()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
-                    Pengaturan Akun
+                <button type="button" onclick="openManageCardsPage()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-blue-200 btn-modern">
+                    Kelola Kartu Saya
                 </button>
             </div>
+            <div class="text-center pt-1">
+                <button type="button" onclick="logoutApp()" class="text-[11px] text-slate-400 hover:text-red-500 underline">Keluar Akun (Logout)</button>
+            </div>
         </div>
+
+        <!-- HALAMAN KELOLA KARTU (DEDICATED PAGE) -->
+        <div id="manageCardsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <button type="button" onclick="closeManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
+                <h2 class="text-sm font-extrabold text-slate-900">Manajemen Kartu</h2>
+            </div>
+
+            <div class="space-y-4 pt-1">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-800">Hubungkan Kartu Baru (Connect)</h3>
+                    <input type="text" id="inputNewCardId" placeholder="ID Kartu Baru (Contoh: NFC-002)" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs uppercase font-bold outline-none focus:ring-2 focus:ring-blue-600">
+                    <button type="button" onclick="executeConnectCard()" id="btnConfirmConnect" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan Kartu</button>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-800">Putuskan Kartu (Disconnect)</h3>
+                    <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+                    </select>
+                    <button type="button" onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Putuskan Kartu Terpilih</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTKJkitt5ntrPbXWvXz4u1Px9lzczgcQO3ywc-GhMg1nlBOvg6cAlWBe1KBVf9oYJD/exec";
         
-        let cardIdSession = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
-        let currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
+        let ownerEmailSession = localStorage.getItem("owner_email") || sessionStorage.getItem("owner_email") || "";
         let globalConnectedCards = [];
-        let isMasterCard = true; // Status apakah kartu yang login adalah master
-        let masterCardIdGlobal = "";
 
         function hideIntroScreen() {
             const introEl = document.getElementById("introScreen");
@@ -287,9 +189,10 @@
 
         window.onload = function() {
             document.getElementById("dashboardScreen").classList.add("hidden");
+            document.getElementById("manageCardsScreen").classList.add("hidden");
             document.getElementById("loginScreen").classList.add("hidden");
 
-            if (cardIdSession && currentPin) {
+            if (ownerEmailSession) {
                 refreshData(true);
             } else {
                 setTimeout(() => {
@@ -299,50 +202,31 @@
             }
         };
 
-        function extractCardId(input) {
-            input = input.trim();
-            try {
-                if (input.startsWith("http://") || input.startsWith("https://")) {
-                    let urlObj = new URL(input);
-                    let idParam = urlObj.searchParams.get("id");
-                    if (idParam) return idParam.trim();
-                }
-            } catch (e) {}
-            return input;
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
         }
 
-        function prosesLogin() {
-            let rawInput = document.getElementById("inputCardId").value;
-            let cardId = extractCardId(rawInput).trim().toLowerCase();
-            let pin = document.getElementById("inputPin").value.trim();
-            let isRememberChecked = document.getElementById("rememberMe").checked;
-
-            if (!cardId || !pin) {
-                alert("ID/Link Kartu dan PIN wajib diisi!");
-                return;
-            }
+        function handleCredentialResponse(response) {
+            let responsePayload = parseJwt(response.credential);
+            let email = responsePayload.email;
 
             document.getElementById("loadingText").classList.remove("hidden");
 
-            fetch(`${SCRIPT_URL}?action=owner_login&product_id=${encodeURIComponent(cardId)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=owner_login_gmail&email=${encodeURIComponent(email)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
-                        cardIdSession = cardId;
-                        currentPin = pin;
-
-                        if (isRememberChecked) {
-                            localStorage.setItem("owner_card_id", cardId);
-                            localStorage.setItem("owner_pin", pin);
-                        } else {
-                            sessionStorage.setItem("owner_card_id", cardId);
-                            sessionStorage.setItem("owner_pin", pin);
-                        }
-
+                        ownerEmailSession = email;
+                        localStorage.setItem("owner_email", email);
                         fetchCardData();
                     } else {
-                        alert(res.message || "ID Kartu atau PIN salah!");
+                        alert(res.message || "Email tidak terdaftar di sistem.");
                     }
                 })
                 .catch(() => {
@@ -352,9 +236,8 @@
         }
 
         function refreshData(isInitial = false) {
-            if (!cardIdSession || !currentPin) {
-                cardIdSession = localStorage.getItem("owner_card_id") || sessionStorage.getItem("owner_card_id") || "";
-                currentPin = localStorage.getItem("owner_pin") || sessionStorage.getItem("owner_pin") || "";
+            if (!ownerEmailSession) {
+                ownerEmailSession = localStorage.getItem("owner_email") || sessionStorage.getItem("owner_email") || "";
             }
 
             if (!isInitial) {
@@ -367,7 +250,7 @@
         }
 
         function fetchCardData(isInitial = false) {
-            fetch(`${SCRIPT_URL}?action=refresh_stats&product_id=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(currentPin)}&t=${new Date().getTime()}`)
+            fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(ownerEmailSession)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
                     if (!isInitial) {
@@ -377,13 +260,11 @@
                     }
 
                     if (res.success && res.data) {
-                        globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [cardIdSession.toUpperCase()];
-                        isMasterCard = res.data.is_master;
-                        masterCardIdGlobal = res.data.master_card;
+                        globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [];
                         renderDashboard(res.data);
                         hideIntroScreen();
                     } else {
-                        if (!isInitial) alert("Sesi kedaluwarsa atau kartu telah di-reset.");
+                        if (!isInitial) alert("Sesi kedaluwarsa.");
                         logoutApp();
                     }
                 })
@@ -400,6 +281,7 @@
         function renderDashboard(data) {
             hideIntroScreen();
             document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("manageCardsScreen").classList.add("hidden");
             const dash = document.getElementById("dashboardScreen");
             dash.classList.remove("hidden");
             dash.classList.add("animate-page-fade-in");
@@ -428,134 +310,12 @@
             }, 100);
         }
 
-        function openSettingModal() { document.getElementById("settingModal").classList.remove("hidden"); }
-        function closeSettingModal() { document.getElementById("settingModal").classList.add("hidden"); }
-
-        // --- VALIDASI AKSES MASTER CARD ---
-        function checkMasterAccess() {
-            if (!isMasterCard) {
-                alert(`⚠️ Akses Ditolak!\n\nPengaturan Hubungkan/Putuskan Kartu hanya dapat dikelola melalui Kartu Master (${masterCardIdGlobal}). Anda sedang login menggunakan kartu cabang.`);
-                closeSettingModal();
-                return false;
-            }
-            return true;
-        }
-
-        // --- FITUR CONNECT KARTU (Hanya Master) ---
-        function openConnectModal() {
-            if (!checkMasterAccess()) return;
-            closeSettingModal();
-            document.getElementById("inputNewCardId").value = "";
-            document.getElementById("connectPinInput").value = "";
-            document.getElementById("connectModal").classList.remove("hidden");
-        }
-        function closeConnectModal() { document.getElementById("connectModal").classList.add("hidden"); }
-
-        function executeConnectCard() {
-            let rawInput = document.getElementById("inputNewCardId").value.trim();
-            let newCardId = extractCardId(rawInput).trim();
-            let pinInput = document.getElementById("connectPinInput").value.trim();
+        // --- NAVIGASI HALAMAN KELOLA KARTU ---
+        function openManageCardsPage() {
+            document.getElementById("dashboardScreen").classList.add("hidden");
             
-            if (!newCardId || !pinInput) {
-                alert("ID/Link Kartu baru dan PIN akun wajib diisi!");
-                return;
-            }
-
-            const btn = document.getElementById("btnConfirmConnect");
-            btn.innerText = "Menghubungkan...";
-            btn.disabled = true;
-
-            let url = `${SCRIPT_URL}?action=connect_card&current_id=${encodeURIComponent(cardIdSession)}&new_card_id=${encodeURIComponent(newCardId)}&pin=${encodeURIComponent(pinInput)}&t=${new Date().getTime()}`;
-
-            fetch(url)
-            .then(res => res.json())
-            .then(res => {
-                btn.innerText = "Hubungkan";
-                btn.disabled = false;
-                closeConnectModal();
-                alert(res.message || "Berhasil.");
-                if (res.success) {
-                    refreshData();
-                }
-            })
-            .catch(() => {
-                btn.innerText = "Hubungkan";
-                btn.disabled = false;
-                closeConnectModal();
-                alert("Terjadi kesalahan koneksi.");
-            });
-        }
-
-        // --- FITUR DISCONNECT KARTU (Hanya Master) ---
-        function openDisconnectModal() {
-            if (!checkMasterAccess()) return;
-            closeSettingModal();
             let selectEl = document.getElementById("selectCardToDisconnect");
             selectEl.innerHTML = "";
-            globalConnectedCards.forEach(cardId => {
-                // Kartu master tidak bisa di-disconnect dari dirinya sendiri
-                if (cardId.toLowerCase() !== masterCardIdGlobal.toLowerCase()) {
-                    let opt = document.createElement("option");
-                    opt.value = cardId;
-                    opt.text = cardId;
-                    selectEl.appendChild(opt);
-                }
-            });
-
-            if (selectEl.options.length === 0) {
-                alert("Tidak ada kartu cabang yang terhubung untuk dilepas.");
-                openSettingModal();
-                return;
-            }
-
-            document.getElementById("disconnectPinInput").value = "";
-            document.getElementById("disconnectModal").classList.remove("hidden");
-        }
-        function closeDisconnectModal() { document.getElementById("disconnectModal").classList.add("hidden"); }
-
-        function executeDisconnectCard() {
-            let selectEl = document.getElementById("selectCardToDisconnect");
-            let targetCardId = selectEl.value;
-            let pinInput = document.getElementById("disconnectPinInput").value.trim();
-
-            if (!targetCardId || !pinInput) {
-                alert("Pilih kartu dan masukkan PIN keamanan!");
-                return;
-            }
-
-            const btn = document.getElementById("btnConfirmDisconnect");
-            btn.innerText = "Memproses...";
-            btn.disabled = true;
-
-            let url = `${SCRIPT_URL}?action=disconnect_card&product_id=${encodeURIComponent(targetCardId)}&login_card=${encodeURIComponent(cardIdSession)}&pin=${encodeURIComponent(pinInput)}&t=${new Date().getTime()}`;
-
-            fetch(url)
-            .then(res => res.json())
-            .then(res => {
-                btn.innerText = "Ya, Disconnect";
-                btn.disabled = false;
-                closeDisconnectModal();
-                alert(res.message || "Berhasil.");
-
-                if (res.success) {
-                    refreshData();
-                }
-            })
-            .catch(() => {
-                btn.innerText = "Ya, Disconnect";
-                btn.disabled = false;
-                closeDisconnectModal();
-                alert("Terjadi kesalahan koneksi.");
-            });
-        }
-
-        // --- FITUR RESET KARTU SPESIFIK ---
-        function openResetModal() {
-            document.getElementById("settingModal").classList.add("hidden");
-            
-            let selectEl = document.getElementById("selectCardToReset");
-            selectEl.innerHTML = "";
-            
             globalConnectedCards.forEach(cardId => {
                 let opt = document.createElement("option");
                 opt.value = cardId;
@@ -563,61 +323,71 @@
                 selectEl.appendChild(opt);
             });
 
-            document.getElementById("resetPinInput").value = "";
-            
-            setTimeout(() => {
-                document.getElementById("resetModal").classList.remove("hidden");
-            }, 50);
+            document.getElementById("inputNewCardId").value = "";
+            document.getElementById("manageCardsScreen").classList.remove("hidden");
         }
-        function closeResetModal() { document.getElementById("resetModal").classList.add("hidden"); }
 
-        function executeResetCard() {
-            let selectEl = document.getElementById("selectCardToReset");
-            let targetCardId = selectEl.value;
-            let inputPin = document.getElementById("resetPinInput").value.trim();
+        function closeManageCardsPage() {
+            document.getElementById("manageCardsScreen").classList.add("hidden");
+            refreshData();
+        }
 
-            if (!targetCardId || !inputPin) {
-                alert("Pilih kartu dan masukkan PIN keamanan!");
+        // --- CONNECT KARTU VIA GMAIL ---
+        function executeConnectCard() {
+            let newCardId = document.getElementById("inputNewCardId").value.trim();
+            if (!newCardId) {
+                alert("Masukkan ID kartu baru!");
                 return;
             }
 
-            if (!confirm(`Apakah Anda yakin ingin mereset total data kartu ${targetCardId}? Data dan statistik kartu ini akan bersih dari awal.`)) {
-                return;
-            }
+            const btn = document.getElementById("btnConfirmConnect");
+            btn.innerText = "Menghubungkan...";
+            btn.disabled = true;
 
-            const btnConfirm = document.getElementById("btnConfirmReset");
-            btnConfirm.innerText = "Memproses...";
-            btnConfirm.disabled = true;
-
-            let directResetUrl = `${SCRIPT_URL}?action=reset_card_direct&product_id=${encodeURIComponent(targetCardId)}&pin=${encodeURIComponent(inputPin)}&t=${new Date().getTime()}`;
-
-            fetch(directResetUrl)
+            fetch(`${SCRIPT_URL}?action=connect_card_gmail&email=${encodeURIComponent(ownerEmailSession)}&new_card_id=${encodeURIComponent(newCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
-                btnConfirm.innerText = "Ya, Reset";
-                btnConfirm.disabled = false;
-                closeResetModal();
-
+                btn.innerText = "Hubungkan Kartu";
+                btn.disabled = false;
                 alert(res.message || "Berhasil.");
-
                 if (res.success) {
-                    if (targetCardId.toLowerCase() === cardIdSession.toLowerCase()) {
-                        let sisaKartu = globalConnectedCards.filter(c => c.toLowerCase() !== targetCardId.toLowerCase());
-                        if (sisaKartu.length > 0) {
-                            cardIdSession = sisaKartu[0].toLowerCase();
-                            refreshData();
-                        } else {
-                            logoutApp();
-                        }
-                    } else {
-                        refreshData();
-                    }
+                    openManageCardsPage();
                 }
             })
             .catch(() => {
-                btnConfirm.innerText = "Ya, Reset";
-                btnConfirm.disabled = false;
-                closeResetModal();
+                btn.innerText = "Hubungkan Kartu";
+                btn.disabled = false;
+                alert("Terjadi kesalahan koneksi.");
+            });
+        }
+
+        // --- DISCONNECT KARTU VIA GMAIL ---
+        function executeDisconnectCard() {
+            let selectEl = document.getElementById("selectCardToDisconnect");
+            let targetCardId = selectEl.value;
+
+            if (!targetCardId) {
+                alert("Pilih kartu yang ingin diputus!");
+                return;
+            }
+
+            const btn = document.getElementById("btnConfirmDisconnect");
+            btn.innerText = "Memproses...";
+            btn.disabled = true;
+
+            fetch(`${SCRIPT_URL}?action=disconnect_card_gmail&email=${encodeURIComponent(ownerEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
+            .then(res => res.json())
+            .then(res => {
+                btn.innerText = "Putuskan Kartu Terpilih";
+                btn.disabled = false;
+                alert(res.message || "Berhasil.");
+                if (res.success) {
+                    openManageCardsPage();
+                }
+            })
+            .catch(() => {
+                btn.innerText = "Putuskan Kartu Terpilih";
+                btn.disabled = false;
                 alert("Terjadi kesalahan koneksi.");
             });
         }
@@ -625,8 +395,6 @@
         function logoutApp() {
             localStorage.clear();
             sessionStorage.clear();
-            document.getElementById("dashboardScreen").classList.add("hidden");
-            document.getElementById("loginScreen").classList.add("hidden");
             location.reload();
         }
     </script>
