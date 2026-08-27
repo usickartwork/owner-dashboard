@@ -212,7 +212,7 @@
                 <button type="button" id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Refresh Statistik
                 </button>
-                <button type="button" onclick="openManageCardsPage()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
+                <button type="button" onclick="openManageCardsPage()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-blue-200 btn-modern">
                     Kelola Kartu
                 </button>
             </div>
@@ -797,16 +797,17 @@
 
             let formattedCardId = newCardId.toUpperCase();
 
+            // Sembunyikan form input terlebih dahulu agar tampil loading penuh
+            hideAllScreens();
             showLoading();
+
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
             fetch(url)
             .then(res => res.json())
             .then(res => {
-                hideLoading();
                 if (res.success) {
-                    // Refresh data terlebih dahulu untuk mengecek apakah kartu baru ini sudah memiliki nama kustom atau belum
-                    showLoading();
+                    // Lakukan refresh data di latar belakang untuk mengecek status nama kustom kartu
                     fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
                     .then(r => r.json())
                     .then(resp => {
@@ -815,30 +816,33 @@
                             globalCardsDetail = resp.data.cards_detail || [];
                         }
 
-                        // Cari detail kartu yang baru ditambahkan
                         let targetCard = globalCardsDetail.find(c => c.id === formattedCardId);
                         let hasCustomName = targetCard && targetCard.name && targetCard.name.trim() !== "";
 
+                        // Munculkan pop-up sukses setelah server benar-benar siap
                         showToast(res.message || "Kartu berhasil dihubungkan!", () => {
                             if (!hasCustomName) {
-                                // Jika BELUM dinamai, arahkan ke halaman ubah nama kustom
                                 openSubManage('name', formattedCardId);
                             } else {
-                                // Jika SUDAH dinamai, langsung kembali ke dashboard utama secara smooth
                                 refreshData();
                             }
                         });
                     })
                     .catch(() => {
                         hideLoading();
-                        refreshData();
+                        showToast(res.message || "Kartu berhasil dihubungkan!", () => {
+                            refreshData();
+                        });
                     });
                 } else {
+                    hideLoading();
+                    openSubManage('add');
                     alert(res.message || "Gagal menghubungkan kartu.");
                 }
             })
             .catch(() => {
                 hideLoading();
+                openSubManage('add');
                 alert("Terjadi kesalahan koneksi.");
             });
         }
