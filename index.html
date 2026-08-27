@@ -6,9 +6,9 @@
     <title>Google Review Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
-        @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-page-fade-in { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, opacity 0.2s ease; }
+        @keyframes popUp { 0% { transform: scale(0.92); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .animate-page-fade-in { animation: popUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
         @keyframes logoPulse {
             0% { transform: scale(0.92); opacity: 0.85; }
@@ -28,7 +28,7 @@
             0% { opacity: 1; visibility: visible; }
             100% { opacity: 0; visibility: hidden; }
         }
-        .animate-fade-out-screen { animation: fadeOutScreen 0.5s ease forwards; }
+        .animate-fade-out-screen { animation: fadeOutScreen 0.4s ease forwards; }
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
@@ -42,7 +42,7 @@
     </div>
 
     <!-- CUSTOM TOAST NOTIFICATION / ANIMASI CEKLIST BERHASIL -->
-    <div id="toastNotification" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+    <div id="toastNotification" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-2xl p-6 shadow-xl max-w-xs w-full text-center space-y-3 animate-page-fade-in border border-slate-100">
             <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto animate-check shadow-sm">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
@@ -51,7 +51,7 @@
             </div>
             <h3 class="text-base font-bold text-slate-900">Berhasil!</h3>
             <p id="toastMessage" class="text-xs text-slate-500 leading-relaxed">Aksi berhasil dijalankan.</p>
-            <button type="button" onclick="closeToast()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2.5 rounded-xl transition btn-modern mt-1">OK</button>
+            <button type="button" onclick="closeToast()" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2.5 rounded-xl transition btn-modern mt-1 shadow-sm">OK</button>
         </div>
     </div>
 
@@ -62,7 +62,7 @@
             <div class="text-center mb-4">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
-                <p id="formSubTitle" class="text-xs text-slate-500 mt-1">Masuk ke akun master Anda untuk melihat statistik.</p>
+                <p id="formSubTitle" class="text-xs text-slate-500 mt-1">Masuk ke akun Anda untuk melihat statistik.</p>
             </div>
 
             <!-- FORM LOGIN -->
@@ -277,7 +277,7 @@
             <div class="space-y-4 pt-1">
                 <!-- 1. Informasi Akun -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Informasi Akun Master</h3>
+                    <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">Informasi Akun</h3>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-500 mb-1">Email / Gmail Terdaftar</label>
                         <input type="text" id="infoUserEmail" disabled class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 outline-none cursor-not-allowed">
@@ -326,23 +326,29 @@
                 intro.classList.add("animate-fade-out-screen");
                 setTimeout(() => {
                     intro.style.visibility = "hidden";
-                }, 500);
+                }, 400);
             }
         }
 
         function showToast(message, callback = null) {
             document.getElementById("toastMessage").innerText = message;
             toastCallback = callback;
-            document.getElementById("toastNotification").classList.remove("hidden");
+            const toast = document.getElementById("toastNotification");
+            toast.classList.remove("hidden");
+            setTimeout(() => { toast.classList.remove("opacity-0"); }, 10);
         }
 
         function closeToast() {
-            document.getElementById("toastNotification").classList.add("hidden");
-            if (typeof toastCallback === "function") {
-                let cb = toastCallback;
-                toastCallback = null;
-                cb();
-            }
+            const toast = document.getElementById("toastNotification");
+            toast.classList.add("opacity-0");
+            setTimeout(() => {
+                toast.classList.add("hidden");
+                if (typeof toastCallback === "function") {
+                    let cb = toastCallback;
+                    toastCallback = null;
+                    cb();
+                }
+            }, 200);
         }
 
         window.onload = function() {
@@ -358,7 +364,7 @@
                 setTimeout(() => {
                     hideLoading();
                     document.getElementById("loginScreen").classList.remove("hidden");
-                }, 800);
+                }, 600);
             }
         };
 
@@ -369,7 +375,7 @@
 
             if (type === 'register') {
                 document.getElementById("formRegister").classList.remove("hidden");
-                document.getElementById("formSubTitle").innerText = "Daftar akun master baru dengan email dan password.";
+                document.getElementById("formSubTitle").innerText = "Daftar akun baru dengan email dan password.";
             } else if (type === 'forgot') {
                 document.getElementById("formForgot").classList.remove("hidden");
                 document.getElementById("stepEmail").classList.remove("hidden");
@@ -382,7 +388,7 @@
                 document.getElementById("formLogin").classList.remove("hidden");
                 document.getElementById("loginEmail").value = "";
                 document.getElementById("loginPin").value = "";
-                document.getElementById("formSubTitle").innerText = "Masuk ke akun master Anda untuk melihat statistik.";
+                document.getElementById("formSubTitle").innerText = "Masuk ke akun Anda untuk melihat statistik.";
             }
         }
 
