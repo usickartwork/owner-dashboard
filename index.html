@@ -8,28 +8,30 @@
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
         @keyframes popUp { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .animate-pop-up { animation: popUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-page-fade-in { animation: popUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
         @keyframes logoPulse {
             0% { transform: scale(0.92); opacity: 0.85; }
-            50% { transform: scale(1.06); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 1; }
             100% { transform: scale(0.92); opacity: 0.85; }
         }
-        .animate-logo-pulse { animation: logoPulse 1.4s ease-in-out infinite; }
+        .animate-logo-pulse { animation: logoPulse 1.2s ease-in-out infinite; }
+        
         @keyframes fadeOutScreen {
             0% { opacity: 1; visibility: visible; }
             100% { opacity: 0; visibility: hidden; }
         }
-        .animate-fade-out-screen { animation: fadeOutScreen 0.6s ease forwards; }
+        .animate-fade-out-screen { animation: fadeOutScreen 0.5s ease forwards; }
         .btn-modern:active { transform: scale(0.97); }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-0 md:p-4">
 
-    <!-- SPLASH SCREEN INTRO -->
-    <div id="introScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center">
-        <div class="space-y-6">
-            <img src="logo.png" alt="Logo Brand" class="h-32 w-auto mx-auto object-contain animate-logo-pulse">
+    <!-- SPLASH SCREEN / LOADING LOGO ANIMATION -->
+    <div id="introScreen" class="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
+        <div class="space-y-4">
+            <img src="logo.png" alt="Logo Brand" class="h-28 w-auto mx-auto object-contain animate-logo-pulse">
+            <p id="loadingLabel" class="text-xs font-semibold text-slate-400 tracking-wider">Menyiapkan sistem...</p>
         </div>
     </div>
 
@@ -78,8 +80,6 @@
                     <button type="button" onclick="switchForm('login')" class="text-xs text-slate-600 font-semibold hover:underline">&larr; Sudah punya akun? Masuk di sini</button>
                 </div>
             </div>
-
-            <div id="loadingText" class="hidden text-center text-xs text-slate-400 pt-2">Memproses ke database...</div>
         </div>
 
         <!-- HALAMAN UTAMA DASHBOARD -->
@@ -206,11 +206,21 @@
         let masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
         let globalConnectedCards = [];
 
-        function hideIntroScreen() {
-            const introEl = document.getElementById("introScreen");
-            if (introEl && !introEl.classList.contains("animate-fade-out-screen")) {
-                introEl.classList.add("animate-fade-out-screen");
-                setTimeout(() => introEl.remove(), 600);
+        function showLoading(text = "Memuat data...") {
+            document.getElementById("loadingLabel").innerText = text;
+            const intro = document.getElementById("introScreen");
+            intro.classList.remove("animate-fade-out-screen");
+            intro.style.visibility = "visible";
+            intro.style.opacity = "1";
+        }
+
+        function hideLoading() {
+            const intro = document.getElementById("introScreen");
+            if (intro && !intro.classList.contains("animate-fade-out-screen")) {
+                intro.classList.add("animate-fade-out-screen");
+                setTimeout(() => {
+                    intro.style.visibility = "hidden";
+                }, 500);
             }
         }
 
@@ -220,12 +230,13 @@
             document.getElementById("loginScreen").classList.add("hidden");
 
             if (masterEmailSession && masterPinSession) {
+                showLoading("Menghubungkan ke server...");
                 refreshData(true);
             } else {
                 setTimeout(() => {
-                    hideIntroScreen();
+                    hideLoading();
                     document.getElementById("loginScreen").classList.remove("hidden");
-                }, 1200);
+                }, 800);
             }
         };
 
@@ -252,12 +263,11 @@
                 return;
             }
 
-            document.getElementById("loadingText").classList.remove("hidden");
+            showLoading("Memverifikasi akun...");
 
             fetch(`${SCRIPT_URL}?action=master_login&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
-                    document.getElementById("loadingText").classList.add("hidden");
                     if (res.success) {
                         masterEmailSession = email;
                         masterPinSession = pin;
@@ -267,11 +277,12 @@
 
                         fetchCardData();
                     } else {
+                        hideLoading();
                         alert(res.message || "Email atau PIN salah!");
                     }
                 })
                 .catch(() => {
-                    document.getElementById("loadingText").classList.add("hidden");
+                    hideLoading();
                     alert("Terjadi kesalahan koneksi.");
                 });
         }
@@ -285,24 +296,23 @@
                 return;
             }
 
-            document.getElementById("loadingText").classList.add("hidden");
+            showLoading("Mendaftarkan akun...");
 
             let url = `${SCRIPT_URL}?action=register_master&email=${encodeURIComponent(email)}&pin=${encodeURIComponent(pin)}&t=${new Date().getTime()}`;
 
             fetch(url)
                 .then(res => res.json())
                 .then(res => {
-                    document.getElementById("loadingText").classList.add("hidden");
+                    hideLoading();
                     alert(res.message || "Berhasil.");
                     if (res.success) {
-                        // Reset form register & arahkan kembali ke halaman login (tidak masuk dashboard)
                         document.getElementById("regEmail").value = "";
                         document.getElementById("regPin").value = "";
                         switchForm('login');
                     }
                 })
                 .catch(() => {
-                    document.getElementById("loadingText").classList.add("hidden");
+                    hideLoading();
                     alert("Terjadi kesalahan koneksi.");
                 });
         }
@@ -314,9 +324,7 @@
             }
 
             if (!isInitial) {
-                const btn = document.getElementById("btnRefresh");
-                btn.innerText = "Memuat...";
-                btn.disabled = true;
+                showLoading("Memperbarui statistik...");
             }
 
             fetchCardData(isInitial);
@@ -326,33 +334,23 @@
             fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
                 .then(res => res.json())
                 .then(res => {
-                    if (!isInitial) {
-                        const btn = document.getElementById("btnRefresh");
-                        btn.disabled = false;
-                        btn.innerText = "Refresh Statistik";
-                    }
-
                     if (res.success && res.data) {
                         globalConnectedCards = res.data.connected_cards ? res.data.connected_cards.split(", ").map(s => s.trim()) : [];
                         renderDashboard(res.data);
-                        hideIntroScreen();
+                        hideLoading();
                     } else {
+                        hideLoading();
                         if (!isInitial) alert("Sesi kedaluwarsa.");
                         logoutApp();
                     }
                 })
                 .catch(() => {
-                    if (!isInitial) {
-                        const btn = document.getElementById("btnRefresh");
-                        btn.disabled = false;
-                        btn.innerText = "Refresh Statistik";
-                    }
+                    hideLoading();
                     if (!isInitial) alert("Gagal memperbarui data.");
                 });
         }
 
         function renderDashboard(data) {
-            hideIntroScreen();
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("manageCardsScreen").classList.add("hidden");
             const dash = document.getElementById("dashboardScreen");
@@ -405,6 +403,7 @@
 
         function closeManageCardsPage() {
             document.getElementById("manageCardsScreen").classList.add("hidden");
+            showLoading("Memuat ulang dashboard...");
             refreshData();
         }
 
@@ -417,25 +416,21 @@
                 return;
             }
 
-            const btn = document.getElementById("btnConfirmAdd");
-            btn.innerText = "Menghubungkan...";
-            btn.disabled = true;
+            showLoading("Menghubungkan kartu...");
 
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
             fetch(url)
             .then(res => res.json())
             .then(res => {
-                btn.innerText = "Hubungkan Kartu Ini";
-                btn.disabled = false;
+                hideLoading();
                 alert(res.message || "Berhasil.");
                 if (res.success) {
                     openManageCardsPage();
                 }
             })
             .catch(() => {
-                btn.innerText = "Hubungkan Kartu Ini";
-                btn.disabled = false;
+                hideLoading();
                 alert("Terjadi kesalahan koneksi.");
             });
         }
@@ -449,23 +444,19 @@
                 return;
             }
 
-            const btn = document.getElementById("btnConfirmDisconnect");
-            btn.innerText = "Memproses...";
-            btn.disabled = true;
+            showLoading("Memutuskan kartu...");
 
             fetch(`${SCRIPT_URL}?action=disconnect_card_master&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
             .then(res => res.json())
             .then(res => {
-                btn.innerText = "Putuskan Kartu Terpilih";
-                btn.disabled = false;
+                hideLoading();
                 alert(res.message || "Berhasil.");
                 if (res.success) {
                     openManageCardsPage();
                 }
             })
             .catch(() => {
-                btn.innerText = "Putuskan Kartu Terpilih";
-                btn.disabled = false;
+                hideLoading();
                 alert("Terjadi kesalahan koneksi.");
             });
         }
