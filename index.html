@@ -212,7 +212,7 @@
                 <button type="button" id="btnRefresh" onclick="refreshData()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Refresh Statistik
                 </button>
-                <button type="button" onclick="openManageCardsPage()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-blue-200 btn-modern">
+                <button type="button" onclick="openManageCardsPage()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold py-3 px-2 rounded-xl text-xs transition border border-slate-200 btn-modern">
                     Kelola Kartu
                 </button>
             </div>
@@ -229,7 +229,7 @@
         <!-- HALAMAN KELOLA KARTU (MENU UTAMA) -->
         <div id="manageCardsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <button type="button" onclick="closeManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
+                <button type="button" onclick="closeManageCardsPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition btn-modern">&larr; Kembali ke Dashboard</button>
                 <h2 class="text-sm font-extrabold text-slate-900">Kelola Kartu Fisik</h2>
             </div>
 
@@ -237,20 +237,20 @@
 
             <div class="space-y-2.5 pt-1">
                 <button type="button" onclick="openSubManage('add')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
-                    <span>➕ Hubungkan Kartu Baru</span>
+                    <span>Hubungkan Kartu Baru</span>
                     <span class="text-slate-400">&rarr;</span>
                 </button>
                 <button type="button" onclick="openSubManage('name')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
-                    <span>✏️ Ubah Nama Kustom Kartu</span>
+                    <span>Ubah Nama Kustom Kartu</span>
                     <span class="text-slate-400">&rarr;</span>
                 </button>
-                <button type="button" onclick="openSubManage('disconnect')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
-                    <span>🔗 Putuskan Kartu dari Akun</span>
+                <button type="button" onclick="openSubManage('disconnect')" class="w-full flex items-center justify-between p-3.5 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-xl text-xs font-bold text-slate-800 transition btn-modern">
+                    <span>Putuskan Kartu dari Akun</span>
                     <span class="text-slate-400">&rarr;</span>
                 </button>
-                <button type="button" onclick="openSubManage('reset')" class="w-full flex items-center justify-between p-3.5 bg-amber-50/60 hover:bg-amber-50 border border-amber-200 rounded-xl text-xs font-bold text-amber-900 transition btn-modern">
-                    <span>🔄 Reset Total Kartu (Pabrik)</span>
-                    <span class="text-amber-500">&rarr;</span>
+                <button type="button" onclick="openSubManage('reset')" class="w-full flex items-center justify-between p-3.5 bg-red-50/60 hover:bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-700 transition btn-modern">
+                    <span>Reset Total Data Kartu</span>
+                    <span class="text-red-400">&rarr;</span>
                 </button>
             </div>
         </div>
@@ -258,7 +258,7 @@
         <!-- SUB MENU 1: HUBUNGKAN KARTU -->
         <div id="subManageAdd" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <button type="button" onclick="openManageCardsPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition btn-modern">&larr; Kembali ke Menu</button>
                 <h2 class="text-sm font-extrabold text-slate-900">Hubungkan Kartu Baru</h2>
             </div>
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
@@ -270,14 +270,14 @@
                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">PIN Keamanan Kartu</label>
                     <input type="password" id="inputNewCardPin" placeholder="••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-600">
                 </div>
-                <button type="button" onclick="executeAddCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Hubungkan Kartu Ini</button>
+                <button type="button" onclick="executeAddCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1 shadow-sm">Hubungkan Kartu Ini</button>
             </div>
         </div>
 
         <!-- SUB MENU 2: UBAH NAMA KUSTOM -->
         <div id="subManageName" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <button type="button" onclick="openManageCardsPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition btn-modern">&larr; Kembali ke Menu</button>
                 <h2 class="text-sm font-extrabold text-slate-900">Nama Kustom Kartu</h2>
             </div>
             <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
@@ -291,14 +291,14 @@
                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Kustom Baru</label>
                     <input type="text" id="inputCustomName" placeholder="Contoh: Meja 1 / Kasir Utama" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                 </div>
-                <button type="button" onclick="executeUpdateCardName()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Simpan Nama Kustom</button>
+                <button type="button" onclick="executeUpdateCardName()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1 shadow-sm">Simpan Nama Kustom</button>
             </div>
         </div>
 
         <!-- SUB MENU 3: PUTUSKAN KARTU -->
         <div id="subManageDisconnect" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
+                <button type="button" onclick="openManageCardsPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition btn-modern">&larr; Kembali ke Menu</button>
                 <h2 class="text-sm font-extrabold text-slate-900">Putuskan Kartu</h2>
             </div>
             <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
@@ -308,31 +308,31 @@
                     <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-slate-400 uppercase">
                     </select>
                 </div>
-                <button type="button" onclick="executeDisconnectCard()" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Putuskan Kartu Terpilih</button>
+                <button type="button" onclick="executeDisconnectCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1 shadow-sm">Putuskan Kartu Terpilih</button>
             </div>
         </div>
 
-        <!-- SUB MENU 4: RESET KONDISI PABRIK -->
+        <!-- SUB MENU 4: RESET TOTAL DATA KARTU -->
         <div id="subManageReset" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <button type="button" onclick="openManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Menu</button>
-                <h2 class="text-sm font-extrabold text-amber-900">Reset Total Kartu</h2>
+                <button type="button" onclick="openManageCardsPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition btn-modern">&larr; Kembali ke Menu</button>
+                <h2 class="text-sm font-extrabold text-red-700">Reset Total Data Kartu</h2>
             </div>
-            <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200 space-y-3">
-                <p class="text-[11px] text-amber-700 leading-relaxed">Mengosongkan profil & statistik kartu, serta mengubah statusnya kembali menjadi unactivated.</p>
+            <div class="bg-red-50/50 p-4 rounded-xl border border-red-200 space-y-3">
+                <p class="text-[11px] text-red-700 leading-relaxed">Mengosongkan profil & statistik kartu, serta mengubah statusnya kembali menjadi unactivated.</p>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu Terhubung</label>
-                    <select id="selectCardToReset" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+                    <select id="selectCardToReset" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-red-500 uppercase">
                     </select>
                 </div>
-                <button type="button" onclick="executeResetCardStats()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1">Reset Kartu Ke Pabrik</button>
+                <button type="button" onclick="executeResetCardStats()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-xl text-xs transition btn-modern mt-1 shadow-sm">Reset Total Data Kartu</button>
             </div>
         </div>
 
         <!-- HALAMAN PENGATURAN AKUN -->
         <div id="accountSettingsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-                <button type="button" onclick="closeAccountSettingsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
+                <button type="button" onclick="closeAccountSettingsPage()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-xs transition btn-modern">&larr; Kembali ke Dashboard</button>
                 <h2 class="text-sm font-extrabold text-slate-900">Pengaturan Akun</h2>
             </div>
 
@@ -372,6 +372,7 @@
         let masterPinSession = localStorage.getItem("master_pin") || sessionStorage.getItem("master_pin") || "";
         let globalCardsDetail = [];
         let toastCallback = null;
+        let newlyConnectedCardId = ""; // Menyimpan ID kartu yang baru dihubungkan
 
         function showLoading() {
             const intro = document.getElementById("introScreen");
@@ -683,7 +684,7 @@
             document.getElementById("manageCardsScreen").classList.remove("hidden");
         }
 
-        function openSubManage(type) {
+        function openSubManage(type, preselectId = "") {
             hideAllScreens();
 
             let selectDisc = document.getElementById("selectCardToDisconnect");
@@ -695,7 +696,7 @@
             selectReset.innerHTML = "";
 
             if (globalCardsDetail.length === 0) {
-                let emptyOpt = document.createElement("option");
+                let emptyOpt = document.option ? document.option : document.createElement("option");
                 emptyOpt.value = ""; emptyOpt.text = "Belum ada kartu terhubung";
                 selectDisc.appendChild(emptyOpt); selectDisc.disabled = true;
                 selectName.appendChild(emptyOpt.cloneNode(true)); selectName.disabled = true;
@@ -723,8 +724,13 @@
                     selectReset.appendChild(opt3);
                 });
 
+                if (preselectId) {
+                    selectName.value = preselectId;
+                }
+
                 if (selectName.options.length > 0) {
-                    document.getElementById("inputCustomName").value = selectName.options[0].getAttribute("data-name") || "";
+                    let activeOpt = selectName.options[selectName.selectedIndex];
+                    document.getElementById("inputCustomName").value = activeOpt ? (activeOpt.getAttribute("data-name") || "") : "";
                 }
             }
 
@@ -790,6 +796,8 @@
                 }
             }
 
+            newlyConnectedCardId = newCardId.toUpperCase();
+
             showLoading();
             let url = `${SCRIPT_URL}?action=add_card_master&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&new_card_id=${encodeURIComponent(newCardId)}&card_pin=${encodeURIComponent(cardPin)}&t=${new Date().getTime()}`;
 
@@ -798,8 +806,16 @@
             .then(res => {
                 hideLoading();
                 if (res.success) {
-                    showToast(res.message || "Kartu berhasil dihubungkan!", () => {
-                        refreshData();
+                    // Setelah sukses hubungkan, ambil data terbaru lalu arahkan ke menu Ubah Nama Kustom
+                    fetch(`${SCRIPT_URL}?action=refresh_stats&email=${encodeURIComponent(masterEmailSession)}&pin=${encodeURIComponent(masterPinSession)}&t=${new Date().getTime()}`)
+                    .then(r => r.json())
+                    .then(resp => {
+                        if (resp.success && resp.data) {
+                            globalCardsDetail = resp.data.cards_detail || [];
+                        }
+                        showToast("Kartu berhasil dihubungkan! Silakan beri nama kustom.", () => {
+                            openSubManage('name', newlyConnectedCardId);
+                        });
                     });
                 } else {
                     alert(res.message || "Gagal menghubungkan kartu.");
@@ -881,7 +897,7 @@
                 return;
             }
 
-            if (!confirm(`Yakin ingin mereset total kartu ${targetCardId} kembali ke kondisi pabrik?`)) { return; }
+            if (!confirm(`Yakin ingin mereset total data kartu ${targetCardId} kembali ke kondisi pabrik?`)) { return; }
 
             showLoading();
             fetch(`${SCRIPT_URL}?action=reset_card_stats&email=${encodeURIComponent(masterEmailSession)}&product_id=${encodeURIComponent(targetCardId)}&t=${new Date().getTime()}`)
