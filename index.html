@@ -220,7 +220,7 @@
                     
                     <div class="space-y-2 pb-3 border-b border-slate-200/60">
                         <label class="block text-[11px] font-semibold text-slate-600">Hubungkan Kartu Baru</label>
-                        <input type="text" id="inputNewCardId" placeholder="ID Kartu (Contoh: NFC-001)" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs uppercase font-bold outline-none focus:ring-2 focus:ring-blue-600 mb-2">
+                        <input type="text" id="inputNewCardId" placeholder="ID Kartu atau Paste Link Kartu (cth: NFC-001)" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-600 mb-2">
                         <input type="password" id="inputNewCardPin" placeholder="PIN Keamanan Kartu" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-600 mb-2">
                         <button type="button" onclick="executeAddCard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Hubungkan Kartu Ini</button>
                     </div>
@@ -233,7 +233,7 @@
                     </div>
                 </div>
 
-                <!-- 2. Reset Total Kartu Spesifik (Nomor 2 dari bawah) -->
+                <!-- 2. Reset Total Kartu Spesifik -->
                 <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200 space-y-3">
                     <h3 class="text-xs font-bold text-amber-900">Reset Total Kartu Spesifik (Kondisi Pabrik)</h3>
                     <p class="text-[11px] text-amber-700 leading-relaxed">Mengosongkan profil & statistik kartu, serta mengubah statusnya kembali menjadi unactivated.</p>
@@ -268,14 +268,12 @@
                 <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
                     <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wide">Keamanan Akun</h3>
                     
-                    <!-- Step 1: Input Password Lama -->
                     <div id="accPinStepOld" class="space-y-2">
                         <label class="block text-[11px] font-semibold text-slate-600">Ganti Password</label>
                         <input type="password" id="inputAccOldPin" placeholder="Masukkan Password Lama" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white mb-2">
                         <button type="button" onclick="verifyAccOldPin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Lanjutkan Ganti Password</button>
                     </div>
 
-                    <!-- Step 2: Input Password Baru (Muncul setelah verifikasi) -->
                     <div id="accPinStepNew" class="hidden space-y-2">
                         <label class="block text-[11px] font-semibold text-emerald-700">Password Lama Terverifikasi ✓</label>
                         <input type="password" id="inputAccNewPin" placeholder="Masukkan Password Baru" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500 bg-white mb-2">
@@ -571,7 +569,6 @@
             }, 100);
         }
 
-        // --- NAVIGASI HALAMAN KELOLA KARTU ---
         function openManageCardsPage() {
             document.getElementById("dashboardScreen").classList.add("hidden");
             
@@ -619,19 +616,13 @@
             refreshData();
         }
 
-        // --- NAVIGASI HALAMAN PENGATURAN AKUN ---
         function openAccountSettingsPage() {
             document.getElementById("dashboardScreen").classList.add("hidden");
-            
-            // Tampilkan informasi akun
             document.getElementById("infoUserEmail").value = masterEmailSession;
-            
-            // Reset form ganti password ke tahap awal
             document.getElementById("inputAccOldPin").value = "";
             document.getElementById("inputAccNewPin").value = "";
             document.getElementById("accPinStepOld").classList.remove("hidden");
             document.getElementById("accPinStepNew").classList.add("hidden");
-
             document.getElementById("accountSettingsScreen").classList.remove("hidden");
         }
 
@@ -641,11 +632,28 @@
         }
 
         function executeAddCard() {
-            let newCardId = document.getElementById("inputNewCardId").value.trim();
+            let rawInput = document.getElementById("inputNewCardId").value.trim();
             let cardPin = document.getElementById("inputNewCardPin").value.trim();
 
-            if (!newCardId || !cardPin) {
-                alert("ID Kartu dan PIN Kartu wajib diisi!");
+            if (!rawInput || !cardPin) {
+                alert("ID/Link Kartu dan PIN Kartu wajib diisi!");
+                return;
+            }
+
+            let newCardId = rawInput;
+            if (rawInput.includes("http://") || rawInput.includes("https://") || rawInput.includes("?id=")) {
+                try {
+                    let urlObj = new URL(rawInput);
+                    let idParam = urlObj.searchParams.get("id");
+                    if (idParam) { newCardId = idParam.trim(); }
+                } catch (e) {
+                    let parts = rawInput.split("=");
+                    if (parts.length > 1) { newCardId = parts[parts.length - 1].trim(); }
+                }
+            }
+
+            if (!newCardId) {
+                alert("Format ID atau Link Kartu tidak valid!");
                 return;
             }
 
@@ -731,7 +739,6 @@
             });
         }
 
-        // STEP 1 Ganti Password Akun: Verifikasi Password Lama
         function verifyAccOldPin() {
             let oldPin = document.getElementById("inputAccOldPin").value.trim();
             if (!oldPin) {
@@ -744,12 +751,10 @@
                 return;
             }
 
-            // Jika benar, tampilkan kolom input password baru
             document.getElementById("accPinStepOld").classList.add("hidden");
             document.getElementById("accPinStepNew").classList.remove("hidden");
         }
 
-        // STEP 2 Ganti Password Akun: Simpan Password Baru
         function saveNewAccountPin() {
             let oldPin = document.getElementById("inputAccOldPin").value.trim();
             let newPin = document.getElementById("inputAccNewPin").value.trim();
