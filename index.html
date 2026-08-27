@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Account Dashboard</title>
+    <title>Google Review Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.1s ease; }
@@ -41,7 +41,7 @@
         <div id="loginScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center mb-4">
                 <img src="logo.png" alt="Logo Brand" class="h-20 w-auto mx-auto object-contain mb-3">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Account</h1>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
                 <p id="formSubTitle" class="text-xs text-slate-500 mt-1">Masuk ke akun master Anda untuk melihat statistik.</p>
             </div>
 
@@ -86,7 +86,7 @@
         <div id="dashboardScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="text-center space-y-1">
                 <img src="logo.png" alt="Logo Brand" class="h-16 w-auto mx-auto object-contain mb-2">
-                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Master Dashboard</h1>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Google Review Dashboard</h1>
                 <div>
                     <span id="displayBusinessName" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Dashboard Bisnis Anda</span>
                 </div>
@@ -171,7 +171,7 @@
         <div id="manageCardsScreen" class="hidden space-y-4 text-left animate-page-fade-in">
             <div class="flex items-center justify-between pb-2 border-b border-slate-100">
                 <button type="button" onclick="closeManageCardsPage()" class="text-xs font-bold text-blue-600 hover:underline">&larr; Kembali ke Dashboard</button>
-                <h2 class="text-sm font-extrabold text-slate-900">Manajemen Kartu Master</h2>
+                <h2 class="text-sm font-extrabold text-slate-900">Kelola Kartu Terhubung</h2>
             </div>
 
             <div class="space-y-4 pt-1">
@@ -189,9 +189,12 @@
                 </div>
 
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                    <h3 class="text-xs font-bold text-slate-800">Putuskan Kartu (Disconnect)</h3>
-                    <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
-                    </select>
+                    <h3 class="text-xs font-bold text-slate-800">Putuskan / Hapus Kartu dari Akun</h3>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pilih Kartu Terhubung</label>
+                        <select id="selectCardToDisconnect" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 bg-white outline-none focus:ring-2 focus:ring-amber-500 uppercase">
+                        </select>
+                    </div>
                     <button type="button" onclick="executeDisconnectCard()" id="btnConfirmDisconnect" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 rounded-xl text-xs transition btn-modern">Putuskan Kartu Terpilih</button>
                 </div>
             </div>
@@ -387,14 +390,24 @@
             
             let selectEl = document.getElementById("selectCardToDisconnect");
             selectEl.innerHTML = "";
-            globalConnectedCards.forEach(cardId => {
-                if (cardId) {
-                    let opt = document.createElement("option");
-                    opt.value = cardId;
-                    opt.text = cardId;
-                    selectEl.appendChild(opt);
-                }
-            });
+            
+            if (globalConnectedCards.length === 0) {
+                let opt = document.createElement("option");
+                opt.value = "";
+                opt.text = "Belum ada kartu terhubung";
+                selectEl.appendChild(opt);
+                selectEl.disabled = true;
+            } else {
+                selectEl.disabled = false;
+                globalConnectedCards.forEach(cardId => {
+                    if (cardId) {
+                        let opt = document.createElement("option");
+                        opt.value = cardId;
+                        opt.text = cardId;
+                        selectEl.appendChild(opt);
+                    }
+                });
+            }
 
             document.getElementById("inputNewCardId").value = "";
             document.getElementById("inputNewCardPin").value = "";
@@ -426,6 +439,7 @@
                 hideLoading();
                 alert(res.message || "Berhasil.");
                 if (res.success) {
+                    refreshData();
                     openManageCardsPage();
                 }
             })
@@ -452,6 +466,7 @@
                 hideLoading();
                 alert(res.message || "Berhasil.");
                 if (res.success) {
+                    refreshData();
                     openManageCardsPage();
                 }
             })
