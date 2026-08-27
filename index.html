@@ -471,7 +471,7 @@
             });
         }
 
-        // --- FITUR DISCONNECT KARTU (PILIH KARTU SPESIFIK) ---
+        // --- FITUR DISCONNECT KARTU (PILIH KARTU SPESIFIK TANPA LOGOUT JIKA MASIH ADA KARTU LAIN) ---
         function openDisconnectModal() {
             closeSettingModal();
             
@@ -516,9 +516,25 @@
                 alert(resultText.replace(/❌|✅/g, "").trim());
 
                 if (resultText.includes("BERHASIL")) {
+                    // Cek apakah kartu yang di-disconnect adalah kartu utama tempat login DAN apakah sisa kartu sudah habis
                     if (targetCardId.toLowerCase() === cardIdSession.toLowerCase()) {
-                        logoutApp();
+                        // Jika kartu utama yang dilepas, cek apakah masih ada kartu lain di sisa daftar
+                        let sisaKartu = globalConnectedCards.filter(c => c.toLowerCase() !== targetCardId.toLowerCase());
+                        if (sisaKartu.length > 0) {
+                            // Jika masih ada kartu lain, pindahkan sesi login ke kartu pertama yang tersisa secara otomatis tanpa logout!
+                            cardIdSession = sisaKartu[0].toLowerCase();
+                            if (localStorage.getItem("owner_card_id")) {
+                                localStorage.setItem("owner_card_id", cardIdSession);
+                            } else {
+                                sessionStorage.setItem("owner_card_id", cardIdSession);
+                            }
+                            refreshData(); // Refresh dashboard dengan sesi kartu baru yang tersisa
+                        } else {
+                            // Jika benar-benar habis, baru lakukan logout
+                            logoutApp();
+                        }
                     } else {
+                        // Jika kartu cabang/lain yang dilepas, langsung refresh data dashboard saja tanpa logout
                         refreshData();
                     }
                 }
